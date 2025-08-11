@@ -19,15 +19,12 @@
     align-items:flex-start;
     justify-content:space-between;
   }
-  .left {
-    width:520px;
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-  }
+
+  .left { width:520px; display:flex; flex-direction:column; gap:14px; }
   h1 { margin:0 0 4px 0; font-size:22px; }
   .desc { margin:0 0 12px 0; color:var(--muted); font-size:13px; }
   .controls { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+
   .control {
     background:#FBFCFD;
     border-radius:10px;
@@ -40,24 +37,29 @@
   }
   .control .label { font-size:13px; color:var(--muted); display:flex; justify-content:space-between; align-items:center; gap:8px; }
   .row { display:flex; gap:10px; align-items:center; }
+
   input[type="color"] { width:42px; height:42px; padding:0; border-radius:8px; border:1px solid rgba(0,0,0,0.06); cursor:pointer; }
   .hex { font-family:monospace; padding:8px 10px; border-radius:8px; border:1px solid #e6eef9; width:100%; background:#fff; text-align:center; }
   input[type="number"] { padding:8px 10px; border-radius:8px; border:1px solid #e6eef9; width:100%; text-align:center; }
+
   .small-btn { background:transparent; border:1px solid rgba(3,7,18,0.06); padding:6px 8px; border-radius:8px; cursor:pointer; color:var(--muted); }
-  .comp-swatch { width:34px; height:34px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); cursor:pointer; }
-  .right {
-    width:420px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:12px;
-  }
+
+  .right { width:420px; display:flex; flex-direction:column; align-items:center; gap:12px; }
   #preview-wrap { background:linear-gradient(180deg,#fff,#fbfeff); padding:18px; border-radius:14px; display:flex; flex-direction:column; align-items:center; box-shadow:0 6px 18px rgba(12,22,40,0.04); }
   #preview { width:360px; height:360px; display:flex; align-items:center; justify-content:center; }
   #preview svg { max-width:100%; height:auto; display:block; }
+
   .actions { display:flex; gap:10px; margin-top:6px; }
   .btn { background:var(--accent); color:#fff; padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:600; }
   .btn.secondary { background:#fff; color:var(--accent); border:1px solid rgba(11,116,209,0.14); }
+
+  /* harmony bar (Option C) */
+  .harmony-bar { width:100%; height:32px; display:flex; border-radius:8px; overflow:hidden; border:1px solid rgba(0,0,0,0.06); box-shadow:inset 0 1px 0 rgba(255,255,255,0.4); }
+  .harmony-seg { flex:1; display:flex; align-items:center; justify-content:center; font-size:12px; color:#fff; text-shadow:0 1px 0 rgba(0,0,0,0.15); }
+  .harmony-seg.left { cursor:default; opacity:0.98; }
+  .harmony-seg.right { cursor:pointer; opacity:0.98; }
+  .harmony-note { font-size:11px; color:var(--muted); margin-top:6px; }
+
   @media (max-width:980px){
     .card { flex-direction:column; align-items:center; }
     .left, .right { width:100%; }
@@ -68,9 +70,10 @@
 <body>
 <div class="page">
   <div class="card" role="main" aria-label="TD Logo Customizer">
+
     <div class="left">
       <h1>TD Logo Customizer</h1>
-      <p class="desc">Edit fills, strokes and stroke widths. Click the complementary swatch to apply a complementary colour (hue + 180°). Changes persist on refresh.</p>
+      <p class="desc">Edit fills, strokes and stroke widths. Click the right half of the harmony bar to apply the complementary colour (hue + 180°). Changes persist on refresh.</p>
 
       <div class="controls" role="group" aria-label="controls">
 
@@ -81,9 +84,10 @@
           </div>
           <div class="row">
             <input type="color" id="pathFillPicker" aria-label="Path fill color">
-            <div id="pathFillComp" class="comp-swatch" title="Click to apply complementary colour"></div>
             <input id="pathFillHex" class="hex" type="text" aria-label="Path fill hex">
           </div>
+          <div id="pathFillBar" class="harmony-bar" title="Left=current • Right=complementary (click right to apply)"></div>
+          <div class="harmony-note">Right half = complementary. Click to apply.</div>
         </div>
 
         <!-- Path Stroke -->
@@ -93,9 +97,9 @@
           </div>
           <div class="row">
             <input type="color" id="pathStrokePicker" aria-label="Path stroke color">
-            <div id="pathStrokeComp" class="comp-swatch" title="Click to apply complementary colour"></div>
             <input id="pathStrokeHex" class="hex" type="text" aria-label="Path stroke hex">
           </div>
+          <div id="pathStrokeBar" class="harmony-bar" title="Left=current • Right=complementary (click right to apply)"></div>
         </div>
 
         <!-- Path Stroke Width -->
@@ -115,9 +119,9 @@
           </div>
           <div class="row">
             <input type="color" id="rectFillPicker" aria-label="Rectangle fill color">
-            <div id="rectFillComp" class="comp-swatch" title="Click to apply complementary colour"></div>
             <input id="rectFillHex" class="hex" type="text" aria-label="Rectangle fill hex">
           </div>
+          <div id="rectFillBar" class="harmony-bar" title="Left=current • Right=complementary (click right to apply)"></div>
         </div>
 
         <!-- Rectangle Stroke -->
@@ -127,9 +131,9 @@
           </div>
           <div class="row">
             <input type="color" id="rectStrokePicker" aria-label="Rectangle stroke color">
-            <div id="rectStrokeComp" class="comp-swatch" title="Click to apply complementary colour"></div>
             <input id="rectStrokeHex" class="hex" type="text" aria-label="Rectangle stroke hex">
           </div>
+          <div id="rectStrokeBar" class="harmony-bar" title="Left=current • Right=complementary (click right to apply)"></div>
         </div>
 
         <!-- Rectangle Stroke Width -->
@@ -146,7 +150,7 @@
 
       <div style="display:flex; gap:10px; margin-top:12px; align-items:center;">
         <button id="resetAllBtn" class="btn secondary">Reset All</button>
-        <button id="downloadBtn" class="btn">Download PNG</button>
+        <!-- removed the left-side Download button (per your request) -->
       </div>
 
     </div> <!-- left -->
@@ -154,15 +158,12 @@
     <div class="right">
       <div id="preview-wrap" aria-live="polite">
         <div id="preview" title="Preview">
-          <!-- Inline SVG: I preserved inkscape:label attributes and added friendly IDs used by the script -->
-          <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-          <!-- Created with Inkscape (http://www.inkscape.org/) -->
+          <!-- INLINE SVG (no XML prolog) -->
           <svg id="svgRoot"
              version="1.1"
              xmlns="http://www.w3.org/2000/svg"
              xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
              xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-             xmlns:svg="http://www.w3.org/2000/svg"
              width="1024" height="1024"
              viewBox="0 0 1024 1024"
              role="img" aria-label="TD logo preview">
@@ -176,13 +177,13 @@
                inkscape:window-width="1920" inkscape:window-height="1051" inkscape:window-x="-9" inkscape:window-y="-9"
                inkscape:window-maximized="1" inkscape:current-layer="g1" />
             <g inkscape:groupmode="layer" inkscape:label="Image" id="g1">
-              <!-- rectangle: kept original style but added script-friendly ID "SquareBehindTD" -->
+              <!-- rectangle: friendly id SquareBehindTD (script references this) -->
               <rect
                  id="SquareBehindTD"
                  style="fill:#eedc29;fill-opacity:1;stroke-width:1.6;fill-rule:nonzero"
                  width="800" height="800" x="113.09484" y="116.78271"
                  inkscape:label="Square Behind TD" />
-              <!-- path: kept original style but added script-friendly ID "TDPath" -->
+              <!-- path: friendly id TDPath -->
               <path
                  id="TDPath"
                  style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:2;stroke-dasharray:none;stroke-dashoffset:0"
@@ -193,8 +194,8 @@
         </div>
 
         <div class="actions">
-          <button id="export2x" class="btn secondary" title="Download PNG at 1×">Download PNG</button>
-          <button id="export3x" class="btn" title="Download PNG at 2×">Download 2× PNG</button>
+          <button id="export1x" class="btn secondary" title="Download PNG at 1×">Download PNG</button>
+          <button id="export2x" class="btn" title="Download PNG at 2×">Download 2× PNG</button>
         </div>
       </div>
     </div> <!-- right -->
@@ -204,7 +205,7 @@
 
 <script>
 (() => {
-  /* ---------- Defaults (from you) ---------- */
+  /* ---------- Defaults ---------- */
   const DEFAULTS = {
     pathFill: '#FFFFFF',
     pathStroke: '#000000',
@@ -213,76 +214,40 @@
     rectStroke: '#EEDC29',
     rectStrokeWidth: '0'
   };
-
   const STORAGE_KEY = 'tdLogoSettings_v1';
 
-  /* ---------- Elements ---------- */
+  /* ---------- Grab elements ---------- */
   const svgRoot = document.getElementById('svgRoot');
-  // find path & rect by inkscape:label OR by friendly ID fallback
-  function getInkscapeLabel(el){
-    return el.getAttribute('inkscape:label') || el.getAttribute('inkscape:label') || null;
-  }
-  function findElementByLabelOrId(tagNames, labelCandidates){
-    for(const tag of tagNames){
-      const els = svgRoot.querySelectorAll(tag);
-      for(const el of els){
-        // try inkscape:label (namespace) first
-        let lab = el.getAttribute('inkscape:label');
-        if(lab && labelCandidates.includes(lab)) return el;
-      }
-    }
-    // fallback to standard IDs that might exist
-    const fallbackIds = ['TDPath','path1','td-path','td_path'];
-    for(const id of fallbackIds){
-      const el = document.getElementById(id);
-      if(el) return el;
-    }
-    // other fallback: look for element with inkscape label containing TD or Square
-    const els = svgRoot.querySelectorAll('rect, path');
-    for(const el of els){
-      const lab = el.getAttribute('inkscape:label') || '';
-      if(labelCandidates.some(c => lab.trim() === c)) return el;
-    }
-    return null;
-  }
+  const pathEl = document.getElementById('TDPath');      // path
+  const rectEl = document.getElementById('SquareBehindTD'); // rect
 
-  // rectangle and path elements (we added friendly ids SquareBehindTD and TDPath in the SVG)
-  const rectEl = document.getElementById('SquareBehindTD') || findElementByLabelOrId(['rect'], ['Square Behind TD', 'Square BehindTD']);
-  const pathEl = document.getElementById('TDPath') || findElementByLabelOrId(['path'], ['TD Path', 'TDPath']);
-
-  if(!rectEl || !pathEl){
-    console.error('Could not find TD Path or Square Behind TD in the SVG. Make sure labels/IDs are present.');
-  }
-
-  // controls
   const controls = {
     pathFillPicker: document.getElementById('pathFillPicker'),
-    pathFillHex:    document.getElementById('pathFillHex'),
-    pathFillComp:   document.getElementById('pathFillComp'),
+    pathFillHex: document.getElementById('pathFillHex'),
+    pathFillBar: document.getElementById('pathFillBar'),
 
     pathStrokePicker: document.getElementById('pathStrokePicker'),
-    pathStrokeHex:    document.getElementById('pathStrokeHex'),
-    pathStrokeComp:   document.getElementById('pathStrokeComp'),
+    pathStrokeHex: document.getElementById('pathStrokeHex'),
+    pathStrokeBar: document.getElementById('pathStrokeBar'),
 
-    pathStrokeWidth:  document.getElementById('pathStrokeWidth'),
+    pathStrokeWidth: document.getElementById('pathStrokeWidth'),
 
     rectFillPicker: document.getElementById('rectFillPicker'),
-    rectFillHex:    document.getElementById('rectFillHex'),
-    rectFillComp:   document.getElementById('rectFillComp'),
+    rectFillHex: document.getElementById('rectFillHex'),
+    rectFillBar: document.getElementById('rectFillBar'),
 
     rectStrokePicker: document.getElementById('rectStrokePicker'),
-    rectStrokeHex:    document.getElementById('rectStrokeHex'),
-    rectStrokeComp:   document.getElementById('rectStrokeComp'),
+    rectStrokeHex: document.getElementById('rectStrokeHex'),
+    rectStrokeBar: document.getElementById('rectStrokeBar'),
 
     rectStrokeWidth: document.getElementById('rectStrokeWidth'),
 
     resetAllBtn: document.getElementById('resetAllBtn'),
-    downloadBtn: document.getElementById('downloadBtn'),
-    export2xBtn: document.getElementById('export2x'),
-    export3xBtn: document.getElementById('export3x')
+    export1xBtn: document.getElementById('export1x'),
+    export2xBtn: document.getElementById('export2x')
   };
 
-  /* ---------- Color math (HEX <-> RGB <-> HSL) ---------- */
+  /* ---------- Color math ---------- */
   function clamp(n,min,max){ return Math.min(max,Math.max(min,n)); }
   function hexToRgb(hex){
     if(!hex) return null;
@@ -345,7 +310,7 @@
     return rgbToHex(rgb2.r, rgb2.g, rgb2.b);
   }
 
-  /* ---------- Apply styles to SVG elements (use inline style to override Inkscape style attr) ---------- */
+  /* ---------- Apply styles to SVG ---------- */
   function applyStyles(){
     if(!pathEl || !rectEl) return;
     // path
@@ -363,12 +328,11 @@
     const rStrokeWidth = String(controls.rectStrokeWidth.value || DEFAULTS.rectStrokeWidth);
 
     rectEl.style.setProperty('fill', rFill);
-    // If rect stroke width is zero, keep stroke but width 0 (some renderers show invisible stroke)
     rectEl.style.setProperty('stroke', rStroke);
     rectEl.style.setProperty('stroke-width', rStrokeWidth);
   }
 
-  /* ---------- Sync UI with values and localStorage ---------- */
+  /* ---------- persist / load ---------- */
   function saveSettings(){
     const obj = {
       pathFill: normalizeHexInput(controls.pathFillPicker.value) || DEFAULTS.pathFill,
@@ -385,7 +349,6 @@
     if(raw){
       try{
         const s = JSON.parse(raw);
-        // apply but fallback to defaults if something missing
         controls.pathFillPicker.value = s.pathFill || DEFAULTS.pathFill;
         controls.pathStrokePicker.value = s.pathStroke || DEFAULTS.pathStroke;
         controls.pathStrokeWidth.value = s.pathStrokeWidth != null ? s.pathStrokeWidth : DEFAULTS.pathStrokeWidth;
@@ -395,7 +358,7 @@
         return;
       }catch(e){}
     }
-    // no saved -> set defaults
+    // fallback defaults
     controls.pathFillPicker.value = DEFAULTS.pathFill;
     controls.pathStrokePicker.value = DEFAULTS.pathStroke;
     controls.pathStrokeWidth.value = DEFAULTS.pathStrokeWidth;
@@ -404,135 +367,167 @@
     controls.rectStrokeWidth.value = DEFAULTS.rectStrokeWidth;
   }
 
-  /* ---------- Complementary previews ---------- */
-  function updateCompSwatches(){
-    controls.pathFillComp.style.background = getComplementHex(controls.pathFillPicker.value);
-    controls.pathStrokeComp.style.background = getComplementHex(controls.pathStrokePicker.value);
-    controls.rectFillComp.style.background = getComplementHex(controls.rectFillPicker.value);
-    controls.rectStrokeComp.style.background = getComplementHex(controls.rectStrokePicker.value);
+  /* ---------- Harmony bars ---------- */
+  function updateHarmonyBar(barEl, colorHex){
+    const cur = normalizeHexInput(colorHex) || colorHex;
+    const comp = getComplementHex(cur);
+    barEl.innerHTML = '';
+    const left = document.createElement('div');
+    left.className = 'harmony-seg left';
+    left.style.background = cur;
+    left.textContent = '';
+    const right = document.createElement('div');
+    right.className = 'harmony-seg right';
+    right.style.background = comp;
+    right.title = 'Click to apply complementary color';
+    right.textContent = '';
+    // action: clicking right applies comp to the matching picker (we attach handler outside)
+    barEl.appendChild(left);
+    barEl.appendChild(right);
+    return { left, right, cur, comp };
   }
 
-  /* ---------- Wire up events ---------- */
+  /* ---------- wire inputs & events ---------- */
   function wireInputs(){
-    // whenever a color picker changes, update hex and preview
-    const colorPairs = [
-      ['pathFillPicker','pathFillHex','pathFillComp'],
-      ['pathStrokePicker','pathStrokeHex','pathStrokeComp'],
-      ['rectFillPicker','rectFillHex','rectFillComp'],
-      ['rectStrokePicker','rectStrokeHex','rectStrokeComp']
+    // color fields list so we can reuse logic
+    const pairs = [
+      {picker: controls.pathFillPicker, hex: controls.pathFillHex, bar: controls.pathFillBar},
+      {picker: controls.pathStrokePicker, hex: controls.pathStrokeHex, bar: controls.pathStrokeBar},
+      {picker: controls.rectFillPicker, hex: controls.rectFillHex, bar: controls.rectFillBar},
+      {picker: controls.rectStrokePicker, hex: controls.rectStrokeHex, bar: controls.rectStrokeBar}
     ];
-    colorPairs.forEach(([pickerId, hexId, compId]) => {
-      const picker = controls[pickerId];
-      const hex = document.getElementById(hexId);
-      const comp = controls[compId];
 
-      // when color picker changes
-      picker.addEventListener('input', () => {
-        hex.value = normalizeHexInput(picker.value) || picker.value;
-        updateCompSwatches();
-        applyStyles();
-        saveSettings();
+    pairs.forEach(pair => {
+      // update hex when picker changes
+      pair.picker.addEventListener('input', () => {
+        const nh = normalizeHexInput(pair.picker.value) || pair.picker.value;
+        pair.hex.value = nh;
+        // refresh harmony bar
+        const segs = updateHarmonyBar(pair.bar, nh);
+        segs.right.addEventListener('click', () => {
+          // apply comp color to this picker
+          pair.picker.value = segs.comp;
+          pair.hex.value = segs.comp;
+          applyStyles(); saveSettings();
+        }, { once: false });
+        applyStyles(); saveSettings();
       });
 
-      // hex typed
-      hex.addEventListener('input', () => {
-        const nh = normalizeHexInput(hex.value);
+      // when hex typed manually
+      pair.hex.addEventListener('input', () => {
+        const nh = normalizeHexInput(pair.hex.value);
         if(nh){
-          picker.value = nh;
-          hex.value = nh;
-          updateCompSwatches();
-          applyStyles();
-          saveSettings();
+          pair.picker.value = nh;
+          pair.hex.value = nh;
+          const segs = updateHarmonyBar(pair.bar, nh);
+          segs.right.addEventListener('click', () => {
+            pair.picker.value = segs.comp;
+            pair.hex.value = segs.comp;
+            applyStyles(); saveSettings();
+          }, { once: false });
+          applyStyles(); saveSettings();
         }
       });
 
-      // comp swatch clickable - apply complement
-      comp.addEventListener('click', () => {
-        const compHex = getComplementHex(picker.value);
-        picker.value = compHex;
-        hex.value = compHex;
-        updateCompSwatches();
-        applyStyles();
-        saveSettings();
-      });
+      // initialize bar (we'll refresh later in init)
     });
 
     // stroke widths
-    controls.pathStrokeWidth.addEventListener('input', () => {
-      applyStyles(); saveSettings();
-    });
-    controls.rectStrokeWidth.addEventListener('input', () => {
-      applyStyles(); saveSettings();
-    });
+    controls.pathStrokeWidth.addEventListener('input', () => { applyStyles(); saveSettings(); });
+    controls.rectStrokeWidth.addEventListener('input', () => { applyStyles(); saveSettings(); });
 
-    // per-control reset buttons
+    // per-control resets (small buttons)
     document.querySelectorAll('.small-btn[data-reset]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', () => {
         const key = btn.getAttribute('data-reset');
-        if(!key) return;
-        switch(key){
-          case 'pathFill': controls.pathFillPicker.value = DEFAULTS.pathFill; document.getElementById('pathFillHex').value = DEFAULTS.pathFill; break;
-          case 'pathStroke': controls.pathStrokePicker.value = DEFAULTS.pathStroke; document.getElementById('pathStrokeHex').value = DEFAULTS.pathStroke; break;
-          case 'pathStrokeWidth': controls.pathStrokeWidth.value = DEFAULTS.pathStrokeWidth; break;
-          case 'rectFill': controls.rectFillPicker.value = DEFAULTS.rectFill; document.getElementById('rectFillHex').value = DEFAULTS.rectFill; break;
-          case 'rectStroke': controls.rectStrokePicker.value = DEFAULTS.rectStroke; document.getElementById('rectStrokeHex').value = DEFAULTS.rectStroke; break;
-          case 'rectStrokeWidth': controls.rectStrokeWidth.value = DEFAULTS.rectStrokeWidth; break;
+        switch (key) {
+          case 'pathFill':
+            controls.pathFillPicker.value = DEFAULTS.pathFill; controls.pathFillHex.value = DEFAULTS.pathFill; break;
+          case 'pathStroke':
+            controls.pathStrokePicker.value = DEFAULTS.pathStroke; controls.pathStrokeHex.value = DEFAULTS.pathStroke; break;
+          case 'pathStrokeWidth':
+            controls.pathStrokeWidth.value = DEFAULTS.pathStrokeWidth; break;
+          case 'rectFill':
+            controls.rectFillPicker.value = DEFAULTS.rectFill; controls.rectFillHex.value = DEFAULTS.rectFill; break;
+          case 'rectStroke':
+            controls.rectStrokePicker.value = DEFAULTS.rectStroke; controls.rectStrokeHex.value = DEFAULTS.rectStroke; break;
+          case 'rectStrokeWidth':
+            controls.rectStrokeWidth.value = DEFAULTS.rectStrokeWidth; break;
         }
-        updateCompSwatches(); applyStyles(); saveSettings();
+        // update UI
+        refreshHarmonyBars(); applyStyles(); saveSettings();
       });
     });
 
-    // global reset
+    // Reset all
     controls.resetAllBtn.addEventListener('click', () => {
-      controls.pathFillPicker.value = DEFAULTS.pathFill;
-      document.getElementById('pathFillHex').value = DEFAULTS.pathFill;
-      controls.pathStrokePicker.value = DEFAULTS.pathStroke;
-      document.getElementById('pathStrokeHex').value = DEFAULTS.pathStroke;
+      controls.pathFillPicker.value = DEFAULTS.pathFill; controls.pathFillHex.value = DEFAULTS.pathFill;
+      controls.pathStrokePicker.value = DEFAULTS.pathStroke; controls.pathStrokeHex.value = DEFAULTS.pathStroke;
       controls.pathStrokeWidth.value = DEFAULTS.pathStrokeWidth;
-
-      controls.rectFillPicker.value = DEFAULTS.rectFill;
-      document.getElementById('rectFillHex').value = DEFAULTS.rectFill;
-      controls.rectStrokePicker.value = DEFAULTS.rectStroke;
-      document.getElementById('rectStrokeHex').value = DEFAULTS.rectStroke;
+      controls.rectFillPicker.value = DEFAULTS.rectFill; controls.rectFillHex.value = DEFAULTS.rectFill;
+      controls.rectStrokePicker.value = DEFAULTS.rectStroke; controls.rectStrokeHex.value = DEFAULTS.rectStroke;
       controls.rectStrokeWidth.value = DEFAULTS.rectStrokeWidth;
-
-      updateCompSwatches(); applyStyles(); saveSettings();
+      refreshHarmonyBars(); applyStyles(); saveSettings();
     });
 
-    // Export buttons
-    controls.export2xBtn.addEventListener('click', () => exportPNG(1));
-    controls.export3xBtn.addEventListener('click', () => exportPNG(2));
+    // export buttons
+    controls.export1xBtn.addEventListener('click', () => exportPNG(1));
+    controls.export2xBtn.addEventListener('click', () => exportPNG(2));
+  }
+
+  function refreshHarmonyBars(){
+    // sync hex textboxes (in case some were missing) and render bars
+    controls.pathFillHex.value = normalizeHexInput(controls.pathFillPicker.value);
+    controls.pathStrokeHex.value = normalizeHexInput(controls.pathStrokePicker.value);
+    controls.rectFillHex.value = normalizeHexInput(controls.rectFillPicker.value);
+    controls.rectStrokeHex.value = normalizeHexInput(controls.rectStrokePicker.value);
+
+    updateHarmonyBar(controls.pathFillBar, controls.pathFillPicker.value);
+    updateHarmonyBar(controls.pathStrokeBar, controls.pathStrokePicker.value);
+    updateHarmonyBar(controls.rectFillBar, controls.rectFillPicker.value);
+    updateHarmonyBar(controls.rectStrokeBar, controls.rectStrokePicker.value);
+
+    // add click handlers for right halves again (right is second child)
+    [ ['pathFillBar', 'pathFillPicker', 'pathFillHex'],
+      ['pathStrokeBar','pathStrokePicker','pathStrokeHex'],
+      ['rectFillBar','rectFillPicker','rectFillHex'],
+      ['rectStrokeBar','rectStrokePicker','rectStrokeHex'] ].forEach(([barId, pickerId, hexId])=>{
+        const bar = document.getElementById(barId);
+        if(!bar) return;
+        const right = bar.children[1];
+        if(!right) return;
+        right.onclick = () => {
+          const compHex = getComplementHex(normalizeHexInput(document.getElementById(pickerId).value));
+          document.getElementById(pickerId).value = compHex;
+          document.getElementById(hexId).value = compHex;
+          applyStyles(); saveSettings();
+          // rebuild bars to reflect new state
+          refreshHarmonyBars();
+        };
+    });
   }
 
   /* ---------- Export PNG ---------- */
   function makeSerializableClone(scale=1){
-    // clone root svg
     const clone = svgRoot.cloneNode(true);
     clone.setAttribute('xmlns','http://www.w3.org/2000/svg');
-    // ensure width/height in px match viewBox * scale
     const vb = svgRoot.viewBox && svgRoot.viewBox.baseVal ? svgRoot.viewBox.baseVal : null;
-    const w = vb && vb.width ? vb.width : (svgRoot.getAttribute('width') || 1024);
-    const h = vb && vb.height ? vb.height : (svgRoot.getAttribute('height') || 1024);
+    const w = vb && vb.width ? vb.width : (parseInt(svgRoot.getAttribute('width')) || 1024);
+    const h = vb && vb.height ? vb.height : (parseInt(svgRoot.getAttribute('height')) || 1024);
     clone.setAttribute('width', String(w * scale));
     clone.setAttribute('height', String(h * scale));
-    // copy inline styles (style.cssText) into style attribute so serializer keeps them
-    const all = clone.querySelectorAll('*');
-    all.forEach(el => {
-      if(el.style && el.style.cssText) {
-        el.setAttribute('style', el.style.cssText);
-      }
+    // move inline style cssText into style attribute so serializer keeps them
+    clone.querySelectorAll('*').forEach(el => {
+      if(el.style && el.style.cssText) el.setAttribute('style', el.style.cssText);
     });
     return { clone, w: (vb? vb.width : w), h: (vb? vb.height : h) };
   }
 
   function exportPNG(scaleMultiplier=1){
-    // ensure styles applied
-    applyStyles();
-    // clone and serialize
+    applyStyles(); // ensure up-to-date
     const { clone, w, h } = makeSerializableClone(scaleMultiplier);
     const serializer = new XMLSerializer();
     let svgString = serializer.serializeToString(clone);
-    // Add XML declaration (helps some renderers)
     svgString = '<?xml version="1.0" encoding="utf-8"?>\n' + svgString;
     const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -542,8 +537,8 @@
       canvas.width = Math.round(w * scaleMultiplier);
       canvas.height = Math.round(h * scaleMultiplier);
       const ctx = canvas.getContext('2d');
-      // optional: white background (uncomment if needed)
-      // ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,canvas.width, canvas.height);
+      // optional white background if you want non-transparent output:
+      // ctx.fillStyle = '#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(url);
       const a = document.createElement('a');
@@ -551,32 +546,25 @@
       a.href = canvas.toDataURL('image/png');
       a.click();
     };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      alert('Failed to render SVG to PNG. Try a modern browser (Chrome/Firefox/Edge).');
-    };
+    img.onerror = () => { URL.revokeObjectURL(url); alert('Failed to render SVG to PNG. Try a modern browser (Chrome/Firefox/Edge).'); };
     img.src = url;
   }
 
   /* ---------- Init ---------- */
   function initUI(){
-    // load saved or defaults
     loadSettings();
-    // set hex text boxes to match pickers
-    document.getElementById('pathFillHex').value = normalizeHexInput(controls.pathFillPicker.value);
-    document.getElementById('pathStrokeHex').value = normalizeHexInput(controls.pathStrokePicker.value);
-    document.getElementById('rectFillHex').value = normalizeHexInput(controls.rectFillPicker.value);
-    document.getElementById('rectStrokeHex').value = normalizeHexInput(controls.rectStrokePicker.value);
-    // comp swatches
-    updateCompSwatches();
-    // apply styles to preview
+    // populate hex boxes
+    controls.pathFillHex.value = normalizeHexInput(controls.pathFillPicker.value);
+    controls.pathStrokeHex.value = normalizeHexInput(controls.pathStrokePicker.value);
+    controls.rectFillHex.value = normalizeHexInput(controls.rectFillPicker.value);
+    controls.rectStrokeHex.value = normalizeHexInput(controls.rectStrokePicker.value);
+    refreshHarmonyBars();
     applyStyles();
-    // wire events
     wireInputs();
   }
 
-  // run init
-  initUI();
+  // run init on DOM loaded
+  document.addEventListener('DOMContentLoaded', initUI);
 
 })();
 </script>
