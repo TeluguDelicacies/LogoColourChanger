@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>TD Logo Customizer — Complementary Fix</title>
+<title>TD Logo Customizer — Complementary Fix (Complete)</title>
 <style>
   :root{ --bg:#f4f6f8; --card:#fff; --muted:#6b7280; --accent:#0b74d1; --radius:12px; }
   html,body { height:100%; margin:0; font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif; background:var(--bg); color:#111; }
@@ -37,27 +37,36 @@
   }
   .control .label { font-size:13px; color:var(--muted); display:flex; justify-content:space-between; align-items:center; gap:8px; }
   .row { display:flex; gap:10px; align-items:center; }
-  input[type="color"] { width:42px; height:42px; padding:0; border-radius:8px; border:1px solid rgba(0,0,0,0.06); cursor:pointer; }
-  .hex { font-family:monospace; padding:8px 10px; border-radius:8px; border:1px solid #e6eef9; width:100%; background:#fff; text-align:center; }
+  input[type="color"] { width:42px; height:42px; padding:0; border-radius:8px; border:1px solid rgba(0,0,0,0.06); cursor:pointer; flex: 0 0 auto; }
+  .hex { font-family:monospace; padding:8px 10px; border-radius:8px; border:1px solid #e6eef9; width:100%; background:#fff; text-align:center; box-sizing:border-box; }
   input[type="number"] { padding:8px 10px; border-radius:8px; border:1px solid #e6eef9; width:100%; text-align:center; }
   .small-btn { background:transparent; border:1px solid rgba(3,7,18,0.06); padding:6px 8px; border-radius:8px; cursor:pointer; color:var(--muted); }
-  .apply-btn { background:transparent; border:1px dashed rgba(11,116,209,0.16); padding:6px 8px; border-radius:8px; cursor:pointer; color:var(--accent); font-weight:600; }
+
+  .apply-btn {
+    display:block;
+    width:100%;
+    padding:8px;
+    border-radius:8px;
+    border:1px dashed rgba(11,116,209,0.16);
+    cursor:pointer;
+    color:var(--accent);
+    font-weight:700;
+    text-align:center;
+    margin-top:6px;
+    box-sizing:border-box;
+  }
 
   .right { width:420px; display:flex; flex-direction:column; align-items:center; gap:12px; }
   #preview-wrap { background:linear-gradient(180deg,#fff,#fbfeff); padding:18px; border-radius:14px; display:flex; flex-direction:column; align-items:center; box-shadow:0 6px 18px rgba(12,22,40,0.04); }
   #preview { width:360px; height:360px; display:flex; align-items:center; justify-content:center; }
   #preview svg { max-width:100%; height:auto; display:block; }
-  .actions { display:flex; gap:10px; margin-top:6px; align-items:center; }
+  .actions { display:flex; gap:10px; margin-top:6px; align-items:center; flex-wrap:wrap; }
+
   .btn { background:var(--accent); color:#fff; padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:600; }
   .btn.secondary { background:#fff; color:var(--accent); border:1px solid rgba(11,116,209,0.14); }
 
-  /* complementary panel */
-  .comp-panel { margin-top:10px; background:#FBFCFD; border-radius:10px; padding:12px; border:1px solid rgba(15,23,42,0.03); display:none; gap:10px; }
-  .comp-row { display:flex; align-items:center; gap:10px; justify-content:space-between; }
-  .comp-swatch { width:56px; height:36px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.04); }
-  .comp-label { font-size:13px; color:var(--muted); }
-
-  .filename { padding:8px; border-radius:8px; border:1px solid #e6eef9; width:220px; }
+  .filename-row { width:100%; display:flex; justify-content:flex-start; gap:10px; margin-top:8px; }
+  .filename { padding:8px; border-radius:8px; border:1px solid #e6eef9; width:100%; box-sizing:border-box; }
 
   @media (max-width:980px){
     .card { flex-direction:column; align-items:center; }
@@ -72,7 +81,7 @@
   <div class="card" role="main" aria-label="TD Logo Customizer">
     <div class="left">
       <h1>TD Logo Customizer</h1>
-      <p class="desc">Edit fills, strokes and stroke widths. Click "Find Complementary" to reveal two swatches: Path Fill complementary (from Rectangle Fill) and Rectangle Fill complementary (from Path Fill). Changes persist on refresh. Use the small "Apply" buttons to quickly set complements.</p>
+      <p class="desc">Edit fills, strokes and stroke widths. Use the "Apply" buttons under each fill hex to set complementary colours: Path → Rectangle and Rectangle → Path. Changes persist on refresh.</p>
 
       <div class="controls" role="group" aria-label="controls">
 
@@ -84,12 +93,14 @@
               <button class="small-btn" data-reset="pathFill" title="Reset Path Fill">↺</button>
             </div>
           </div>
-          <div class="row">
+
+          <div class="row" style="align-items:center;">
             <input type="color" id="pathFillPicker" aria-label="Path fill color">
             <input id="pathFillHex" class="hex" type="text" aria-label="Path fill hex">
-            <!-- Apply complementary of Path -> Rectangle -->
-            <button id="applyPathToRect" class="apply-btn" title="Set Rectangle Fill to complement of Path Fill">Apply → Rect</button>
           </div>
+
+          <!-- Apply complement (below hex, full width) -->
+          <button id="applyPathToRect" class="apply-btn" title="Set Rectangle Fill to complement of Path Fill">Apply complement → Rectangle</button>
         </div>
 
         <!-- Path Stroke -->
@@ -118,12 +129,14 @@
           <div class="label"><span>Rectangle Fill</span>
             <button class="small-btn" data-reset="rectFill" title="Reset Rectangle Fill">↺</button>
           </div>
-          <div class="row">
+
+          <div class="row" style="align-items:center;">
             <input type="color" id="rectFillPicker" aria-label="Rectangle fill color">
             <input id="rectFillHex" class="hex" type="text" aria-label="Rectangle fill hex">
-            <!-- Apply complementary of Rect -> Path -->
-            <button id="applyRectToPath" class="apply-btn" title="Set Path Fill to complement of Rectangle Fill">Apply → Path</button>
           </div>
+
+          <!-- Apply complement (below hex, full width) -->
+          <button id="applyRectToPath" class="apply-btn" title="Set Path Fill to complement of Rectangle Fill">Apply complement → Path</button>
         </div>
 
         <!-- Rectangle Stroke -->
@@ -149,28 +162,8 @@
 
       </div> <!-- controls -->
 
-      <div style="display:flex; gap:10px; margin-top:12px; align-items:center;">
+      <div style="display:flex; gap:10px; margin-top:6px; align-items:center;">
         <button id="resetAllBtn" class="btn secondary">Reset All</button>
-        <button id="toggleCompBtn" class="btn">Find Complementary</button>
-      </div>
-
-      <!-- complementary panel (hidden by default) -->
-      <div class="comp-panel" id="compPanel" aria-hidden="true">
-        <div class="comp-row">
-          <div class="comp-label">Path Fill complementary (from Rectangle Fill)</div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <div id="pathCompSwatch" class="comp-swatch" title="Click to apply complementary to Path Fill"></div>
-            <button id="applyPathComplementFromRect" class="apply-btn" title="Apply this complement to Path Fill">Apply</button>
-          </div>
-        </div>
-        <div style="height:10px;"></div>
-        <div class="comp-row">
-          <div class="comp-label">Rectangle Fill complementary (from Path Fill)</div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <div id="rectCompSwatch" class="comp-swatch" title="Click to apply complementary to Rectangle Fill"></div>
-            <button id="applyRectComplementFromPath" class="apply-btn" title="Apply this complement to Rectangle Fill">Apply</button>
-          </div>
-        </div>
       </div>
 
     </div> <!-- left -->
@@ -179,6 +172,8 @@
       <div id="preview-wrap" aria-live="polite">
         <div id="preview" title="Preview">
           <!-- INLINE SVG (original content, friendly IDs applied) -->
+          <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+          <!-- Created with Inkscape (http://www.inkscape.org/) -->
           <svg id="svgRoot"
              version="1.1"
              xmlns="http://www.w3.org/2000/svg"
@@ -212,8 +207,11 @@
           </svg>
         </div>
 
-        <div class="actions">
+        <div class="filename-row">
           <input id="fileName" class="filename" type="text" placeholder="filename (e.g. TD-custom)" title="File name for download">
+        </div>
+
+        <div class="actions">
           <button id="export1x" class="btn secondary" title="Download PNG at 1×">Download PNG</button>
           <button id="export2x" class="btn" title="Download PNG at 2×">
               Download PNG<br><span style="font-size: 0.8em; opacity: 0.8;">(Higher Resolution)</span>
@@ -227,6 +225,7 @@
 
 <script>
 (() => {
+  /* ---------- Defaults ---------- */
   const DEFAULTS = {
     pathFill: '#FFFFFF',
     pathStroke: '#000000',
@@ -236,9 +235,9 @@
     rectStrokeWidth: '0',
     fileName: 'TD-custom'
   };
-  const STORAGE_KEY = 'tdLogoSettings_v3';
+  const STORAGE_KEY = 'tdLogoSettings_v4';
 
-  // elements
+  /* ---------- Elements ---------- */
   const svgRoot = document.getElementById('svgRoot');
   const pathEl = document.getElementById('TDPath');
   const rectEl = document.getElementById('SquareBehindTD');
@@ -257,25 +256,21 @@
     rectStrokeWidth: document.getElementById('rectStrokeWidth'),
 
     resetAllBtn: document.getElementById('resetAllBtn'),
-    toggleCompBtn: document.getElementById('toggleCompBtn'),
-    compPanel: document.getElementById('compPanel'),
-    pathCompSwatch: document.getElementById('pathCompSwatch'),
-    rectCompSwatch: document.getElementById('rectCompSwatch'),
 
     applyPathToRectBtn: document.getElementById('applyPathToRect'),
     applyRectToPathBtn: document.getElementById('applyRectToPath'),
-    applyPathComplementFromRect: document.getElementById('applyPathComplementFromRect'),
-    applyRectComplementFromPath: document.getElementById('applyRectComplementFromPath'),
 
     export1xBtn: document.getElementById('export1x'),
     export2xBtn: document.getElementById('export2x'),
     fileNameInput: document.getElementById('fileName')
   };
 
-  /* ---------- color helpers (HEX <-> RGB <-> HSL) ---------- */
+  /* ---------- Color helpers (HEX <-> RGB <-> HSL) ---------- */
+  function clamp(n,min,max){ return Math.min(max,Math.max(min,n)); }
   function normalizeHexInput(h){
     if(!h) return null;
-    h = h.trim();
+    h = String(h).trim();
+    if(!h) return null;
     if(!h.startsWith('#')) h = '#'+h;
     if(/^#([0-9a-fA-F]{3})$/i.test(h)) h = '#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];
     if(/^#([0-9a-fA-F]{6})$/i.test(h)) return h.toUpperCase();
@@ -289,7 +284,7 @@
     return { r: (bigint>>16)&255, g: (bigint>>8)&255, b: bigint&255 };
   }
   function rgbToHex(r,g,b){
-    return '#' + [r,g,b].map(x=> ('0'+Math.round(Math.max(0,Math.min(255,x))).toString(16)).slice(-2)).join('').toUpperCase();
+    return '#' + [r,g,b].map(x=> ('0'+Math.round(clamp(x,0,255)).toString(16)).slice(-2)).join('').toUpperCase();
   }
   function rgbToHsl(r,g,b){
     r/=255; g/=255; b/=255;
@@ -333,20 +328,26 @@
     const rgb2 = hslToRgb(newH, hsl.s, hsl.l);
     return rgbToHex(rgb2.r, rgb2.g, rgb2.b);
   }
+  function getContrastColor(hex){
+    const c = hexToRgb(hex);
+    if(!c) return '#000000';
+    // perceptual luminance
+    const lum = (0.299*c.r + 0.587*c.g + 0.114*c.b)/255;
+    return lum > 0.65 ? '#000000' : '#FFFFFF';
+  }
 
-  /* ---------- apply styles to svg elements ---------- */
+  /* ---------- Apply styles to SVG ---------- */
   function applyStyles(){
     if(!pathEl || !rectEl) return;
-    // path
     const pFill = controls.pathFillPicker.value;
     const pStroke = controls.pathStrokePicker.value;
     const pStrokeWidth = String(controls.pathStrokeWidth.value || DEFAULTS.pathStrokeWidth);
 
+    // set inline style (so cloning for export will pick it up)
     pathEl.style.setProperty('fill', pFill);
     pathEl.style.setProperty('stroke', pStroke);
     pathEl.style.setProperty('stroke-width', pStrokeWidth);
 
-    // rect
     const rFill = controls.rectFillPicker.value;
     const rStroke = controls.rectStrokePicker.value;
     const rStrokeWidth = String(controls.rectStrokeWidth.value || DEFAULTS.rectStrokeWidth);
@@ -384,7 +385,6 @@
         return;
       }catch(e){}
     }
-    // fallback defaults
     controls.pathFillPicker.value = DEFAULTS.pathFill;
     controls.pathStrokePicker.value = DEFAULTS.pathStroke;
     controls.pathStrokeWidth.value = DEFAULTS.pathStrokeWidth;
@@ -394,73 +394,37 @@
     if(controls.fileNameInput) controls.fileNameInput.value = DEFAULTS.fileName;
   }
 
-  /* ---------- complementary UI ---------- */
-  function updateComplementaryUI(){
-    // path complementary = complement(rectFill)
-    const rectFill = normalizeHexInput(controls.rectFillPicker.value) || controls.rectFillPicker.value;
-    const pathComp = getComplementHex(rectFill);
-    controls.pathCompSwatch.style.background = pathComp;
-    controls.pathCompSwatch.title = `Complement (from Rect): ${pathComp}`;
-    controls.pathCompSwatch.onclick = () => {
-      // apply computed complement to path
-      controls.pathFillPicker.value = pathComp;
-      controls.pathFillHex.value = pathComp;
-      applyStyles(); saveSettings(); refreshAllUI();
-    };
-    controls.applyPathComplementFromRect.onclick = () => {
-      controls.pathFillPicker.value = pathComp;
-      controls.pathFillHex.value = pathComp;
-      applyStyles(); saveSettings(); refreshAllUI();
-    };
-    // rect complementary = complement(pathFill)
+  /* ---------- Update Apply buttons colors & labels ---------- */
+  function updateApplyButtonsPreview(){
+    // Path -> Rect: compute complement of path fill (this is the colour that will be applied to rectangle)
     const pathFill = normalizeHexInput(controls.pathFillPicker.value) || controls.pathFillPicker.value;
-    const rectComp = getComplementHex(pathFill);
-    controls.rectCompSwatch.style.background = rectComp;
-    controls.rectCompSwatch.title = `Complement (from Path): ${rectComp}`;
-    controls.rectCompSwatch.onclick = () => {
-      controls.rectFillPicker.value = rectComp;
-      controls.rectFillHex.value = rectComp;
-      applyStyles(); saveSettings(); refreshAllUI();
-    };
-    controls.applyRectComplementFromPath.onclick = () => {
-      controls.rectFillPicker.value = rectComp;
-      controls.rectFillHex.value = rectComp;
-      applyStyles(); saveSettings(); refreshAllUI();
-    };
+    const compForRect = getComplementHex(pathFill);
+    controls.applyPathToRectBtn.style.background = compForRect;
+    controls.applyPathToRectBtn.style.color = getContrastColor(compForRect);
+    controls.applyPathToRectBtn.textContent = `Apply ${compForRect} → Rectangle`;
 
-    // Small inline apply buttons (quick actions)
-    controls.applyPathToRectBtn.onclick = () => {
-      // take path fill -> compute complement -> set rect fill
-      const p = normalizeHexInput(controls.pathFillPicker.value) || controls.pathFillPicker.value;
-      const comp = getComplementHex(p);
-      controls.rectFillPicker.value = comp;
-      controls.rectFillHex.value = comp;
-      applyStyles(); saveSettings(); refreshAllUI();
-    };
-    controls.applyRectToPathBtn.onclick = () => {
-      const r = normalizeHexInput(controls.rectFillPicker.value) || controls.rectFillPicker.value;
-      const comp = getComplementHex(r);
-      controls.pathFillPicker.value = comp;
-      controls.pathFillHex.value = comp;
-      applyStyles(); saveSettings(); refreshAllUI();
-    };
+    // Rect -> Path
+    const rectFill = normalizeHexInput(controls.rectFillPicker.value) || controls.rectFillPicker.value;
+    const compForPath = getComplementHex(rectFill);
+    controls.applyRectToPathBtn.style.background = compForPath;
+    controls.applyRectToPathBtn.style.color = getContrastColor(compForPath);
+    controls.applyRectToPathBtn.textContent = `Apply ${compForPath} → Path`;
   }
 
-  /* ---------- sync UI (hex boxes and comp swatches) ---------- */
+  /* ---------- Sync UI (hex boxes and apply button previews) ---------- */
   function refreshAllUI(){
-    // hex boxes
     controls.pathFillHex.value = normalizeHexInput(controls.pathFillPicker.value) || controls.pathFillPicker.value;
     controls.pathStrokeHex.value = normalizeHexInput(controls.pathStrokePicker.value) || controls.pathStrokePicker.value;
     controls.rectFillHex.value = normalizeHexInput(controls.rectFillPicker.value) || controls.rectFillPicker.value;
     controls.rectStrokeHex.value = normalizeHexInput(controls.rectStrokePicker.value) || controls.rectStrokePicker.value;
-    // complementary swatches
-    updateComplementaryUI();
-    // apply styles to SVG
+
+    updateApplyButtonsPreview();
     applyStyles();
   }
 
-  /* ---------- wiring inputs & resets ---------- */
+  /* ---------- Wiring inputs & buttons ---------- */
   function wireInputs(){
+    // color <-> hex synchronization for the four color controls
     const colorPairs = [
       [controls.pathFillPicker, controls.pathFillHex],
       [controls.pathStrokePicker, controls.pathStrokeHex],
@@ -471,18 +435,21 @@
       picker.addEventListener('input', () => {
         const nh = normalizeHexInput(picker.value) || picker.value;
         hexInput.value = nh;
-        refreshAllUI(); saveSettings();
+        refreshAllUI();
+        saveSettings();
       });
       hexInput.addEventListener('input', () => {
         const nh = normalizeHexInput(hexInput.value);
         if(nh){
           picker.value = nh;
           hexInput.value = nh;
-          refreshAllUI(); saveSettings();
+          refreshAllUI();
+          saveSettings();
         }
       });
     });
 
+    // stroke widths
     controls.pathStrokeWidth.addEventListener('input', () => { applyStyles(); saveSettings(); });
     controls.rectStrokeWidth.addEventListener('input', () => { applyStyles(); saveSettings(); });
 
@@ -520,17 +487,23 @@
       refreshAllUI(); saveSettings();
     });
 
-    // toggle comp panel
-    controls.toggleCompBtn.addEventListener('click', () => {
-      const open = controls.compPanel.style.display === 'flex';
-      controls.compPanel.style.display = open ? 'none' : 'flex';
-      controls.compPanel.setAttribute('aria-hidden', open ? 'true' : 'false');
-      // ensure swatches up-to-date
-      updateComplementaryUI();
+    // Apply complement buttons
+    controls.applyPathToRectBtn.addEventListener('click', () => {
+      const p = normalizeHexInput(controls.pathFillPicker.value) || controls.pathFillPicker.value;
+      const comp = getComplementHex(p);
+      controls.rectFillPicker.value = comp;
+      controls.rectFillHex.value = comp;
+      refreshAllUI(); saveSettings();
+    });
+    controls.applyRectToPathBtn.addEventListener('click', () => {
+      const r = normalizeHexInput(controls.rectFillPicker.value) || controls.rectFillPicker.value;
+      const comp = getComplementHex(r);
+      controls.pathFillPicker.value = comp;
+      controls.pathFillHex.value = comp;
+      refreshAllUI(); saveSettings();
     });
 
-    // update complementary UI live as picks change (already covered by refreshAllUI) — ensure calls also on hex edits
-    // small apply buttons were wired inside updateComplementaryUI for convenience
+    // export buttons wired in init
   }
 
   /* ---------- Export PNG (serialize inline styles) ---------- */
@@ -582,29 +555,26 @@
     img.src = url;
   }
 
-  /* ---------- init ---------- */
+  /* ---------- Init ---------- */
   function init(){
     loadSettings();
 
-    // init hex inputs
+    // init hex inputs to match pickers
     controls.pathFillHex.value = normalizeHexInput(controls.pathFillPicker.value);
     controls.pathStrokeHex.value = normalizeHexInput(controls.pathStrokePicker.value);
     controls.rectFillHex.value = normalizeHexInput(controls.rectFillPicker.value);
     controls.rectStrokeHex.value = normalizeHexInput(controls.rectStrokePicker.value);
 
-    // show/hide comp panel default hidden
-    controls.compPanel.style.display = 'none';
-    controls.compPanel.style.flexDirection = 'column';
+    // file name default
+    if(!controls.fileNameInput.value) controls.fileNameInput.value = DEFAULTS.fileName;
 
     refreshAllUI();
     wireInputs();
 
-    // exports
     controls.export1xBtn.addEventListener('click', () => exportPNG(1));
     controls.export2xBtn.addEventListener('click', () => exportPNG(2));
   }
 
-  // run
   document.addEventListener('DOMContentLoaded', init);
 
 })();
