@@ -1,179 +1,336 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>TD Logo Customizer</title>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f5f5f5;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-        color: #333;
-    }
-    h1 {
-        margin-bottom: 10px;
-    }
-    .controls {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        justify-content: center;
-        margin-bottom: 20px;
-    }
-    .control-group {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .control-group input[type="color"] {
-        border: none;
-        background: none;
-        width: 50px;
-        height: 50px;
-        padding: 0;
-    }
-    .control-group input[type="text"], 
-    .control-group input[type="number"] {
-        margin-top: 5px;
-        text-align: center;
-        width: 80px;
-        padding: 5px;
-    }
-    #preview svg {
-        max-width: 400px;
-        height: auto;
-    }
-    button {
-        padding: 10px 20px;
-        background: #0078d4;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-    button:hover {
-        background: #005fa3;
-    }
+  :root { --card-bg: #fff; --accent: #0078d4; --muted: #666; }
+  body {
+    font-family: Inter, system-ui, Arial, sans-serif;
+    margin: 0;
+    background: #f3f3f3;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px;
+  }
+  h1 {
+    margin: 0 0 18px;
+    font-size: 34px;
+    text-align: center;
+  }
+  .card {
+    width: min(900px, 96%);
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 18px 22px;
+    box-shadow: 0 6px 22px rgba(20,20,24,0.06);
+    margin-bottom: 28px;
+  }
+  .controls {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+  .control {
+    text-align: center;
+    min-width: 120px;
+  }
+  .control label {
+    display:block;
+    font-size:14px;
+    color:var(--muted);
+    margin-bottom:8px;
+  }
+  .swatch {
+    width:56px;
+    height:56px;
+    border-radius:6px;
+    border: 1px solid rgba(0,0,0,0.08);
+    display:inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+  }
+  .hex {
+    display:block;
+    margin-top:8px;
+    width:108px;
+    padding:8px 6px;
+    text-align:center;
+    border-radius:6px;
+    border:1px solid #ddd;
+    background:#fafafa;
+    font-family:monospace;
+  }
+  input[type="number"] {
+    width:86px;
+    padding:8px;
+    border-radius:6px;
+    border:1px solid #ddd;
+    text-align:center;
+  }
+  #preview-wrap {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+    margin-top:26px;
+  }
+  #preview {
+    width:420px;
+    height:420px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  #preview svg { max-width:100%; height:auto; display:block; }
+  button.download {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    border-radius:8px;
+    font-size:16px;
+    cursor:pointer;
+  }
+  .row {
+    display:flex;
+    gap:14px;
+    align-items:center;
+    justify-content:center;
+  }
+  @media (max-width:640px){
+    .controls { gap:12px; }
+  }
 </style>
 </head>
 <body>
+  <h1>TD Logo Customizer</h1>
 
-<h1>TD Logo Customizer</h1>
+  <div class="card">
+    <div class="controls" role="group" aria-label="color controls">
+      <div class="control">
+        <label for="pathColor">Path Fill</label>
+        <input id="pathColor" class="swatch" type="color" />
+        <input id="pathHex" class="hex" type="text" />
+      </div>
 
-<div class="controls">
-    <div class="control-group">
-        <label>Path Fill</label>
-        <input type="color" id="pathColor">
-        <input type="text" id="pathHex">
-    </div>
-    <div class="control-group">
-        <label>Rectangle Fill</label>
-        <input type="color" id="rectColor">
-        <input type="text" id="rectHex">
-    </div>
-    <div class="control-group">
-        <label>Stroke Color</label>
-        <input type="color" id="strokeColor">
-        <input type="text" id="strokeHex">
-    </div>
-    <div class="control-group">
-        <label>Stroke Width</label>
-        <input type="number" id="strokeWidth" min="0" step="0.5" value="2">
-    </div>
-</div>
+      <div class="control">
+        <label for="rectColor">Rectangle Fill</label>
+        <input id="rectColor" class="swatch" type="color" />
+        <input id="rectHex" class="hex" type="text" />
+      </div>
 
-<div id="preview">
-    <!-- Inline SVG -->
-    <svg
-        version="1.1"
-        width="1024"
-        height="1024"
-        viewBox="0 0 1024 1024"
-        xmlns="http://www.w3.org/2000/svg">
-        <rect
-            id="Square Behind TD"
-            width="800"
-            height="800"
-            x="113.09484"
-            y="116.78271"
-            fill="#eedc29" />
-        <path
-            id="TD Path"
-            fill="#ffffff"
-            stroke="#000000"
-            stroke-width="2"
-            d="m 419.65674,940.20232 ... (rest of your path here) ..." />
-    </svg>
-</div>
+      <div class="control">
+        <label for="strokeColor">Stroke Color</label>
+        <input id="strokeColor" class="swatch" type="color" />
+        <input id="strokeHex" class="hex" type="text" />
+      </div>
 
-<br>
-<button id="downloadBtn">Download PNG</button>
+      <div class="control">
+        <label for="strokeWidth">Stroke Width</label>
+        <input id="strokeWidth" type="number" min="0" step="0.5" value="2" />
+      </div>
+    </div>
+  </div>
+
+  <div id="preview-wrap">
+    <div id="preview" aria-live="polite">
+      <!-- Inline SVG (IDs must match exactly) -->
+      <svg id="svgRoot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="TD logo preview">
+        <rect id="Square Behind TD" width="800" height="800" x="113.09484" y="116.78271"
+              style="fill:#eedc29;fill-opacity:1;stroke-width:1.6;fill-rule:nonzero"/>
+        <path id="TD Path"
+              style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:2;stroke-dasharray:none;stroke-dashoffset:0"
+              d="m 419.65674,940.20232 c -6.62019,-2.11841 -12.35359,-8.61353 -13.81427,-15.64959 -1.97307,-9.50419 1.31056,-43.95566 6.99035,-73.34206 16.12051,-83.40515 51.53045,-192.53008 91.18284,-281.00359 9.43351,-21.04831 28.66618,-59.27576 37.73336,-75 18.27819,-31.69791 38.90638,-57.369 50.22838,-62.50754 11.07657,-5.02715 27.61651,0.65766 34.53819,11.87082 4.21446,6.82746 3.36234,9.6221 -6.80588,22.32079 -22.70035,28.34959 -50.90181,74.56806 -73.10896,119.81593 -24.88742,50.70901 -39.08543,85.89396 -59.11639,146.5 -11.51081,34.8273 -17.16552,54.2999 -22.68929,78.13299 -4.37888,18.89333 -16.1346,76.5901 -15.69483,77.02987 0.39446,0.39447 47.64256,-26.83694 69.67047,-40.15452 85.97817,-51.9805 158.80761,-110.63677 220.39982,-177.50834 29.94237,-32.50887 50.61951,-58.56139 71.82727,-90.5 36.18825,-54.49903 57.58561,-104.60108 66.41025,-155.5 2.57499,-14.85209 2.60049,-50.72883 0.045,-63.374 -2.63833,-13.05531 -6.21213,-23.57195 -9.91201,-29.16819 -5.09311,-7.70353 -17.58317,-19.57952 -24.38806,-23.18901 -7.91334,-4.19743 -27.14723,-9.71435 -45.38231,-13.01715 -13.31869,-2.41233 -16.78115,-2.6314 -42.5,-2.68897 -30.2576,-0.0677 -38.12952,0.67199 -69.90004,6.56851 -65.07557,12.07784 -112.51325,27.60471 -176.39207,57.73504 -36.00208,16.98144 -84.75861,44.79973 -121.22298,69.16438 l -11.51508,7.69412 -2.28742,23.88763 c -3.59292,37.52095 -4.11234,45.49943 -5.22476,80.25334 -2.06154,64.40626 0.7629,122.8963 9.15129,189.50973 3.52703,28.00867 3.3967,29.84537 -2.58794,36.46964 -4.90005,5.42378 -11.69156,8.50705 -19.789,8.98401 -10.39632,0.61236 -17.60288,-3.02228 -20.93701,-10.55964 -3.21089,-7.25874 -7.25073,-47.4206 -9.98542,-99.26944 -2.18543,-41.43506 -1.05795,-163.61877 1.82576,-197.85658 l 0.61962,-7.35658 -2.78098,1.82217 c -3.25453,2.13246 -11.74897,2.35796 -15.52594,0.41216 -11.53072,-5.94032 -13.89616,-18.66803 -5.02188,-27.02117 3.7842,-3.56197 18.70987,-12.83055 22.08158,-13.71227 1.47328,-0.38527 1.96154,-1.74861 2.37672,-6.63631 4.23367,-49.84118 9.19295,-82.4562 20.09897,-132.18233 3.5911,-16.37368 13.43906,-56.85728 16.10832,-66.21909 0.3883,-1.36186 0.20582,-2.25 -0.46229,-2.25 -2.88939,0 -89.83643,24.92447 -158.62945,45.47315 -64.69264,19.32388 -82.51558,24.43018 -87.79773,25.15418 -13.79249,1.89047 -28.312848,-11.97064 -24.804998,-23.67881 1.524129,-5.08707 5.061649,-10.02041 8.715448,-12.15435 6.87817,-4.01704 101.83508,-32.45079 175.88732,-52.66741 111.70466,-30.49592 228.23381,-59.47148 289.86473,-72.07633 85.99528,-17.58787 132.81865,-22.82455 193.63527,-21.65595 45.58866,0.876 68.50192,2.64756 74.82232,5.78498 13.24192,6.57322 11.94224,23.3204 -2.32232,29.92468 -3.6433,1.68679 -7.04434,1.85389 -38.13907,1.8739 -18.77649,0.0121 -42.17649,0.47764 -52,1.03458 -83.19633,4.71682 -173.96105,19.58285 -294.73343,48.27336 l -17.8725,4.24577 -1.79191,5.98412 c -22.51257,75.18142 -27.31339,92.40962 -33.39139,119.82801 -5.67642,25.60685 -7.87844,36.82685 -10.53072,53.65612 -1.17015,7.425 -2.29094,14.2875 -2.49065,15.25 -0.1997,0.9625 -0.2429,1.75 -0.096,1.75 0.1469,0 4.94227,-3.06272 10.65638,-6.80604 53.00801,-34.72566 117.1805,-68.20712 172.88929,-90.20354 31.39645,-12.39678 76.9532,-25.80927 112,-32.97424 36.74082,-7.51127 91.56038,-10.07301 120,-5.6076 13.93029,2.18725 37.36553,8.3209 45.45469,11.89675 27.22265,12.03391 48.77301,30.46701 66.28182,56.6938 9.99945,14.97822 16.89318,31.97587 21.2918,52.5 2.71345,12.65995 3.84683,49.32601 2.06148,66.69064 -4.51344,43.89862 -18.93917,83.44638 -46.33623,127.03004 -45.68425,72.67526 -117.23185,148.7866 -206.75356,219.94139 -64.4352,51.21491 -153.41761,109.46562 -217,142.05435 -19.70369,10.09903 -33.4404,13.37357 -43.11397,10.27842 z"/>
+      </svg>
+    </div>
+
+    <div class="row">
+      <button id="downloadBtn" class="download">Download PNG</button>
+    </div>
+  </div>
 
 <script>
-function syncHexAndColor(hexInput, colorInput) {
-    hexInput.value = colorInput.value.toUpperCase();
-    hexInput.addEventListener("input", () => {
-        if (/^#([0-9A-F]{3}){1,2}$/i.test(hexInput.value)) {
-            colorInput.value = hexInput.value;
-            updatePreview();
-        }
+(function () {
+  const pathEl = document.getElementById('TD Path');
+  const rectEl = document.getElementById('Square Behind TD');
+  const svgEl = document.getElementById('svgRoot');
+
+  // Inputs
+  const pathColor = document.getElementById('pathColor');
+  const rectColor = document.getElementById('rectColor');
+  const strokeColor = document.getElementById('strokeColor');
+  const pathHex = document.getElementById('pathHex');
+  const rectHex = document.getElementById('rectHex');
+  const strokeHex = document.getElementById('strokeHex');
+  const strokeWidth = document.getElementById('strokeWidth');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  // helpers
+  function rgbToHex(r,g,b){
+    const toHex = n => ('0' + Number(n).toString(16)).slice(-2);
+    return '#' + toHex(r) + toHex(g) + toHex(b);
+  }
+  function normalizeColorToHex(color){
+    if(!color) return null;
+    color = color.trim();
+    if(color[0] === '#'){
+      // expand #abc -> #aabbcc
+      if(color.length === 4) {
+        return '#' + color[1]+color[1]+color[2]+color[2]+color[3]+color[3];
+      }
+      return color.length === 7 ? color.toUpperCase() : color.toUpperCase();
+    }
+    const rgb = color.match(/rgba?\s*\(\s*([0-9]+)[ ,]+([0-9]+)[ ,]+([0-9]+)/i);
+    if(rgb){
+      return rgbToHex(rgb[1],rgb[2],rgb[3]).toUpperCase();
+    }
+    // fallback: try computed style conversion
+    const temp = document.createElement('div');
+    temp.style.color = color;
+    document.body.appendChild(temp);
+    const cs = getComputedStyle(temp).color;
+    document.body.removeChild(temp);
+    const m = cs.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if(m) return rgbToHex(m[1],m[2],m[3]).toUpperCase();
+    return null;
+  }
+
+  function getInlineOrAttrColor(el, prop){
+    // 1) style property (inline)
+    if(el.style && el.style[prop]) return el.style[prop];
+    // 2) attribute like fill / stroke
+    const att = el.getAttribute(prop);
+    if(att) return att;
+    // 3) style attribute string (Inkscape exports)
+    const styleStr = el.getAttribute('style') || '';
+    const re = new RegExp(prop + '\\s*:\\s*([^;]+)', 'i');
+    const res = styleStr.match(re);
+    if(res) return res[1].trim();
+    // 4) computed as last resort
+    return getComputedStyle(el)[prop];
+  }
+
+  function setStyleOn(el, prop, value){
+    // write to inline style (so it overrides existing style attribute)
+    el.style.setProperty(prop, value);
+  }
+
+  function initInputsFromSVG(){
+    const pFill = normalizeColorToHex(getInlineOrAttrColor(pathEl, 'fill')) || '#FFFFFF';
+    const rFill = normalizeColorToHex(getInlineOrAttrColor(rectEl, 'fill')) || '#EEDC29';
+    const pStroke = normalizeColorToHex(getInlineOrAttrColor(pathEl, 'stroke')) || '#000000';
+    const sWidth = (pathEl.style && pathEl.style.strokeWidth) || pathEl.getAttribute('stroke-width') || '2';
+
+    pathColor.value = pFill;
+    rectColor.value = rFill;
+    strokeColor.value = pStroke;
+    strokeWidth.value = sWidth;
+
+    pathHex.value = pFill.toUpperCase();
+    rectHex.value = rFill.toUpperCase();
+    strokeHex.value = pStroke.toUpperCase();
+  }
+
+  function updatePreview(){
+    // Apply to inline style (ensures this overrides any original "style" attribute)
+    setStyleOn(pathEl, 'fill', pathColor.value);
+    setStyleOn(rectEl, 'fill', rectColor.value);
+    setStyleOn(pathEl, 'stroke', strokeColor.value);
+    setStyleOn(pathEl, 'stroke-width', strokeWidth.value);
+  }
+
+  // Keep hex and color inputs in sync
+  function wireColorPair(colorInput, hexInput){
+    // color -> hex
+    colorInput.addEventListener('input', () => {
+      const hx = normalizeColorToHex(colorInput.value) || colorInput.value;
+      hexInput.value = hx.toUpperCase();
+      updatePreview();
     });
-    colorInput.addEventListener("input", () => {
-        hexInput.value = colorInput.value.toUpperCase();
+    // hex -> color
+    hexInput.addEventListener('input', () => {
+      const val = hexInput.value.trim();
+      if(/^#([0-9A-F]{3}){1,2}$/i.test(val)){
+        colorInput.value = normalizeColorToHex(val);
         updatePreview();
+      }
     });
-}
+  }
 
-function updatePreview() {
-    const path = document.getElementById("TD Path");
-    const rect = document.getElementById("Square Behind TD");
+  // Prepare serialization step: ensure inline styles are present as attributes
+  function makeSerializableSvgClone(){
+    const clone = svgEl.cloneNode(true);
+    clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    // walk children and write style.cssText into style attribute so serializer keeps them
+    const all = clone.querySelectorAll('*');
+    all.forEach(el => {
+      if(el.style && el.style.cssText){
+        el.setAttribute('style', el.style.cssText);
+      }
+    });
+    // Also set root style if any
+    if(clone.style && clone.style.cssText){
+      clone.setAttribute('style', clone.style.cssText);
+    }
+    return clone;
+  }
 
-    path.setAttribute("fill", document.getElementById("pathColor").value);
-    rect.setAttribute("fill", document.getElementById("rectColor").value);
-    path.setAttribute("stroke", document.getElementById("strokeColor").value);
-    path.setAttribute("stroke-width", document.getElementById("strokeWidth").value);
-}
-
-document.getElementById("downloadBtn").addEventListener("click", () => {
-    const svg = document.querySelector("#preview svg");
+  downloadBtn.addEventListener('click', () => {
+    // serialize updated svg
+    const clone = makeSerializableSvgClone();
     const serializer = new XMLSerializer();
-    const svgString = serializer.serializeToString(svg);
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    const img = new Image();
-    const svgBlob = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
+    const svgString = serializer.serializeToString(clone);
+    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
     const url = URL.createObjectURL(svgBlob);
+    const img = new Image();
 
     img.onload = () => {
-        canvas.width = svg.viewBox.baseVal.width || svg.width.baseVal.value;
-        canvas.height = svg.viewBox.baseVal.height || svg.height.baseVal.value;
-        ctx.drawImage(img, 0, 0);
-        URL.revokeObjectURL(url);
+      // determine size from viewBox or width/height
+      let w = svgEl.viewBox && svgEl.viewBox.baseVal && svgEl.viewBox.baseVal.width
+               ? svgEl.viewBox.baseVal.width : (svgEl.width.baseVal ? svgEl.width.baseVal.value : 1024);
+      let h = svgEl.viewBox && svgEl.viewBox.baseVal && svgEl.viewBox.baseVal.height
+               ? svgEl.viewBox.baseVal.height : (svgEl.height.baseVal ? svgEl.height.baseVal.value : 1024);
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      // optional: fill white background (uncomment if you want white bg)
+      // ctx.fillStyle = '#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
 
-        const a = document.createElement("a");
-        a.download = "custom_logo.png";
-        a.href = canvas.toDataURL("image/png");
-        a.click();
+      const a = document.createElement('a');
+      a.download = 'TD-custom.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    };
+    img.onerror = (e) => {
+      URL.revokeObjectURL(url);
+      alert('Failed to render SVG to PNG — try opening the page in a modern browser.');
     };
     img.src = url;
-});
+  });
 
-syncHexAndColor(document.getElementById("pathHex"), document.getElementById("pathColor"));
-syncHexAndColor(document.getElementById("rectHex"), document.getElementById("rectColor"));
-syncHexAndColor(document.getElementById("strokeHex"), document.getElementById("strokeColor"));
+  // init
+  document.addEventListener('DOMContentLoaded', () => {
+    initInputsFromSVG();
+    wireColorPair(pathColor, pathHex);
+    wireColorPair(rectColor, rectHex);
+    wireColorPair(strokeColor, strokeHex);
 
-updatePreview();
+    // update preview whenever stroke width changes
+    strokeWidth.addEventListener('input', updatePreview);
+
+    // initial preview using values we read
+    updatePreview();
+  });
+})();
 </script>
-
 </body>
 </html>
