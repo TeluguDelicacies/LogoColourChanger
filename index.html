@@ -2,328 +2,313 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SVG Color Editor</title>
+<title>SVG Color Tool</title>
 <style>
     body {
-        font-family: "Roboto", sans-serif;
-        background: #f4f5f7;
+        font-family: 'Segoe UI', sans-serif;
+        background: #f5f5f5;
         margin: 0;
         padding: 0;
-        color: #333;
+        display: flex;
+        height: 100vh;
     }
-    header {
-        background: #6200ea;
-        color: white;
-        padding: 1rem;
-        text-align: center;
-        font-size: 1.5rem;
-        font-weight: 500;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
+
     .container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 1rem;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-    }
-    .preview {
-        grid-column: span 2;
-        background: white;
-        padding: 1rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 300px;
+        width: 100%;
+        gap: 20px;
+        padding: 20px;
+        box-sizing: border-box;
     }
+
     .controls {
-        background: white;
-        padding: 1rem;
+        flex: 0 0 350px;
+        background: #fff;
+        padding: 20px;
         border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        overflow-y: auto;
     }
-    .control-group {
-        margin-bottom: 1.5rem;
+
+    .section {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
     }
-    label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
+
+    .section h3 {
+        margin: 0;
+        font-size: 16px;
+        color: #333;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 5px;
     }
-    .input-row {
+
+    .input-group {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 5px;
     }
-    input[type="color"], input[type="text"], input[type="number"] {
+
+    .input-group input[type="text"], .input-group input[type="number"] {
         flex: 1;
-        padding: 0.4rem;
+        padding: 5px;
+        border-radius: 4px;
         border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 0.9rem;
+        font-size: 14px;
     }
-    button {
-        background: #6200ea;
-        color: white;
+
+    .input-group input[type="color"] {
+        width: 40px;
+        height: 40px;
+        padding: 0;
         border: none;
-        padding: 0.6rem 1rem;
-        border-radius: 5px;
+        background: none;
         cursor: pointer;
-        transition: background 0.3s ease;
-        font-size: 0.9rem;
     }
-    button:hover {
-        background: #4e00b5;
-    }
-    .icon-btn {
+
+    .copy-btn {
         background: none;
         border: none;
         cursor: pointer;
-        padding: 0.3rem;
+        font-size: 18px;
+        color: #666;
     }
-    .icon-btn svg {
-        width: 18px;
-        height: 18px;
-        fill: #555;
+
+    .btn {
+        background: #6200ea;
+        color: #fff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s;
+        width: 100%;
     }
-    .downloads {
-        grid-column: span 2;
+
+    .btn:hover {
+        background: #4b00b5;
+    }
+
+    .preview {
+        flex: 1;
+        background: #fff;
         display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        padding: 20px;
     }
-    .undo-btn {
-        background: #ff5722;
-        margin-top: 0.5rem;
-    }
-    .undo-btn:hover {
-        background: #d84315;
+
+    svg {
+        max-width: 100%;
+        max-height: 90%;
     }
 </style>
 </head>
 <body>
-<header>SVG Color Editor</header>
 
 <div class="container">
-    <div class="preview" id="preview"></div>
-
-    <!-- Path Controls -->
     <div class="controls">
-        <h3>Path Controls</h3>
-        <div class="control-group">
-            <label>Fill Color</label>
-            <div class="input-row">
-                <input type="color" id="pathFillColor">
-                <input type="text" id="pathFillHex">
-                <button class="icon-btn" id="copyPathFill">
-                    📋
-                </button>
+        <div class="section">
+            <h3>Path</h3>
+            <div class="input-group">
+                <input type="color" id="pathFill" value="#FFFFFF">
+                <input type="text" id="pathFillHex" value="#FFFFFF">
+                <button class="copy-btn" onclick="copyHex('pathFillHex')">📋</button>
             </div>
-            <button id="applyComplToRect">Apply Complimentary to Rectangle</button>
-            <button id="undoPathFill" class="undo-btn" style="display:none;">Undo</button>
-        </div>
-        <div class="control-group">
-            <label>Stroke Color</label>
-            <div class="input-row">
-                <input type="color" id="pathStrokeColor">
-                <input type="text" id="pathStrokeHex">
-                <button class="icon-btn" id="copyPathStroke">
-                    📋
-                </button>
+            <button class="btn" onclick="applyComplementary('pathFill', 'rectFill')">Apply Complementary to Rectangle</button>
+            <button class="btn" onclick="undoFill('pathFill')">Undo Fill</button>
+
+            <div class="input-group">
+                <input type="color" id="pathStroke" value="#000000">
+                <input type="text" id="pathStrokeHex" value="#000000">
+                <button class="copy-btn" onclick="copyHex('pathStrokeHex')">📋</button>
+            </div>
+            <div class="input-group">
+                <label>Width:</label>
+                <input type="number" id="pathStrokeWidth" value="2" min="0">
             </div>
         </div>
-        <div class="control-group">
-            <label>Stroke Width</label>
-            <input type="number" id="pathStrokeWidth" min="0" step="0.5">
+
+        <div class="section">
+            <h3>Rectangle</h3>
+            <div class="input-group">
+                <input type="color" id="rectFill" value="#EEDC29">
+                <input type="text" id="rectFillHex" value="#EEDC29">
+                <button class="copy-btn" onclick="copyHex('rectFillHex')">📋</button>
+            </div>
+            <button class="btn" onclick="applyComplementary('rectFill', 'pathFill')">Apply Complementary to Path</button>
+            <button class="btn" onclick="undoFill('rectFill')">Undo Fill</button>
+
+            <div class="input-group">
+                <input type="color" id="rectStroke" value="#EEDC29">
+                <input type="text" id="rectStrokeHex" value="#EEDC29">
+                <button class="copy-btn" onclick="copyHex('rectStrokeHex')">📋</button>
+            </div>
+            <div class="input-group">
+                <label>Width:</label>
+                <input type="number" id="rectStrokeWidth" value="0" min="0">
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Download</h3>
+            <input type="text" id="fileName" placeholder="Enter file name" value="logo">
+            <button id="exportPNG" class="btn">Download PNG</button>
+            <button id="export2x" class="btn">Download PNG<br>(Higher Resolution)</button>
+            <button id="exportSVG" class="btn">Download SVG</button>
         </div>
     </div>
 
-    <!-- Rectangle Controls -->
-    <div class="controls">
-        <h3>Rectangle Controls</h3>
-        <div class="control-group">
-            <label>Fill Color</label>
-            <div class="input-row">
-                <input type="color" id="rectFillColor">
-                <input type="text" id="rectFillHex">
-                <button class="icon-btn" id="copyRectFill">
-                    📋
-                </button>
-            </div>
-            <button id="applyComplToPath">Apply Complimentary to Path</button>
-            <button id="undoRectFill" class="undo-btn" style="display:none;">Undo</button>
-        </div>
-        <div class="control-group">
-            <label>Stroke Color</label>
-            <div class="input-row">
-                <input type="color" id="rectStrokeColor">
-                <input type="text" id="rectStrokeHex">
-                <button class="icon-btn" id="copyRectStroke">
-                    📋
-                </button>
-            </div>
-        </div>
-        <div class="control-group">
-            <label>Stroke Width</label>
-            <input type="number" id="rectStrokeWidth" min="0" step="0.5">
-        </div>
-    </div>
-
-    <!-- Downloads -->
-    <div class="downloads">
-        <input type="text" id="fileName" placeholder="Enter file name">
-        <button id="downloadPNG">Download PNG</button>
-        <button id="downloadPNG2x">Download PNG (2×)</button>
-        <button id="downloadSVG">Download SVG</button>
+    <div class="preview" id="preview">
+        <!-- SVG will be injected here -->
     </div>
 </div>
 
 <script>
-// Load external SVG into preview
-fetch('logo.svg')
-    .then(res => res.text())
-    .then(data => {
-        document.getElementById('preview').innerHTML = data;
-        initEditor();
-    });
+    let originalFills = {};
 
-function hexToComplimentary(hex) {
-    let r = parseInt(hex.substr(1, 2), 16);
-    let g = parseInt(hex.substr(3, 2), 16);
-    let b = parseInt(hex.substr(5, 2), 16);
-    r = 255 - r; g = 255 - g; b = 255 - b;
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
-}
+    function copyHex(inputId) {
+        const val = document.getElementById(inputId).value;
+        navigator.clipboard.writeText(val);
+    }
 
-function initEditor() {
-    const path = document.querySelector('svg path');
-    const rect = document.querySelector('svg rect');
+    function hexToRgb(hex) {
+        hex = hex.replace('#','');
+        if(hex.length===3){
+            hex = hex.split('').map(c => c+c).join('');
+        }
+        const bigint = parseInt(hex, 16);
+        return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+    }
 
-    let lastPathFill = null;
-    let lastRectFill = null;
+    function rgbToHex(r, g, b) {
+        return "#" + [r,g,b].map(x => {
+            const hex = x.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        }).join('');
+    }
 
-    const bindColorControl = (colorInput, hexInput, copyBtn, target, attr) => {
+    function getComplementary(hex) {
+        const [r,g,b] = hexToRgb(hex);
+        return rgbToHex(255-r, 255-g, 255-b);
+    }
+
+    function applyComplementary(fromId, toId) {
+        const fromColor = document.getElementById(fromId).value;
+        const comp = getComplementary(fromColor);
+        const targetInput = document.getElementById(toId);
+        const targetHex = document.getElementById(toId + "Hex");
+        if (!originalFills[toId]) originalFills[toId] = targetInput.value;
+        targetInput.value = comp;
+        targetHex.value = comp;
+        applyColors();
+    }
+
+    function undoFill(id) {
+        if (originalFills[id]) {
+            document.getElementById(id).value = originalFills[id];
+            document.getElementById(id + "Hex").value = originalFills[id];
+            applyColors();
+        }
+    }
+
+    function syncInputs(colorId, hexId) {
+        const colorInput = document.getElementById(colorId);
+        const hexInput = document.getElementById(hexId);
+
         colorInput.addEventListener('input', () => {
-            target.setAttribute(attr, colorInput.value);
             hexInput.value = colorInput.value.toUpperCase();
+            applyColors();
         });
+
         hexInput.addEventListener('input', () => {
-            if(/^#([0-9A-Fa-f]{6})$/.test(hexInput.value)) {
+            if (/^#([0-9A-F]{3}){1,2}$/i.test(hexInput.value)) {
                 colorInput.value = hexInput.value;
-                target.setAttribute(attr, hexInput.value);
+                applyColors();
             }
         });
-        copyBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(hexInput.value);
-        });
-    };
-
-    bindColorControl(
-        document.getElementById('pathFillColor'),
-        document.getElementById('pathFillHex'),
-        document.getElementById('copyPathFill'),
-        path, 'fill'
-    );
-    bindColorControl(
-        document.getElementById('pathStrokeColor'),
-        document.getElementById('pathStrokeHex'),
-        document.getElementById('copyPathStroke'),
-        path, 'stroke'
-    );
-    bindColorControl(
-        document.getElementById('rectFillColor'),
-        document.getElementById('rectFillHex'),
-        document.getElementById('copyRectFill'),
-        rect, 'fill'
-    );
-    bindColorControl(
-        document.getElementById('rectStrokeColor'),
-        document.getElementById('rectStrokeHex'),
-        document.getElementById('copyRectStroke'),
-        rect, 'stroke'
-    );
-
-    document.getElementById('pathStrokeWidth').addEventListener('input', e => {
-        path.setAttribute('stroke-width', e.target.value);
-    });
-    document.getElementById('rectStrokeWidth').addEventListener('input', e => {
-        rect.setAttribute('stroke-width', e.target.value);
-    });
-
-    // Apply & Undo Complimentary
-    document.getElementById('applyComplToRect').addEventListener('click', () => {
-        lastRectFill = rect.getAttribute('fill');
-        const comp = hexToComplimentary(path.getAttribute('fill'));
-        rect.setAttribute('fill', comp);
-        document.getElementById('rectFillColor').value = comp;
-        document.getElementById('rectFillHex').value = comp;
-        document.getElementById('undoPathFill').style.display = 'block';
-    });
-    document.getElementById('undoPathFill').addEventListener('click', () => {
-        if(lastRectFill) {
-            rect.setAttribute('fill', lastRectFill);
-            document.getElementById('rectFillColor').value = lastRectFill;
-            document.getElementById('rectFillHex').value = lastRectFill;
-        }
-        document.getElementById('undoPathFill').style.display = 'none';
-    });
-
-    document.getElementById('applyComplToPath').addEventListener('click', () => {
-        lastPathFill = path.getAttribute('fill');
-        const comp = hexToComplimentary(rect.getAttribute('fill'));
-        path.setAttribute('fill', comp);
-        document.getElementById('pathFillColor').value = comp;
-        document.getElementById('pathFillHex').value = comp;
-        document.getElementById('undoRectFill').style.display = 'block';
-    });
-    document.getElementById('undoRectFill').addEventListener('click', () => {
-        if(lastPathFill) {
-            path.setAttribute('fill', lastPathFill);
-            document.getElementById('pathFillColor').value = lastPathFill;
-            document.getElementById('pathFillHex').value = lastPathFill;
-        }
-        document.getElementById('undoRectFill').style.display = 'none';
-    });
-
-    // Download PNG
-    document.getElementById('downloadPNG').addEventListener('click', () => downloadImage(1));
-    document.getElementById('downloadPNG2x').addEventListener('click', () => downloadImage(2));
-    document.getElementById('downloadSVG').addEventListener('click', () => {
-        const fileName = document.getElementById('fileName').value || 'logo';
-        const blob = new Blob([document.querySelector('svg').outerHTML], {type: 'image/svg+xml'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName + '.svg';
-        a.click();
-        URL.revokeObjectURL(url);
-    });
-
-    function downloadImage(scale) {
-        const svg = document.querySelector('svg');
-        const svgData = new XMLSerializer().serializeToString(svg);
-        const canvas = document.createElement('canvas');
-        const bbox = svg.getBBox();
-        canvas.width = bbox.width * scale;
-        canvas.height = bbox.height * scale;
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(svgBlob);
-        img.onload = () => {
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            URL.revokeObjectURL(url);
-            const a = document.createElement('a');
-            a.download = (document.getElementById('fileName').value || 'logo') + '.png';
-            a.href = canvas.toDataURL('image/png');
-            a.click();
-        };
-        img.src = url;
     }
-}
+
+    function applyColors() {
+        const path = document.querySelector('#preview svg path');
+        const rect = document.querySelector('#preview svg rect');
+
+        if (path) {
+            path.setAttribute('fill', document.getElementById('pathFill').value);
+            path.setAttribute('stroke', document.getElementById('pathStroke').value);
+            path.setAttribute('stroke-width', document.getElementById('pathStrokeWidth').value);
+        }
+
+        if (rect) {
+            rect.setAttribute('fill', document.getElementById('rectFill').value);
+            rect.setAttribute('stroke', document.getElementById('rectStroke').value);
+            rect.setAttribute('stroke-width', document.getElementById('rectStrokeWidth').value);
+        }
+    }
+
+    function downloadSVG() {
+        const svg = document.querySelector('#preview svg');
+        const serializer = new XMLSerializer();
+        const source = serializer.serializeToString(svg);
+        const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = document.getElementById('fileName').value + ".svg";
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function downloadPNG(scale=1) {
+        const svg = document.querySelector('#preview svg');
+        const serializer = new XMLSerializer();
+        const source = serializer.serializeToString(svg);
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = document.getElementById('fileName').value + ".png";
+                link.click();
+                URL.revokeObjectURL(url);
+            });
+        };
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
+    }
+
+    document.getElementById('exportPNG').addEventListener('click', () => downloadPNG(1));
+    document.getElementById('export2x').addEventListener('click', () => downloadPNG(2));
+    document.getElementById('exportSVG').addEventListener('click', downloadSVG);
+
+    // Sync fields
+    syncInputs('pathFill','pathFillHex');
+    syncInputs('pathStroke','pathStrokeHex');
+    syncInputs('rectFill','rectFillHex');
+    syncInputs('rectStroke','rectStrokeHex');
+
+    // Load SVG inline
+    fetch('logo.svg')
+        .then(res => res.text())
+        .then(svgData => {
+            document.getElementById('preview').innerHTML = svgData;
+            applyColors();
+        });
 </script>
 </body>
 </html>
