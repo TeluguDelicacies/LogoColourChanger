@@ -77,6 +77,10 @@
     }
 
     /* Logo Selector */
+    .logo-selector-wrap {
+      order: 0;
+    }
+
     .logo-selector {
       display: flex;
       align-items: center;
@@ -115,29 +119,21 @@
 
     /* Preview Section */
     .preview-section {
-      display: flex;
-      flex-direction: column;
       order: 1;
+      position: relative;
     }
 
-    .preview-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-      gap: 8px;
+    .preview-wrapper {
+      position: relative;
     }
 
-    .preview-title {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    .preview-actions {
+    .preview-overlay-buttons {
+      position: absolute;
+      top: 8px;
+      right: 8px;
       display: flex;
       gap: 6px;
+      z-index: 10;
     }
 
     .preview-btn {
@@ -148,6 +144,7 @@
       border: none;
       cursor: pointer;
       transition: var(--transition);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
 
     .preview-btn.random {
@@ -156,7 +153,7 @@
     }
 
     .preview-btn.reset {
-      background: var(--bg);
+      background: rgba(30, 41, 59, 0.95);
       color: var(--text-secondary);
       border: 1px solid var(--card-border);
     }
@@ -534,13 +531,13 @@
 
     body.is-desktop .app {
       height: 100%;
-      max-width: 1300px;
+      max-width: 1400px;
       margin: 0 auto;
       padding: 16px 24px;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto 1fr auto;
-      gap: 12px;
+      grid-template-columns: minmax(450px, 1fr) minmax(350px, 500px);
+      grid-template-rows: auto 1fr;
+      gap: 16px;
       overflow: hidden;
     }
 
@@ -559,56 +556,40 @@
       font-size: 0.7rem;
     }
 
-    body.is-desktop .logo-selector-wrap {
-      grid-column: 1 / -1;
+    /* Left Column: All controls */
+    body.is-desktop .left-column {
+      grid-column: 1;
       grid-row: 2;
-    }
-
-    body.is-desktop .preview-section {
-      grid-column: 2;
-      grid-row: 3;
-      order: unset;
       display: flex;
       flex-direction: column;
-      height: 100%;
-      min-height: 0;
+      gap: 12px;
+      overflow-y: auto;
+      padding-right: 8px;
     }
 
-    body.is-desktop .preview-container {
-      flex: 1;
-      aspect-ratio: 1;
-      max-width: 100%;
-      max-height: 100%;
-      margin: 0 auto;
+    body.is-desktop .left-column::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    body.is-desktop .left-column::-webkit-scrollbar-thumb {
+      background: var(--card-border);
+      border-radius: 2px;
+    }
+
+    body.is-desktop .logo-selector-wrap {
+      order: 0;
     }
 
     body.is-desktop .controls-section {
-      grid-column: 1;
-      grid-row: 3;
-      order: unset;
-      overflow-y: auto;
-      max-height: 100%;
-      padding-right: 8px;
-      /* 2x2 GRID on desktop */
+      order: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       align-content: start;
     }
 
-    body.is-desktop .controls-section::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    body.is-desktop .controls-section::-webkit-scrollbar-thumb {
-      background: var(--card-border);
-      border-radius: 2px;
-    }
-
     body.is-desktop .download-section {
-      grid-column: 1 / -1;
-      grid-row: 4;
-      order: unset;
+      order: 2;
     }
 
     body.is-desktop .download-buttons {
@@ -623,6 +604,55 @@
     body.is-desktop .download-btn.primary {
       flex: 2;
     }
+
+    /* Right Column: Preview only */
+    body.is-desktop .preview-section {
+      grid-column: 2;
+      grid-row: 2;
+      order: unset;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+
+    body.is-desktop .preview-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    body.is-desktop .preview-container {
+      width: 100%;
+      max-width: 450px;
+      aspect-ratio: 1;
+    }
+
+    body.is-desktop .preview-overlay-buttons {
+      top: 12px;
+      right: 12px;
+    }
+
+    body.is-desktop .preview-btn {
+      padding: 8px 14px;
+      font-size: 0.75rem;
+    }
+
+    /* Hide mobile elements on desktop */
+    body.is-desktop .mobile-only {
+      display: none;
+    }
+
+    /* Show desktop elements only on desktop */
+    .desktop-only {
+      display: none;
+    }
+
+    body.is-desktop .desktop-only {
+      display: flex;
+    }
   </style>
 </head>
 
@@ -634,72 +664,76 @@
       <p>Customize your brand colors easily</p>
     </header>
 
-    <!-- Logo Selector -->
-    <div class="logo-selector-wrap card">
-      <div class="logo-selector">
-        <label for="logoSelect">Logo</label>
-        <select id="logoSelect" class="logo-select">
-          <option value="td">Telugu Delicacies</option>
-          <option value="akshaya">Akshaya</option>
-          <option value="tasty">Tasty Pinch</option>
-        </select>
+    <!-- Left Column (Desktop) -->
+    <div class="left-column">
+      <!-- Logo Selector -->
+      <div class="logo-selector-wrap card">
+        <div class="logo-selector">
+          <label for="logoSelect">Logo</label>
+          <select id="logoSelect" class="logo-select">
+            <option value="td">Telugu Delicacies</option>
+            <option value="akshaya">Akshaya</option>
+            <option value="tasty">Tasty Pinch</option>
+          </select>
+        </div>
       </div>
+
+      <!-- Controls Section (2x2 on desktop) -->
+      <section class="controls-section" id="controlsSection"></section>
+
+      <!-- Download Section -->
+      <section class="download-section card">
+        <label for="fileName">File Name</label>
+        <input type="text" id="fileName" class="filename-input" placeholder="my-logo">
+
+        <div class="download-row">
+          <div class="dpi-wrap" title="Scale multiplier for HD export (2 = double size)">
+            <span class="dpi-label">HD Scale:</span>
+            <input type="number" id="dpiInput" class="dpi-input" value="2" min="1" max="4" step="1">
+            <span class="dpi-label">×</span>
+          </div>
+        </div>
+
+        <div class="download-buttons">
+          <button id="exportPNG" class="download-btn primary" title="Download standard resolution PNG">
+            <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Save PNG
+          </button>
+          <button id="exportPNGHD" class="download-btn secondary"
+            title="Download high resolution PNG using scale above">
+            <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            HD PNG
+          </button>
+          <button id="exportSVG" class="download-btn secondary" title="Download as scalable vector (best quality)">
+            <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            SVG
+          </button>
+        </div>
+      </section>
     </div>
 
-    <!-- Preview Section with Random/Reset in header -->
+    <!-- Preview Section (Right Column on Desktop) -->
     <section class="preview-section card">
-      <div class="preview-header">
-        <span class="preview-title">👁️ Preview</span>
-        <div class="preview-actions">
-          <button id="randomBtn" class="preview-btn random" title="Generate random color scheme">🎲 Random</button>
-          <button id="resetBtn" class="preview-btn reset" title="Reset to default colors">↺ Reset</button>
+      <div class="preview-wrapper">
+        <!-- Overlay buttons on top-right of preview -->
+        <div class="preview-overlay-buttons">
+          <button id="randomBtn" class="preview-btn random" title="Generate random colors">🎲 Random</button>
+          <button id="resetBtn" class="preview-btn reset" title="Reset to defaults">↺ Reset</button>
         </div>
-      </div>
-      <div class="preview-container" id="preview">
-        <div id="svgContainer"></div>
-      </div>
-    </section>
-
-    <!-- Controls Section -->
-    <section class="controls-section" id="controlsSection"></section>
-
-    <!-- Download Section -->
-    <section class="download-section card">
-      <label for="fileName">File Name</label>
-      <input type="text" id="fileName" class="filename-input" placeholder="my-logo">
-
-      <div class="download-row">
-        <div class="dpi-wrap" title="Scale multiplier for HD export (2 = double size)">
-          <span class="dpi-label">HD Scale:</span>
-          <input type="number" id="dpiInput" class="dpi-input" value="2" min="1" max="4" step="1">
-          <span class="dpi-label">×</span>
+        <div class="preview-container" id="preview">
+          <div id="svgContainer"></div>
         </div>
-      </div>
-
-      <div class="download-buttons">
-        <button id="exportPNG" class="download-btn primary" title="Download standard resolution PNG">
-          <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          Save PNG
-        </button>
-        <button id="exportPNGHD" class="download-btn secondary" title="Download high resolution PNG using scale above">
-          <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          HD PNG
-        </button>
-        <button id="exportSVG" class="download-btn secondary" title="Download as scalable vector (best quality)">
-          <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-          </svg>
-          SVG
-        </button>
       </div>
     </section>
   </div>
@@ -726,7 +760,7 @@
       checkDesktop();
       window.addEventListener('resize', checkDesktop);
 
-      /* ========== Configuration with Labels & Descriptions ========== */
+      /* ========== Configuration ========== */
       const LOGO_CONFIG = {
         td: {
           name: "Telugu Delicacies",
@@ -801,13 +835,12 @@
         }
       };
 
-      const STORAGE_KEY = 'tdLogoCustomizer_v7';
+      const STORAGE_KEY = 'tdLogoCustomizer_v8';
       let currentLogoKey = 'td';
       let currentConfig = LOGO_CONFIG[currentLogoKey];
       let svgRoot = null;
       let controlState = {};
 
-      /* ========== DOM Elements ========== */
       const els = {
         svgContainer: document.getElementById('svgContainer'),
         controlsSection: document.getElementById('controlsSection'),
@@ -822,7 +855,6 @@
         toast: document.getElementById('toast')
       };
 
-      /* ========== Color Helpers ========== */
       function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
 
       function hexToRgb(hex) {
@@ -840,10 +872,7 @@
 
       function hslToRgb(h, s, l) {
         h = ((h % 360) + 360) % 360;
-        if (s === 0) {
-          const v = Math.round(l * 255);
-          return { r: v, g: v, b: v };
-        }
+        if (s === 0) { const v = Math.round(l * 255); return { r: v, g: v, b: v }; }
         const c = (1 - Math.abs(2 * l - 1)) * s;
         const x = c * (1 - Math.abs((h / 60) % 2 - 1));
         const m = l - c / 2;
@@ -854,21 +883,15 @@
         else if (h < 240) { g1 = x; b1 = c; }
         else if (h < 300) { r1 = x; b1 = c; }
         else { r1 = c; b1 = x; }
-        return {
-          r: Math.round((r1 + m) * 255),
-          g: Math.round((g1 + m) * 255),
-          b: Math.round((b1 + m) * 255)
-        };
+        return { r: Math.round((r1 + m) * 255), g: Math.round((g1 + m) * 255), b: Math.round((b1 + m) * 255) };
       }
 
-      /* ========== Toast ========== */
       function showToast(message) {
         els.toast.textContent = message;
         els.toast.classList.add('show');
         setTimeout(() => els.toast.classList.remove('show'), 2000);
       }
 
-      /* ========== SVG Loading ========== */
       async function loadSVG() {
         try {
           const response = await fetch(currentConfig.file, { cache: "no-cache" });
@@ -878,22 +901,18 @@
           svgRoot = els.svgContainer.querySelector('svg');
           if (svgRoot) svgRoot.id = 'svgRootInlined';
         } catch (e) {
-          els.svgContainer.innerHTML = `<?xml version="1.0"?>
-            <svg id="svgRootInlined" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-              <rect id="SquareBehindTD" fill="#eedc29" width="800" height="800" x="113" y="117"/>
-              <path id="TDPath" fill="#ffffff" stroke="#000000" stroke-width="2" d="M420,940c-6.6-2.1-12.4-8.6-13.8-15.6-2-9.5,1.3-44,7-73.3,16.1-83.4,51.5-192.5,91.2-281,9.4-21,28.7-59.3,37.7-75,18.3-31.7,38.9-57.4,50.2-62.5,11.1-5,27.6,0.7,34.5,11.9,4.2,6.8,3.4,9.6-6.8,22.3-22.7,28.3-50.9,74.6-73.1,119.8-24.9,50.7-39.1,85.9-59.1,146.5-11.5,34.8-17.2,54.3-22.7,78.1-4.4,18.9-16.1,76.6-15.7,77,0.4,0.4,47.6-26.8,69.7-40.2,86-52,158.8-110.6,220.4-177.5,29.9-32.5,50.6-58.6,71.8-90.5,36.2-54.5,57.6-104.6,66.4-155.5,2.6-14.9,2.6-50.7,0-63.4-2.6-13.1-6.2-23.6-9.9-29.2-5.1-7.7-17.6-19.6-24.4-23.2-7.9-4.2-27.1-9.7-45.4-13-13.3-2.4-16.8-2.6-42.5-2.7-30.3-0.1-38.1,0.7-69.9,6.6-65.1,12.1-112.5,27.6-176.4,57.7-36,17-84.8,44.8-121.2,69.2l-11.5,7.7-2.3,23.9c-3.6,37.5-4.1,45.5-5.2,80.3-2.1,64.4,0.8,122.9,9.2,189.5,3.5,28,3.4,29.8-2.6,36.5-4.9,5.4-11.7,8.5-19.8,9-10.4,0.6-17.6-3-20.9-10.6-3.2-7.3-7.3-47.4-10-99.3-2.2-41.4-1.1-163.6,1.8-197.9l0.6-7.4-2.8,1.8c-3.3,2.1-11.7,2.4-15.5,0.4-11.5-5.9-13.9-18.7-5-27,3.8-3.6,18.7-12.8,22.1-13.7,1.5-0.4,2-1.7,2.4-6.6,4.2-49.8,9.2-82.5,20.1-132.2,3.6-16.4,13.4-56.9,16.1-66.2,0.4-1.4,0.2-2.3-0.5-2.3-2.9,0-89.8,24.9-158.6,45.5-64.7,19.3-82.5,24.4-87.8,25.2-13.8,1.9-28.3-12-24.8-23.7,1.5-5.1,5.1-10,8.7-12.2,6.9-4,101.8-32.5,175.9-52.7,111.7-30.5,228.2-59.5,289.9-72.1,86-17.6,132.8-22.8,193.6-21.7,45.6,0.9,68.5,2.6,74.8,5.8,13.2,6.6,11.9,23.3-2.3,29.9-3.6,1.7-7,1.9-38.1,1.9-18.8,0-42.2,0.5-52,1-83.2,4.7-174,19.6-294.7,48.3l-17.9,4.2-1.8,6c-22.5,75.2-27.3,92.4-33.4,119.8-5.7,25.6-7.9,36.8-10.5,53.7-1.2,7.4-2.3,14.3-2.5,15.3-0.2,1-0.2,1.8-0.1,1.8,0.1,0,4.9-3.1,10.7-6.8,53-34.7,117.2-68.2,172.9-90.2,31.4-12.4,77-25.8,112-33,36.7-7.5,91.6-10.1,120-5.6,13.9,2.2,37.4,8.3,45.5,11.9,27.2,12,48.8,30.5,66.3,56.7,10,15,16.9,32,21.3,52.5,2.7,12.7,3.8,49.3,2.1,66.7-4.5,43.9-18.9,83.4-46.3,127-45.7,72.7-117.2,148.8-206.8,219.9-64.4,51.2-153.4,109.5-217,142.1C454.5,934.5,430.2,943.2,420,940z"/>
-            </svg>`;
+          els.svgContainer.innerHTML = `<svg id="svgRootInlined" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+            <rect id="SquareBehindTD" fill="#eedc29" width="800" height="800" x="113" y="117"/>
+            <path id="TDPath" fill="#ffffff" stroke="#000000" stroke-width="2" d="M420,940c-6.6-2.1-12.4-8.6-13.8-15.6-2-9.5,1.3-44,7-73.3,16.1-83.4,51.5-192.5,91.2-281,9.4-21,28.7-59.3,37.7-75,18.3-31.7,38.9-57.4,50.2-62.5,11.1-5,27.6,0.7,34.5,11.9,4.2,6.8,3.4,9.6-6.8,22.3-22.7,28.3-50.9,74.6-73.1,119.8-24.9,50.7-39.1,85.9-59.1,146.5-11.5,34.8-17.2,54.3-22.7,78.1-4.4,18.9-16.1,76.6-15.7,77,0.4,0.4,47.6-26.8,69.7-40.2,86-52,158.8-110.6,220.4-177.5,29.9-32.5,50.6-58.6,71.8-90.5,36.2-54.5,57.6-104.6,66.4-155.5,2.6-14.9,2.6-50.7,0-63.4-2.6-13.1-6.2-23.6-9.9-29.2-5.1-7.7-17.6-19.6-24.4-23.2-7.9-4.2-27.1-9.7-45.4-13-13.3-2.4-16.8-2.6-42.5-2.7-30.3-0.1-38.1,0.7-69.9,6.6-65.1,12.1-112.5,27.6-176.4,57.7-36,17-84.8,44.8-121.2,69.2l-11.5,7.7-2.3,23.9c-3.6,37.5-4.1,45.5-5.2,80.3-2.1,64.4,0.8,122.9,9.2,189.5,3.5,28,3.4,29.8-2.6,36.5-4.9,5.4-11.7,8.5-19.8,9-10.4,0.6-17.6-3-20.9-10.6-3.2-7.3-7.3-47.4-10-99.3-2.2-41.4-1.1-163.6,1.8-197.9l0.6-7.4-2.8,1.8c-3.3,2.1-11.7,2.4-15.5,0.4-11.5-5.9-13.9-18.7-5-27,3.8-3.6,18.7-12.8,22.1-13.7,1.5-0.4,2-1.7,2.4-6.6,4.2-49.8,9.2-82.5,20.1-132.2,3.6-16.4,13.4-56.9,16.1-66.2,0.4-1.4,0.2-2.3-0.5-2.3-2.9,0-89.8,24.9-158.6,45.5-64.7,19.3-82.5,24.4-87.8,25.2-13.8,1.9-28.3-12-24.8-23.7,1.5-5.1,5.1-10,8.7-12.2,6.9-4,101.8-32.5,175.9-52.7,111.7-30.5,228.2-59.5,289.9-72.1,86-17.6,132.8-22.8,193.6-21.7,45.6,0.9,68.5,2.6,74.8,5.8,13.2,6.6,11.9,23.3-2.3,29.9-3.6,1.7-7,1.9-38.1,1.9-18.8,0-42.2,0.5-52,1-83.2,4.7-174,19.6-294.7,48.3l-17.9,4.2-1.8,6c-22.5,75.2-27.3,92.4-33.4,119.8-5.7,25.6-7.9,36.8-10.5,53.7-1.2,7.4-2.3,14.3-2.5,15.3-0.2,1-0.2,1.8-0.1,1.8,0.1,0,4.9-3.1,10.7-6.8,53-34.7,117.2-68.2,172.9-90.2,31.4-12.4,77-25.8,112-33,36.7-7.5,91.6-10.1,120-5.6,13.9,2.2,37.4,8.3,45.5,11.9,27.2,12,48.8,30.5,66.3,56.7,10,15,16.9,32,21.3,52.5,2.7,12.7,3.8,49.3,2.1,66.7-4.5,43.9-18.9,83.4-46.3,127-45.7,72.7-117.2,148.8-206.8,219.9-64.4,51.2-153.4,109.5-217,142.1C454.5,934.5,430.2,943.2,420,940z"/>
+          </svg>`;
           svgRoot = els.svgContainer.querySelector('svg');
         }
       }
 
-      /* ========== Generate Control UI ========== */
       function generateControlsUI() {
         els.controlsSection.innerHTML = '';
-
         currentConfig.controls.forEach(ctrl => {
           const state = controlState[ctrl.id] || ctrl.defaults;
-
           const card = document.createElement('div');
           card.className = 'control-card';
           card.id = `control-${ctrl.id}`;
@@ -914,15 +933,11 @@
                 <div class="hex-input-wrap">
                   <span class="hex-prefix">#</span>
                   <input type="text" class="hex-input" id="${ctrl.id}-fill-hex" 
-                         value="${state.fill.replace('#', '')}" 
-                         maxlength="6" 
-                         placeholder="FFFFFF"
-                         title="Enter hex color code"
-                         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                         value="${state.fill.replace('#', '')}" maxlength="6" placeholder="FFFFFF"
+                         title="Enter hex color code" autocomplete="off" spellcheck="false">
                   <button class="copy-btn" data-copy="${ctrl.id}-fill" title="Copy color code">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="9" y="9" width="13" height="13" rx="2"/>
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                      <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                     </svg>
                   </button>
                 </div>
@@ -933,31 +948,21 @@
             html += `<div class="stroke-section">
               <div class="stroke-section-title">Stroke (Outline)</div>
               <div class="stroke-row">`;
-
             if (ctrl.showStroke) {
-              html += `<input type="color" class="stroke-color-picker" id="${ctrl.id}-stroke-picker" value="${state.stroke}" title="Stroke/outline color">`;
+              html += `<input type="color" class="stroke-color-picker" id="${ctrl.id}-stroke-picker" value="${state.stroke}" title="Stroke color">`;
             }
-
             if (ctrl.showStrokeWidth) {
-              html += `
-                <div class="stroke-width-wrap" title="Outline thickness (0 = no outline)">
-                  <span class="stroke-width-label">Width:</span>
-                  <input type="number" class="stroke-width-input" id="${ctrl.id}-stroke-width" 
-                         value="${state.strokeWidth}" min="0" max="20" step="0.5">
-                </div>`;
+              html += `<div class="stroke-width-wrap" title="Outline thickness"><span class="stroke-width-label">Width:</span>
+                <input type="number" class="stroke-width-input" id="${ctrl.id}-stroke-width" value="${state.strokeWidth}" min="0" max="20" step="0.5"></div>`;
             }
-
             html += `</div></div>`;
           }
-
           card.innerHTML = html;
           els.controlsSection.appendChild(card);
         });
-
         wireControlEvents();
       }
 
-      /* ========== Wire Control Events ========== */
       function wireControlEvents() {
         currentConfig.controls.forEach(ctrl => {
           const fillPicker = document.getElementById(`${ctrl.id}-fill-picker`);
@@ -972,51 +977,40 @@
               const hex = fillPicker.value.toUpperCase();
               fillHex.value = hex.replace('#', '');
               controlState[ctrl.id].fill = hex;
-              applyStyles();
-              saveSettings();
+              applyStyles(); saveSettings();
             });
           }
 
           if (fillHex) {
-            fillHex.addEventListener('input', (e) => {
+            fillHex.addEventListener('input', () => {
               let val = fillHex.value.toUpperCase().replace(/[^0-9A-F]/g, '').slice(0, 6);
               fillHex.value = val;
-
               if (val.length === 6 || val.length === 3) {
-                let normalized = val;
-                if (val.length === 3) normalized = val.split('').map(c => c + c).join('');
+                let normalized = val.length === 3 ? val.split('').map(c => c + c).join('') : val;
                 normalized = '#' + normalized;
                 fillPicker.value = normalized;
                 controlState[ctrl.id].fill = normalized;
-                applyStyles();
-                saveSettings();
+                applyStyles(); saveSettings();
               }
             });
-
             fillHex.addEventListener('blur', () => {
               let val = fillHex.value.toUpperCase().replace(/[^0-9A-F]/g, '');
               if (val.length === 3) val = val.split('').map(c => c + c).join('');
-              if (val.length === 6) {
-                fillHex.value = val;
-              } else {
-                fillHex.value = controlState[ctrl.id].fill.replace('#', '');
-              }
+              fillHex.value = val.length === 6 ? val : controlState[ctrl.id].fill.replace('#', '');
             });
           }
 
           if (strokePicker) {
             strokePicker.addEventListener('input', () => {
               controlState[ctrl.id].stroke = strokePicker.value.toUpperCase();
-              applyStyles();
-              saveSettings();
+              applyStyles(); saveSettings();
             });
           }
 
           if (strokeWidth) {
             strokeWidth.addEventListener('input', () => {
               controlState[ctrl.id].strokeWidth = strokeWidth.value;
-              applyStyles();
-              saveSettings();
+              applyStyles(); saveSettings();
             });
           }
 
@@ -1027,8 +1021,7 @@
               if (fillHex) fillHex.value = ctrl.defaults.fill.replace('#', '');
               if (strokePicker) strokePicker.value = ctrl.defaults.stroke;
               if (strokeWidth) strokeWidth.value = ctrl.defaults.strokeWidth;
-              applyStyles();
-              saveSettings();
+              applyStyles(); saveSettings();
               showToast('Reset ✓');
             });
           }
@@ -1045,15 +1038,11 @@
         });
       }
 
-      /* ========== Apply Styles to SVG ========== */
       function applyStyles() {
         if (!svgRoot) return;
-
         currentConfig.controls.forEach(ctrl => {
           const state = controlState[ctrl.id] || ctrl.defaults;
-          const elements = svgRoot.querySelectorAll(ctrl.selector);
-
-          elements.forEach(el => {
+          svgRoot.querySelectorAll(ctrl.selector).forEach(el => {
             el.style.setProperty('fill', state.fill);
             if (ctrl.showStroke) el.style.setProperty('stroke', state.stroke);
             if (ctrl.showStrokeWidth) el.style.setProperty('stroke-width', state.strokeWidth);
@@ -1061,11 +1050,9 @@
         });
       }
 
-      /* ========== Settings Persistence ========== */
       function saveSettings() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
-          logoKey: currentLogoKey,
-          controls: controlState,
+          logoKey: currentLogoKey, controls: controlState,
           fileName: els.fileNameInput.value.trim() || currentConfig.fileName,
           dpi: parseInt(els.dpiInput.value) || 2
         }));
@@ -1093,34 +1080,25 @@
 
       function initControlState() {
         controlState = {};
-        currentConfig.controls.forEach(ctrl => {
-          controlState[ctrl.id] = { ...ctrl.defaults };
-        });
+        currentConfig.controls.forEach(ctrl => { controlState[ctrl.id] = { ...ctrl.defaults }; });
       }
 
-      /* ========== Export Functions ========== */
       function getContentBounds() {
         if (!svgRoot) return null;
-        const elements = svgRoot.querySelectorAll('path, rect, circle, ellipse, polygon, polyline, text, g');
         let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-
-        elements.forEach(el => {
+        svgRoot.querySelectorAll('path, rect, circle, ellipse, polygon, polyline, text, g').forEach(el => {
           try {
             const bbox = el.getBBox();
             if (bbox.width > 0 && bbox.height > 0) {
-              minX = Math.min(minX, bbox.x);
-              minY = Math.min(minY, bbox.y);
-              maxX = Math.max(maxX, bbox.x + bbox.width);
-              maxY = Math.max(maxY, bbox.y + bbox.height);
+              minX = Math.min(minX, bbox.x); minY = Math.min(minY, bbox.y);
+              maxX = Math.max(maxX, bbox.x + bbox.width); maxY = Math.max(maxY, bbox.y + bbox.height);
             }
           } catch (e) { }
         });
-
         if (minX === Infinity) {
           const vb = svgRoot.viewBox?.baseVal;
           return { x: vb?.x || 0, y: vb?.y || 0, width: vb?.width || 1024, height: vb?.height || 1024 };
         }
-
         const padding = Math.max(maxX - minX, maxY - minY) * 0.02;
         return { x: minX - padding, y: minY - padding, width: (maxX - minX) + padding * 2, height: (maxY - minY) + padding * 2 };
       }
@@ -1129,22 +1107,17 @@
         if (!svgRoot) return null;
         const clone = svgRoot.cloneNode(true);
         clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-        clone.querySelectorAll('*').forEach(el => {
-          if (el.style?.cssText) el.setAttribute('style', el.style.cssText);
-        });
-
+        clone.querySelectorAll('*').forEach(el => { if (el.style?.cssText) el.setAttribute('style', el.style.cssText); });
         let w, h;
         if (cropToContent) {
           const bounds = getContentBounds();
           clone.setAttribute('viewBox', `${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}`);
-          w = bounds.width;
-          h = bounds.height;
+          w = bounds.width; h = bounds.height;
         } else {
           const vb = svgRoot.viewBox?.baseVal;
           w = vb?.width || parseInt(svgRoot.getAttribute('width')) || 1024;
           h = vb?.height || parseInt(svgRoot.getAttribute('height')) || 1024;
         }
-
         clone.setAttribute('width', String(Math.round(w * scale)));
         clone.setAttribute('height', String(Math.round(h * scale)));
         return { clone, w, h };
@@ -1153,37 +1126,25 @@
       function exportPNG(useCustomDPI = false) {
         applyStyles();
         const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
-
-        let scale = 1;
-        let suffix = '';
-        if (useCustomDPI) {
-          scale = clamp(parseInt(els.dpiInput.value) || 2, 1, 4);
-          suffix = `-${scale}x`;
-        }
-
+        let scale = 1, suffix = '';
+        if (useCustomDPI) { scale = clamp(parseInt(els.dpiInput.value) || 2, 1, 4); suffix = `-${scale}x`; }
         const data = makeSerializableClone(scale, true);
         if (!data) return showToast('SVG not loaded');
-
         const { clone, w, h } = data;
         const svgString = '<?xml version="1.0"?>\n' + new XMLSerializer().serializeToString(clone);
-        const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' }));
         const img = new Image();
-
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          canvas.width = Math.round(w * scale);
-          canvas.height = Math.round(h * scale);
+          canvas.width = Math.round(w * scale); canvas.height = Math.round(h * scale);
           canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
           URL.revokeObjectURL(url);
-
           const a = document.createElement('a');
           a.download = `${safeName}${suffix}.png`;
           a.href = canvas.toDataURL('image/png');
           a.click();
           showToast(`Saved ${canvas.width}×${canvas.height} ✓`);
         };
-
         img.onerror = () => { URL.revokeObjectURL(url); showToast('Export failed'); };
         img.src = url;
       }
@@ -1193,76 +1154,45 @@
         const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
         const data = makeSerializableClone(1, true);
         if (!data) return showToast('SVG not loaded');
-
-        const svgString = '<?xml version="1.0"?>\n' + new XMLSerializer().serializeToString(data.clone);
-        const url = URL.createObjectURL(new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' }));
-
+        const url = URL.createObjectURL(new Blob(['<?xml version="1.0"?>\n' + new XMLSerializer().serializeToString(data.clone)], { type: 'image/svg+xml;charset=utf-8' }));
         const a = document.createElement('a');
-        a.download = `${safeName}.svg`;
-        a.href = url;
-        a.click();
+        a.download = `${safeName}.svg`; a.href = url; a.click();
         setTimeout(() => URL.revokeObjectURL(url), 1500);
         showToast('SVG saved ✓');
       }
 
-      /* ========== SMART RANDOM COLORS ========== */
       let lastRandomHue = null;
-
       function randomizeColors() {
         const numColors = currentConfig.controls.length;
-
         let baseHue;
-        do {
-          baseHue = Math.floor(Math.random() * 360);
-        } while (lastRandomHue !== null && Math.abs(baseHue - lastRandomHue) < 30);
+        do { baseHue = Math.floor(Math.random() * 360); } while (lastRandomHue !== null && Math.abs(baseHue - lastRandomHue) < 30);
         lastRandomHue = baseHue;
-
         const saturation = 0.65 + Math.random() * 0.25;
         const lightness = 0.40 + Math.random() * 0.20;
-
-        const hues = [];
-        if (numColors === 1) {
-          hues.push(baseHue);
-        } else if (numColors === 2) {
-          hues.push(baseHue);
-          hues.push((baseHue + 180) % 360);
-        } else {
-          for (let i = 0; i < numColors; i++) {
-            hues.push((baseHue + (360 / numColors) * i) % 360);
-          }
-        }
+        const hues = numColors === 1 ? [baseHue] : numColors === 2 ? [baseHue, (baseHue + 180) % 360] :
+          Array.from({ length: numColors }, (_, i) => (baseHue + (360 / numColors) * i) % 360);
 
         currentConfig.controls.forEach((ctrl, i) => {
-          const hue = hues[i % hues.length];
-          const rgb = hslToRgb(hue, saturation, lightness);
+          const rgb = hslToRgb(hues[i % hues.length], saturation, lightness);
           const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
-
           controlState[ctrl.id].fill = hex;
-
           const fillPicker = document.getElementById(`${ctrl.id}-fill-picker`);
           const fillHex = document.getElementById(`${ctrl.id}-fill-hex`);
           if (fillPicker) fillPicker.value = hex;
           if (fillHex) fillHex.value = hex.replace('#', '');
         });
-
-        applyStyles();
-        saveSettings();
-
-        const strategy = numColors === 1 ? 'Random' : numColors === 2 ? 'Complementary' : 'Triadic';
-        showToast(`${strategy} colors 🎲`);
+        applyStyles(); saveSettings();
+        showToast(`${numColors === 1 ? 'Random' : numColors === 2 ? 'Complementary' : 'Triadic'} colors 🎲`);
       }
 
-      /* ========== Reset All ========== */
       function resetAll() {
         initControlState();
         els.fileNameInput.value = currentConfig.fileName;
         generateControlsUI();
-        applyStyles();
-        saveSettings();
+        applyStyles(); saveSettings();
         showToast('Reset to defaults ✓');
       }
 
-      /* ========== Logo Switch ========== */
       async function switchLogo(key) {
         currentLogoKey = key;
         currentConfig = LOGO_CONFIG[key];
@@ -1270,11 +1200,9 @@
         els.fileNameInput.value = currentConfig.fileName;
         await loadSVG();
         generateControlsUI();
-        applyStyles();
-        saveSettings();
+        applyStyles(); saveSettings();
       }
 
-      /* ========== Wire Main Events ========== */
       function wireMainEvents() {
         els.logoSelect.addEventListener('change', () => switchLogo(els.logoSelect.value));
         els.randomBtn.addEventListener('click', randomizeColors);
@@ -1285,7 +1213,6 @@
         els.dpiInput.addEventListener('change', saveSettings);
       }
 
-      /* ========== Initialize ========== */
       async function init() {
         loadSettings();
         await loadSVG();
