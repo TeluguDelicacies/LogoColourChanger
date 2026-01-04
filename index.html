@@ -1051,7 +1051,7 @@
           svgRoot.id = 'svgRootInlined';
           console.log(`[LogoCustomizer] Successfully rendered: ${brandName}`);
         } else {
-           console.error('[LogoCustomizer] SVG rendered but no <svg> element found');
+          console.error('[LogoCustomizer] SVG rendered but no <svg> element found');
         }
       } else {
         console.error(`[LogoCustomizer] Logo not found: ${brandName}`);
@@ -1074,7 +1074,7 @@
                 <span class="control-label">${ctrl.label}</span>
                 <span class="control-desc">${ctrl.desc}</span>
               </div>
-              <button class="reset-btn" data-reset="${ctrl.id}" title="Reset to default">â†º</button>
+              <button class="reset-btn" data-reset="${ctrl.id}" title="Reset to default">&#8634;</button>
             </div>
             <div class="color-row">
               <input type="color" class="color-picker" id="${ctrl.id}-fill-picker" value="${state.fill}" title="Click to pick a color">
@@ -1104,7 +1104,7 @@
           if (ctrl.showStrokeWidth) {
             html += `<div class="stroke-width-wrap" title="Outline thickness"><span class="stroke-width-label">Width:</span>
                 <div class="stepper">
-                  <button class="stepper-btn minus">âˆ’</button>
+                  <button class="stepper-btn minus">&minus;</button>
                   <input type="number" class="stroke-width-input" id="${ctrl.id}-stroke-width" value="${state.strokeWidth}" min="0" max="20" step="1">
                   <button class="stepper-btn plus">+</button>
                 </div></div>`;
@@ -1312,7 +1312,7 @@
         a.download = `${safeName}${suffix}.png`;
         a.href = canvas.toDataURL('image/png');
         a.click();
-        showToast(`Saved ${canvas.width}Ã—${canvas.height} âœ“`);
+        showToast(`Saved ${canvas.width}×${canvas.height} \u2713`);
       };
       img.onerror = () => { URL.revokeObjectURL(url); showToast('Export failed'); };
       img.src = url;
@@ -1327,7 +1327,7 @@
       const a = document.createElement('a');
       a.download = `${safeName}.svg`; a.href = url; a.click();
       setTimeout(() => URL.revokeObjectURL(url), 1500);
-      showToast('SVG saved âœ“');
+      showToast('SVG saved \u2713');
     }
 
     let lastRandomHue = null;
@@ -1351,7 +1351,7 @@
         if (fillHex) fillHex.value = hex.replace('#', '');
       });
       applyStyles(); saveSettings();
-      showToast(`${numColors === 1 ? 'Random' : numColors === 2 ? 'Complementary' : 'Triadic'} colors ðŸŽ²`);
+      showToast(`${numColors === 1 ? 'Random' : numColors === 2 ? 'Complementary' : 'Triadic'} colors \uD83C\uDFB2`);
     }
 
     function resetAll() {
@@ -1359,7 +1359,7 @@
       els.fileNameInput.value = currentConfig.fileName;
       generateControlsUI();
       applyStyles(); saveSettings();
-      showToast('Reset to defaults âœ“');
+      showToast('Reset to defaults \u2713');
     }
 
     async function switchLogo(key) {
