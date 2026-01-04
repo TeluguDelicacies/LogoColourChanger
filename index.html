@@ -51,6 +51,7 @@
     .header {
       text-align: center;
       padding: 8px;
+      order: -10;
     }
 
     .header h1 {
@@ -378,19 +379,72 @@
       white-space: nowrap;
     }
 
+    .stepper {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      height: 32px;
+    }
+
+    .stepper-btn {
+      width: 32px;
+      height: 100%;
+      border: none;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .stepper-btn:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .stepper-btn:active {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
     .stroke-width-input {
-      width: 50px;
-      padding: 6px;
-      font-size: 0.813rem;
-      font-weight: 500;
+      width: 40px;
+      height: 100%;
+      padding: 0;
+      font-size: 0.9rem;
+      font-weight: 600;
       background: transparent;
       border: none;
+      border-left: 1px solid var(--card-border);
+      border-right: 1px solid var(--card-border);
       color: var(--text-primary);
       text-align: center;
+      -moz-appearance: textfield;
+    }
+
+    .stroke-width-input::-webkit-outer-spin-button,
+    .stroke-width-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
 
     .stroke-width-input:focus {
       outline: none;
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .scale-select {
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--card-border);
+      background: var(--bg);
+      color: var(--text-primary);
+      font-size: 0.813rem;
+      flex: 1;
+      cursor: pointer;
     }
 
     /* Download Section */
@@ -421,6 +475,18 @@
     .filename-input:focus {
       outline: none;
       border-color: var(--accent);
+    }
+
+    input[type=number] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+      margin: 0;
     }
 
     /* Standard download buttons row */
@@ -743,8 +809,13 @@
           <div class="hd-row">
             <div class="scale-wrap" title="Multiply size by this number">
               <span class="scale-label">Scale:</span>
-              <input type="number" id="dpiInput" class="scale-input" value="2" min="1" max="20" step="1">
-              <span class="scale-label">×</span>
+              <select id="dpiInput" class="scale-select">
+                <option value="1">1x (Standard)</option>
+                <option value="2" selected>2x (High Res - Web)</option>
+                <option value="3">3x (Print)</option>
+                <option value="4">4x (Ultra HD)</option>
+                <option value="6">6x (Maximum)</option>
+              </select>
             </div>
             <button id="exportPNGHD" class="hd-btn" title="Download larger PNG for printing or high-res displays">
               <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -795,7 +866,7 @@
       }
       checkDesktop.lastMode = null;
       checkDesktop();
-      window.addEventListener('resize', checkDesktop);
+      window.addEventListener('orientationchange', checkDesktop);
 
       /* ========== Configuration ========== */
       const LOGO_CONFIG = {
@@ -1027,7 +1098,11 @@
             }
             if (ctrl.showStrokeWidth) {
               html += `<div class="stroke-width-wrap" title="Outline thickness"><span class="stroke-width-label">Width:</span>
-                <input type="number" class="stroke-width-input" id="${ctrl.id}-stroke-width" value="${state.strokeWidth}" min="0" max="20" step="0.5"></div>`;
+                <div class="stepper">
+                  <button class="stepper-btn minus">−</button>
+                  <input type="number" class="stroke-width-input" id="${ctrl.id}-stroke-width" value="${state.strokeWidth}" min="0" max="20" step="1">
+                  <button class="stepper-btn plus">+</button>
+                </div></div>`;
             }
             html += `</div></div>`;
           }
@@ -1082,10 +1157,25 @@
           }
 
           if (strokeWidth) {
-            strokeWidth.addEventListener('input', () => {
+            const updateStroke = () => {
               controlState[ctrl.id].strokeWidth = strokeWidth.value;
               applyStyles(); saveSettings();
-            });
+            };
+            strokeWidth.addEventListener('input', updateStroke);
+
+            const stepper = strokeWidth.closest('.stepper');
+            if (stepper) {
+              const minus = stepper.querySelector('.minus');
+              const plus = stepper.querySelector('.plus');
+              minus.addEventListener('click', () => {
+                strokeWidth.stepDown();
+                strokeWidth.dispatchEvent(new Event('input'));
+              });
+              plus.addEventListener('click', () => {
+                strokeWidth.stepUp();
+                strokeWidth.dispatchEvent(new Event('input'));
+              });
+            }
           }
 
           if (resetBtn) {
