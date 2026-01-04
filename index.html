@@ -45,7 +45,7 @@
       padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 24px;
     }
 
     .header {
@@ -119,7 +119,7 @@
 
     /* Preview Section */
     .preview-section {
-      order: 1;
+      order: -1;
       position: relative;
     }
 
@@ -743,7 +743,7 @@
           <div class="hd-row">
             <div class="scale-wrap" title="Multiply size by this number">
               <span class="scale-label">Scale:</span>
-              <input type="number" id="dpiInput" class="scale-input" value="2" min="1" max="4" step="1">
+              <input type="number" id="dpiInput" class="scale-input" value="2" min="1" max="20" step="1">
               <span class="scale-label">×</span>
             </div>
             <button id="exportPNGHD" class="hd-btn" title="Download larger PNG for printing or high-res displays">
@@ -1201,7 +1201,7 @@
         applyStyles();
         const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
         let scale = 1, suffix = '';
-        if (useCustomDPI) { scale = clamp(parseInt(els.dpiInput.value) || 2, 1, 4); suffix = `-${scale}x`; }
+        if (useCustomDPI) { scale = clamp(parseInt(els.dpiInput.value) || 2, 1, 20); suffix = `-${scale}x`; }
         const data = makeSerializableClone(scale, true);
         if (!data) return showToast('SVG not loaded');
         const { clone, w, h } = data;
