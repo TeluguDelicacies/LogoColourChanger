@@ -851,7 +851,7 @@
   <!-- Toast -->
   <div id="toast" class="toast"></div>
 
-  <script>
+  <script type="module">
     (() => {
       /* ========== RESPONSIVE DETECTION ========== */
       const DESKTOP_MIN_WIDTH = 900;
@@ -874,7 +874,7 @@
       const LOGO_CONFIG = {
         td: {
           name: "Telugu Delicacies",
-          file: "logo.svg",
+          file: new URL('./logo.svg', import.meta.url).href,
           controls: [
             {
               id: "path",
@@ -901,7 +901,7 @@
         },
         akshaya: {
           name: "Akshaya",
-          file: "Akshaya.svg",
+          file: new URL('./Akshaya.svg', import.meta.url).href,
           controls: [
             {
               id: "green",
@@ -928,7 +928,7 @@
         },
         tasty: {
           name: "Tasty Pinch",
-          file: "Tasty Pinch.svg",
+          file: new URL('./Tasty Pinch.svg', import.meta.url).href,
           controls: [
             {
               id: "brand",
@@ -945,7 +945,7 @@
         },
         teepi: {
           name: "Teepi Gurthu",
-          file: "Teepi Gurthu.svg",
+          file: new URL('./Teepi Gurthu.svg', import.meta.url).href,
           controls: [
             {
               id: "gold",
@@ -1041,17 +1041,13 @@
 
       async function loadSVG() {
         try {
-          // Resolve path relative to current index.html location
-          // This fixes issues when moved to submodules or different subdirectories
-          const baseUrl = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-          const fetchUrl = baseUrl + currentConfig.file;
+          const fetchUrl = currentConfig.file;
 
           console.log(`[LogoCustomizer] Attempting to fetch: ${fetchUrl}`);
 
           const response = await fetch(fetchUrl, { cache: "no-cache" });
           if (!response.ok) {
-            console.error(`[LogoCustomizer] Fetch failed: ${response.status} ${response.statusText} for ${fetchUrl}`);
-            throw new Error(`File not found: ${currentConfig.file}`);
+            throw new Error(`Fetch failed: ${response.status} ${response.statusText}`);
           }
 
           const text = await response.text();
@@ -1059,10 +1055,12 @@
           svgRoot = els.svgContainer.querySelector('svg');
           if (svgRoot) {
             svgRoot.id = 'svgRootInlined';
-            console.log(`[LogoCustomizer] Successfully loaded: ${currentConfig.file}`);
+            console.log(`[LogoCustomizer] Successfully loaded: ${currentConfig.name}`);
           }
         } catch (e) {
-          console.error(`[LogoCustomizer] Error loading SVG:`, e);
+          console.error(`[LogoCustomizer] Error loading SVG from: ${currentConfig.file}`);
+          console.error(`[LogoCustomizer] Error details:`, e);
+
           // Fallback UI
           els.svgContainer.innerHTML = `<svg id="svgRootInlined" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
             <rect id="SquareBehindTD" fill="#eedc29" width="800" height="800" x="113" y="117"/>
