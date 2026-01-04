@@ -854,20 +854,67 @@
         },
         tasty: {
           name: "Tasty Pinch",
-          file: "Tasty Pinch SVG.svg",
+          file: "Tasty Pinch.svg",
           controls: [
             {
-              id: "brand",
-              selector: "#path1",
-              label: "Brand & Spoon",
-              desc: "Main brand text and spoon graphic",
-              tooltip: "Change the brand text and spoon color",
+              id: "red",
+              selector: "#path2",
+              label: "Brand Red",
+              desc: "Main brand icon and text",
+              tooltip: "Change the red brand color",
               showStroke: true,
               showStrokeWidth: true,
-              defaults: { fill: "#802328", stroke: "#802328", strokeWidth: "0" }
+              defaults: { fill: "#761e1a", stroke: "#761e1a", strokeWidth: "0" }
+            },
+            {
+              id: "black",
+              selector: "#path1",
+              label: "Text Black",
+              desc: "Secondary text color",
+              tooltip: "Change the black text color",
+              showStroke: true,
+              showStrokeWidth: true,
+              defaults: { fill: "#000000", stroke: "#000000", strokeWidth: "0" }
             }
           ],
           fileName: "Tasty-Pinch-custom"
+        },
+        teepi: {
+          name: "Teepi Gurthu",
+          file: "Teepi Gurthu.svg",
+          controls: [
+            {
+              id: "gold",
+              selector: "#path9",
+              label: "Gold Top",
+              desc: "Upper gold shape",
+              tooltip: "Change the gold part color",
+              showStroke: true,
+              showStrokeWidth: true,
+              defaults: { fill: "#f0bc54", stroke: "#f0bc54", strokeWidth: "0" }
+            },
+            {
+              id: "orange",
+              selector: "path[style*='fill:#ee8214']",
+              label: "Orange Base",
+              desc: "Lower orange shape",
+              tooltip: "Change the orange part color",
+              showStroke: true,
+              showStrokeWidth: true,
+              defaults: { fill: "#ee8214", stroke: "#ee8214", strokeWidth: "0" }
+            },
+            {
+              id: "dark",
+              selector: "#path7",
+              label: "Dark Detail",
+              desc: "Dark grey detail elements",
+              tooltip: "Change the dark detail color",
+              showStroke: true,
+              showStrokeWidth: true,
+              defaults: { fill: "#231f20", stroke: "#231f20", strokeWidth: "0" }
+            }
+          ],
+          fileName: "Teepi-Gurthu-custom"
         }
       };
 
