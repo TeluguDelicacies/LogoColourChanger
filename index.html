@@ -3,635 +3,775 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>TD Logo Customizer — Full Rebuild</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>TD Logo Customizer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Material-like compact styling */
     :root {
-      --bg: #f4f6f8;
-      --card: #ffffff;
-      --muted: #6b7280;
-      --accent: #0165c3;
-      --accent-contrast: #fff;
-      --radius: 12px;
-      --input-bg: #fbfcfd;
-      --gap: 14px;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-border: rgba(148, 163, 184, 0.1);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent: #3b82f6;
+      --accent-glow: rgba(59, 130, 246, 0.3);
+      --success: #10b981;
+      --danger: #ef4444;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --transition: all 0.2s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     html,
     body {
-      height: 100%;
       margin: 0;
-      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
-      color: #111;
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
     }
 
-    .page {
-      min-height: 100%;
+    /* ========== MOBILE LAYOUT (Default) ========== */
+    .app {
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .header {
+      text-align: center;
+      padding: 8px;
+    }
+
+    .header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 4px 0;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    /* Card base */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    /* Logo Selector */
+    .logo-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-selector label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .logo-select {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 16px;
+    }
+
+    .logo-select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Preview Section */
+    .preview-section {
+      display: flex;
+      flex-direction: column;
+      order: 1;
+      /* Mobile: preview first */
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .preview-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .preview-container {
+      background: #ffffff;
+      border-radius: var(--radius-sm);
+      aspect-ratio: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 28px;
-      box-sizing: border-box;
+      overflow: hidden;
     }
 
-    .card {
-      width: min(1100px, 96%);
+    #svgContainer {
+      width: 90%;
+      height: 90%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #svgContainer svg {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Controls Section */
+    .controls-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      order: 2;
+    }
+
+    .control-card {
       background: var(--card);
       border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: 0 8px 30px rgba(16, 24, 40, 0.08);
-      display: flex;
-      gap: 24px;
-      align-items: flex-start;
-      justify-content: space-between;
-    }
-
-    /* Layout: left controls, right preview */
-    .left {
-      width: 560px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .right {
-      width: 420px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-
-    h1 {
-      margin: 0 0 2px 0;
-      font-size: 20px;
-      letter-spacing: -0.2px;
-    }
-
-    .desc {
-      margin: 0 0 10px 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .controls {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      align-items: start;
-    }
-
-    .control {
-      background: var(--input-bg);
-      border-radius: 10px;
       padding: 12px;
-      border: 1px solid rgba(15, 23, 42, 0.05);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      min-height: 110px;
-      box-shadow: 0 2px 6px rgba(5, 10, 25, 0.02);
+      border: 1px solid var(--card-border);
     }
 
-    .control .label {
-      font-size: 13px;
-      color: var(--muted);
+    .control-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
+      margin-bottom: 10px;
     }
 
-    .row {
+    .control-label {
+      font-size: 0.813rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .reset-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .color-row {
       display: flex;
       gap: 10px;
       align-items: center;
     }
 
-    input[type="color"] {
-      width: 44px;
-      height: 44px;
+    .color-picker {
+      width: 48px;
+      height: 48px;
       padding: 0;
-      border-radius: 8px;
-      border: 1px solid rgba(0, 0, 0, 0.06);
+      border: 2px solid var(--bg);
+      border-radius: 10px;
       cursor: pointer;
-      flex: 0 0 44px;
+      flex-shrink: 0;
     }
 
-    .hex {
-      font-family: monospace;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #e6eef9;
-      width: 100%;
-      background: #fff;
-      text-align: center;
-      box-shadow: none;
+    .color-picker::-webkit-color-swatch-wrapper {
+      padding: 0;
     }
 
-    input[type="number"] {
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #e6eef9;
-      width: 100%;
-      text-align: center;
-    }
-
-    .small-btn {
-      background: transparent;
-      border: 1px solid rgba(3, 7, 18, 0.06);
-      padding: 6px 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .apply-btn {
-      background: var(--accent);
-      color: var(--accent-contrast);
+    .color-picker::-webkit-color-swatch {
       border: none;
-      padding: 8px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
+      border-radius: 7px;
     }
 
-    .undo-btn {
-      background: #fff;
-      color: var(--accent);
-      border: 1px solid rgba(1, 101, 195, 0.12);
-      padding: 8px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    /* Complement area (bottom of columns) */
-    .comp-title {
-      font-weight: 700;
-      font-size: 13px;
-      color: #23314f;
-      margin-bottom: 6px;
-    }
-
-    .comp-row {
+    .hex-input-group {
+      flex: 1;
       display: flex;
-      gap: 8px;
-      align-items: center;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    /* copy icon button inside input group */
-    .input-wrap {
+    .hex-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .hex-input-wrap {
       display: flex;
-      width: 100%;
       align-items: center;
-      gap: 8px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      overflow: hidden;
+    }
+
+    .hex-input-wrap:focus-within {
+      border-color: var(--accent);
+    }
+
+    .hex-prefix {
+      padding: 0 6px 0 10px;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-family: monospace;
+      font-size: 0.875rem;
+    }
+
+    .hex-input {
+      flex: 1;
+      padding: 10px 8px 10px 0;
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: monospace;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      min-width: 0;
+    }
+
+    .hex-input:focus {
+      outline: none;
     }
 
     .copy-btn {
+      padding: 10px;
       background: transparent;
-      border: 1px solid rgba(3, 7, 18, 0.06);
-      padding: 8px;
-      border-radius: 8px;
+      border: none;
       cursor: pointer;
-      flex: 0 0 auto;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      color: var(--text-muted);
     }
 
-    /* preview area and toolbar */
-    #preview-wrap {
-      background: linear-gradient(180deg, #fff, #fbfeff);
-      padding: 12px;
-      border-radius: 14px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: 0 6px 18px rgba(12, 22, 40, 0.04);
-      width: 100%;
+    .copy-btn.copied {
+      color: var(--success);
     }
 
-    #preview-toolbar {
-      width: 100%;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      justify-content: flex-end;
+    .stroke-section {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .stroke-section-title {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
       margin-bottom: 8px;
     }
 
-    #preview {
-      width: 360px;
-      height: 360px;
+    .stroke-row {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-      background: #fff;
-    }
-
-    #preview svg {
-      max-width: 100%;
-      max-height: 100%;
-      display: block;
-    }
-
-    /* actions and filename */
-    .actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 6px;
+      gap: 8px;
       align-items: center;
     }
 
-    .btn {
-      background: var(--accent);
-      color: var(--accent-contrast);
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: none;
+    .stroke-color-picker {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 2px solid var(--bg);
+      border-radius: 8px;
       cursor: pointer;
-      font-weight: 600;
-      min-width: 140px;
+    }
+
+    .stroke-color-picker::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    .stroke-color-picker::-webkit-color-swatch {
+      border: none;
+      border-radius: 5px;
+    }
+
+    .stroke-width-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+    }
+
+    .stroke-width-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .stroke-width-input {
+      width: 50px;
+      padding: 6px;
+      font-size: 0.813rem;
+      font-weight: 500;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
       text-align: center;
     }
 
-    .btn.secondary {
-      background: #fff;
-      color: var(--accent);
-      border: 1px solid rgba(1, 101, 195, 0.12);
+    .stroke-width-input:focus {
+      outline: none;
     }
 
-    .filename {
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid #e6eef9;
+    /* Download Section */
+    .download-section {
+      order: 3;
+    }
+
+    .download-section label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .filename-input {
       width: 100%;
-      box-sizing: border-box;
+      padding: 10px 12px;
+      font-size: 0.875rem;
+      background: var(--bg);
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      margin-bottom: 10px;
     }
 
-    /* responsive */
-    @media (max-width:980px) {
-      .card {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .left,
-      .right {
-        width: 100%;
-      }
-
-      .controls {
-        grid-template-columns: 1fr;
-      }
-
-      #preview {
-        width: 300px;
-        height: 300px;
-      }
+    .filename-input:focus {
+      outline: none;
+      border-color: var(--accent);
     }
 
-    /* tiny helpers */
-    .muted {
-      color: var(--muted);
-      font-size: 12px;
+    .download-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .download-btn {
+      padding: 12px 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .download-btn.primary {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      color: white;
+      padding: 14px;
+      font-size: 0.875rem;
+    }
+
+    .download-btn.secondary {
+      background: var(--bg);
+      color: var(--text-secondary);
+      border: 1px solid var(--card-border);
+    }
+
+    .download-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Action Buttons at Bottom */
+    .action-buttons {
+      order: 4;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      padding: 12px 0;
+    }
+
+    .action-btn {
+      padding: 12px 20px;
+      font-size: 0.813rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .action-btn.random {
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      color: white;
+    }
+
+    .action-btn.reset {
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--success);
+      color: white;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.75rem;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* ========== DESKTOP LAYOUT ========== */
+    body.is-desktop {
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    body.is-desktop .app {
+      height: 100%;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    body.is-desktop .header {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      text-align: left;
+      padding: 4px 0;
+    }
+
+    body.is-desktop .header h1 {
+      font-size: 1.4rem;
+    }
+
+    body.is-desktop .header p {
+      font-size: 0.7rem;
+    }
+
+    body.is-desktop .logo-selector-wrap {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+    body.is-desktop .preview-section {
+      grid-column: 2;
+      grid-row: 3;
+      order: unset;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+
+    body.is-desktop .preview-container {
+      flex: 1;
+      aspect-ratio: unset;
+      min-height: 200px;
+    }
+
+    body.is-desktop .controls-section {
+      grid-column: 1;
+      grid-row: 3;
+      order: unset;
+      overflow-y: auto;
+      max-height: 100%;
+      padding-right: 8px;
+    }
+
+    body.is-desktop .controls-section::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    body.is-desktop .controls-section::-webkit-scrollbar-thumb {
+      background: var(--card-border);
+      border-radius: 2px;
+    }
+
+    body.is-desktop .download-section {
+      grid-column: 1;
+      grid-row: 4;
+      order: unset;
+    }
+
+    body.is-desktop .action-buttons {
+      grid-column: 2;
+      grid-row: 4;
+      order: unset;
+      justify-content: flex-end;
+      padding: 0;
+      align-items: center;
     }
   </style>
 </head>
 
 <body>
-  <div class="page">
-    <div class="card" role="main" aria-label="TD Logo Customizer">
-      <div class="left">
-        <h1>TD Logo Customizer</h1>
-        <p class="desc">Edit fills, strokes and stroke widths. Complementary fill buttons compute hue+180° and let you
-          apply or undo fill changes instantly. Changes persist on refresh.</p>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <h1>🎨 Logo Customizer</h1>
+      <p>Customize your brand colors easily</p>
+    </header>
 
-        <div class="controls" role="group" aria-label="controls">
+    <!-- Logo Selector -->
+    <div class="logo-selector-wrap card">
+      <div class="logo-selector">
+        <label for="logoSelect">Logo</label>
+        <select id="logoSelect" class="logo-select">
+          <option value="td">Telugu Delicacies</option>
+          <option value="akshaya">Akshaya</option>
+          <option value="tasty">Tasty Pinch</option>
+        </select>
+      </div>
+    </div>
 
-          <!-- Logo Selector -->
-          <div class="control" style="grid-column: 1 / -1; min-height: auto; padding-bottom: 20px;">
-            <div class="label"><span>Select Logo</span></div>
-            <select id="logoSelect" class="filename" style="margin-top: 5px; cursor: pointer;">
-              <option value="td">Telugu Delicacies</option>
-              <option value="akshaya">Akshaya</option>
-              <option value="tasty">Tasty Pinch</option>
-            </select>
-          </div>
+    <!-- Preview Section -->
+    <section class="preview-section card">
+      <div class="preview-header">
+        <span class="preview-title">👁️ Preview</span>
+      </div>
+      <div class="preview-container" id="preview">
+        <div id="svgContainer"></div>
+      </div>
+    </section>
 
-          <!-- Left column: Path controls -->
-          <div class="control" id="ctl-path">
-            <div class="label"><span id="lbl-path">Logo Path</span>
-              <button class="small-btn" data-reset="pathFill" title="Reset Path Fill">↺</button>
-            </div>
+    <!-- Controls Section -->
+    <section class="controls-section" id="controlsSection"></section>
 
-            <div class="row" style="align-items:center;">
-              <input type="color" id="pathFillPicker" aria-label="Path fill color">
-              <div style="flex:1">
-                <div class="input-wrap">
-                  <input id="pathFillHex" class="hex" type="text" aria-label="Path fill hex" />
-                  <button class="copy-btn" data-copy-for="pathFillHex" title="Copy hex">
-                    <!-- new copy icon -->
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-                      <path d="M19 21H9a2 2 0 0 1-2-2V7" stroke="#334155" stroke-width="1.6" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                      <rect x="7" y="3" width="13" height="13" rx="2" stroke="#334155" stroke-width="1.6"
-                        stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                  </button>
-                </div>
-                <div style="margin-top:8px; display:flex; gap:8px;">
-                  <button id="applyPathToRect" class="apply-btn"
-                    title="Set rectangle fill to complement of current path fill">Apply → Rect</button>
-                  <div style="flex:1"></div>
-                </div>
-              </div>
-            </div>
+    <!-- Download Section -->
+    <section class="download-section card">
+      <label for="fileName">File Name</label>
+      <input type="text" id="fileName" class="filename-input" placeholder="my-logo">
 
-            <div style="height:6px"></div>
-            <div class="label"><span>Path Stroke</span>
-              <button class="small-btn" data-reset="pathStroke" title="Reset Path Stroke">↺</button>
-            </div>
-            <div class="row">
-              <input type="color" id="pathStrokePicker" aria-label="Path stroke color">
-              <div style="flex:1">
-                <div class="input-wrap">
-                  <input id="pathStrokeHex" class="hex" type="text" aria-label="Path stroke hex" />
-                  <button class="copy-btn" data-copy-for="pathStrokeHex" title="Copy hex">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-                      <path d="M19 21H9a2 2 0 0 1-2-2V7" stroke="#334155" stroke-width="1.6" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                      <rect x="7" y="3" width="13" height="13" rx="2" stroke="#334155" stroke-width="1.6"
-                        stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
+      <div class="download-buttons">
+        <button id="exportPNG" class="download-btn primary">
+          <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Save PNG
+        </button>
+        <button id="exportPNGHD" class="download-btn secondary">
+          <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          HD PNG
+        </button>
+        <button id="exportSVG" class="download-btn secondary">
+          <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
+          SVG
+        </button>
+      </div>
+    </section>
 
-            <div style="height:6px"></div>
-            <div class="label"><span>Path Stroke Width</span>
-              <button class="small-btn" data-reset="pathStrokeWidth" title="Reset Path Stroke Width">↺</button>
-            </div>
-            <div class="row">
-              <input id="pathStrokeWidth" type="number" min="0" step="0.5" />
-            </div>
+    <!-- Action Buttons (Random & Reset) at Bottom -->
+    <section class="action-buttons">
+      <button id="randomBtn" class="action-btn random">🎲 Random Colors</button>
+      <button id="resetAllBtn" class="action-btn reset">↺ Reset All</button>
+    </section>
+  </div>
 
-            <!-- Complementary apply/undo for Path Fill (bottom of left column) -->
-            <div style="margin-top:10px;">
-              <div class="comp-title">Complementary</div>
-              <div class="comp-row">
-                <div style="display:flex; gap:8px;">
-                  <button id="applyPathComplement" class="apply-btn">Apply</button>
-                  <button id="undoPathComplement" class="undo-btn">Undo</button>
-                </div>
-              </div>
-              <div class="muted" style="margin-top:6px;">(Applies only to Path fill)</div>
-            </div>
-          </div>
-
-          <!-- Right column: Rectangle controls -->
-          <div class="control" id="ctl-rect">
-            <div class="label"><span id="lbl-rect">Background Square</span>
-              <button class="small-btn" data-reset="rectFill" title="Reset Rectangle Fill">↺</button>
-            </div>
-
-            <div class="row" style="align-items:center;">
-              <input type="color" id="rectFillPicker" aria-label="Rectangle fill color">
-              <div style="flex:1">
-                <div class="input-wrap">
-                  <input id="rectFillHex" class="hex" type="text" aria-label="Rectangle fill hex" />
-                  <button class="copy-btn" data-copy-for="rectFillHex" title="Copy hex">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-                      <path d="M19 21H9a2 2 0 0 1-2-2V7" stroke="#334155" stroke-width="1.6" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                      <rect x="7" y="3" width="13" height="13" rx="2" stroke="#334155" stroke-width="1.6"
-                        stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                  </button>
-                </div>
-                <div style="margin-top:8px; display:flex; gap:8px;">
-                  <button id="applyRectToPath" class="apply-btn"
-                    title="Set path fill to complement of current rect fill">Apply → Path</button>
-                  <div style="flex:1"></div>
-                </div>
-              </div>
-            </div>
-
-            <div style="height:6px"></div>
-            <div class="label"><span>Rectangle Stroke</span>
-              <button class="small-btn" data-reset="rectStroke" title="Reset Rectangle Stroke">↺</button>
-            </div>
-            <div class="row">
-              <input type="color" id="rectStrokePicker" aria-label="Rectangle stroke color">
-              <div style="flex:1">
-                <div class="input-wrap">
-                  <input id="rectStrokeHex" class="hex" type="text" aria-label="Rectangle stroke hex" />
-                  <button class="copy-btn" data-copy-for="rectStrokeHex" title="Copy hex">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-                      <path d="M19 21H9a2 2 0 0 1-2-2V7" stroke="#334155" stroke-width="1.6" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                      <rect x="7" y="3" width="13" height="13" rx="2" stroke="#334155" stroke-width="1.6"
-                        stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div style="height:6px"></div>
-            <div class="label"><span>Rectangle Stroke Width</span>
-              <button class="small-btn" data-reset="rectStrokeWidth" title="Reset Rectangle Stroke Width">↺</button>
-            </div>
-            <div class="row">
-              <input id="rectStrokeWidth" type="number" min="0" step="0.5" />
-            </div>
-
-            <!-- Complementary apply/undo for Rect Fill (bottom of right column) -->
-            <div style="margin-top:10px;">
-              <div class="comp-title">Complementary</div>
-              <div class="comp-row">
-                <div style="display:flex; gap:8px;">
-                  <button id="applyRectComplement" class="apply-btn">Apply</button>
-                  <button id="undoRectComplement" class="undo-btn">Undo</button>
-                </div>
-              </div>
-              <div class="muted" style="margin-top:6px;">(Applies only to Rectangle fill)</div>
-            </div>
-          </div>
-
-        </div> <!-- controls -->
-
-        <div style="display:flex; gap:10px; margin-top:6px; align-items:center;">
-          <button id="resetAllBtn" class="btn secondary">Reset All</button>
-          <div class="muted">Defaults will be loaded on open</div>
-        </div>
-      </div> <!-- left -->
-
-      <!-- Right: preview, random/reset toolbar and exports -->
-      <div class="right">
-        <div id="preview-wrap" aria-live="polite">
-          <!-- preview toolbar (Random + Reset) -->
-          <div id="preview-toolbar">
-            <div style="flex:1"></div>
-            <button id="randomBtn" class="btn" title="Randomize both fills (complementary hue)">Random</button>
-            <button id="resetPreviewBtn" class="btn secondary"
-              title="Reset Path & Rectangle fills to defaults">Reset</button>
-          </div>
-
-          <div id="preview" title="Preview">
-            <!-- SVG will be loaded here (from external logo.svg or fallback) -->
-            <div id="svgContainer"
-              style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"></div>
-          </div>
-
-          <div style="width:100%; margin-top:10px;">
-            <input id="fileName" class="filename" type="text" placeholder="filename (e.g. TD-custom)"
-              title="File name for download">
-          </div>
-
-          <div class="actions" style="width:100%; justify-content:space-between;">
-            <div style="display:flex; gap:8px;">
-              <button id="export1x" class="btn">Download PNG</button>
-              <button id="export2x" class="btn">Download PNG (2×)</button>
-              <button id="exportSVG" class="btn">Download SVG</button>
-            </div>
-          </div>
-        </div>
-      </div> <!-- right -->
-
-    </div> <!-- card -->
-  </div> <!-- page -->
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
 
   <script>
     (() => {
-      /* ---------- Configuration ---------- */
+      /* ========== RESPONSIVE DETECTION ========== */
+      // Use 768px width (tablet+) and 500px height (minimal)
+      const DESKTOP_MIN_WIDTH = 900;
+      const DESKTOP_MIN_HEIGHT = 500; // Lowered from 600
+
+      function checkDesktop() {
+        const isDesktop = window.innerWidth >= DESKTOP_MIN_WIDTH &&
+          window.innerHeight >= DESKTOP_MIN_HEIGHT;
+
+        document.body.classList.toggle('is-desktop', isDesktop);
+
+        // Only log once per mode change
+        const currentMode = isDesktop ? 'DESKTOP' : 'MOBILE';
+        if (checkDesktop.lastMode !== currentMode) {
+          console.log(`Layout: ${currentMode} (${window.innerWidth}×${window.innerHeight})`);
+          checkDesktop.lastMode = currentMode;
+        }
+      }
+      checkDesktop.lastMode = null;
+
+      checkDesktop();
+      window.addEventListener('resize', checkDesktop);
+
+      /* ========== Configuration ========== */
       const LOGO_CONFIG = {
         td: {
           name: "Telugu Delicacies",
           file: "logo.svg",
-          el1: { selector: "#path1, #TDPath", label: "Logo Path" },
-          el2: { selector: "#rect1, #SquareBehindTD", label: "Background Square" },
-          defaults: {
-            pathFill: "#FFFFFF", pathStroke: "#000000", pathStrokeWidth: "2",
-            rectFill: "#EEDC29", rectStroke: "#EEDC29", rectStrokeWidth: "0",
-            fileName: "TD-custom"
-          }
+          controls: [
+            {
+              id: "path",
+              selector: "#path1, #TDPath",
+              label: "Logo Path Fill",
+              showStroke: true,
+              showStrokeWidth: true,
+              defaults: { fill: "#FFFFFF", stroke: "#000000", strokeWidth: "2" }
+            },
+            {
+              id: "rect",
+              selector: "#rect1, #SquareBehindTD",
+              label: "Background Fill",
+              showStroke: true,
+              showStrokeWidth: true,
+              defaults: { fill: "#EEDC29", stroke: "#EEDC29", strokeWidth: "0" }
+            }
+          ],
+          fileName: "TD-custom"
         },
         akshaya: {
           name: "Akshaya",
           file: "Akshaya.svg",
-          el1: { selector: "#path3", label: "Green Details" },
-          el2: { selector: "#path4", label: "Yellow Details" },
-          defaults: {
-            pathFill: "#18aa3e", pathStroke: "#18aa3e", pathStrokeWidth: "0",
-            rectFill: "#fdf311", rectStroke: "#fdf311", rectStrokeWidth: "0",
-            fileName: "Akshaya-custom"
-          }
+          controls: [
+            {
+              id: "green",
+              selector: "#path3",
+              label: "Green Details",
+              showStroke: true,
+              showStrokeWidth: true,
+              defaults: { fill: "#18aa3e", stroke: "#18aa3e", strokeWidth: "0" }
+            },
+            {
+              id: "yellow",
+              selector: "#path4",
+              label: "Yellow Details",
+              showStroke: true,
+              showStrokeWidth: true,
+              defaults: { fill: "#fdf311", stroke: "#fdf311", strokeWidth: "0" }
+            }
+          ],
+          fileName: "Akshaya-custom"
         },
         tasty: {
           name: "Tasty Pinch",
           file: "Tasty Pinch SVG.svg",
-          el1: { selector: "#path3, #path4", label: "Spoon & Pinch" },
-          el2: { selector: "#path1", label: "Brand Text" },
-          defaults: {
-            pathFill: "#802328", pathStroke: "#802328", pathStrokeWidth: "0",
-            rectFill: "#802328", rectStroke: "#802328", rectStrokeWidth: "0",
-            fileName: "Tasty-Pinch-custom"
-          }
+          controls: [
+            {
+              id: "brand",
+              selector: "#path1",
+              label: "Brand Fill",
+              showStroke: true,
+              showStrokeWidth: true,
+              defaults: { fill: "#802328", stroke: "#802328", strokeWidth: "0" }
+            }
+          ],
+          fileName: "Tasty-Pinch-custom"
         }
       };
 
-      const STORAGE_KEY = 'tdLogoCustomizer_v2';
+      const STORAGE_KEY = 'tdLogoCustomizer_v6';
       let currentLogoKey = 'td';
-      let DEFAULTS = LOGO_CONFIG[currentLogoKey].defaults;
-
-      /* ---------- Elements ---------- */
-      const svgContainer = document.getElementById('svgContainer');
-      const svgRootId = 'svgRootInlined';
+      let currentConfig = LOGO_CONFIG[currentLogoKey];
       let svgRoot = null;
+      let controlState = {};
 
-      const controls = {
-        pathFillPicker: document.getElementById('pathFillPicker'),
-        pathFillHex: document.getElementById('pathFillHex'),
-        pathStrokePicker: document.getElementById('pathStrokePicker'),
-        pathStrokeHex: document.getElementById('pathStrokeHex'),
-        pathStrokeWidth: document.getElementById('pathStrokeWidth'),
-
-        rectFillPicker: document.getElementById('rectFillPicker'),
-        rectFillHex: document.getElementById('rectFillHex'),
-        rectStrokePicker: document.getElementById('rectStrokePicker'),
-        rectStrokeHex: document.getElementById('rectStrokeHex'),
-        rectStrokeWidth: document.getElementById('rectStrokeWidth'),
-
-        applyPathToRectBtn: document.getElementById('applyPathToRect'),
-        applyRectToPathBtn: document.getElementById('applyRectToPath'),
-
-        applyPathComplement: document.getElementById('applyPathComplement'),
-        undoPathComplement: document.getElementById('undoPathComplement'),
-        applyRectComplement: document.getElementById('applyRectComplement'),
-        undoRectComplement: document.getElementById('undoRectComplement'),
-
-        copyButtons: document.querySelectorAll('.copy-btn'),
-
-        resetAllBtn: document.getElementById('resetAllBtn'),
-        randomBtn: document.getElementById('randomBtn'),
-        resetPreviewBtn: document.getElementById('resetPreviewBtn'),
-
-        export1xBtn: document.getElementById('export1x'),
-        export2xBtn: document.getElementById('export2x'),
-        exportSVGBtn: document.getElementById('exportSVG'),
+      /* ========== DOM Elements ========== */
+      const els = {
+        svgContainer: document.getElementById('svgContainer'),
+        controlsSection: document.getElementById('controlsSection'),
+        logoSelect: document.getElementById('logoSelect'),
         fileNameInput: document.getElementById('fileName'),
-        logoSelect: document.getElementById('logoSelect')
+        randomBtn: document.getElementById('randomBtn'),
+        resetAllBtn: document.getElementById('resetAllBtn'),
+        exportPNG: document.getElementById('exportPNG'),
+        exportPNGHD: document.getElementById('exportPNGHD'),
+        exportSVG: document.getElementById('exportSVG'),
+        toast: document.getElementById('toast')
       };
 
-      let pathEl = null;
-      let rectEl = null;
-
-      // Undo stacks for fills only
-      const undoStack = {
-        pathFill: [],
-        rectFill: []
-      };
-
-      // Keep last random hue to avoid immediate repeat
-      let lastRandomHue = null;
-
-      /* ---------- Color conversions & helpers ---------- */
+      /* ========== Color Helpers ========== */
       function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
 
       function hexToRgb(hex) {
         if (!hex) return null;
-        let h = ('' + hex).replace('#', '').trim();
+        let h = String(hex).replace('#', '').trim();
         if (h.length === 3) h = h.split('').map(c => c + c).join('');
         if (h.length !== 6) return null;
         const bigint = parseInt(h, 16);
         return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
       }
+
       function rgbToHex(r, g, b) {
         return '#' + [r, g, b].map(x => ('0' + Math.round(clamp(x, 0, 255)).toString(16)).slice(-2)).join('').toUpperCase();
       }
-      function rgbToHsl(r, g, b) {
-        r /= 255; g /= 255; b /= 255;
-        const max = Math.max(r, g, b), min = Math.min(r, g, b);
-        let h = 0, s = 0, l = (max + min) / 2;
-        if (max !== min) {
-          const d = max - min;
-          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-          switch (max) {
-            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-            case g: h = (b - r) / d + 2; break;
-            case b: h = (r - g) / d + 4; break;
-          }
-          h = h * 60;
-        }
-        return { h: h, s: s, l: l };
-      }
+
       function hslToRgb(h, s, l) {
         h = ((h % 360) + 360) % 360;
         if (s === 0) {
@@ -642,471 +782,458 @@
         const x = c * (1 - Math.abs((h / 60) % 2 - 1));
         const m = l - c / 2;
         let r1 = 0, g1 = 0, b1 = 0;
-        if (h < 60) { r1 = c; g1 = x; b1 = 0; }
-        else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
-        else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
-        else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
-        else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
-        else { r1 = c; g1 = 0; b1 = x; }
-        return { r: Math.round((r1 + m) * 255), g: Math.round((g1 + m) * 255), b: Math.round((b1 + m) * 255) };
+        if (h < 60) { r1 = c; g1 = x; }
+        else if (h < 120) { r1 = x; g1 = c; }
+        else if (h < 180) { g1 = c; b1 = x; }
+        else if (h < 240) { g1 = x; b1 = c; }
+        else if (h < 300) { r1 = x; b1 = c; }
+        else { r1 = c; b1 = x; }
+        return {
+          r: Math.round((r1 + m) * 255),
+          g: Math.round((g1 + m) * 255),
+          b: Math.round((b1 + m) * 255)
+        };
       }
 
-      function normalizeHexInput(h) {
-        if (h === null || h === undefined) return null;
-        let s = ('' + h).trim();
-        if (!s) return null;
-        if (!s.startsWith('#')) s = '#' + s;
-        if (/^#([0-9a-fA-F]{3})$/i.test(s)) s = '#' + s[1] + s[1] + s[2] + s[2] + s[3] + s[3];
-        if (/^#([0-9a-fA-F]{6})$/i.test(s)) return s.toUpperCase();
-        return null;
+      /* ========== Toast ========== */
+      function showToast(message) {
+        els.toast.textContent = message;
+        els.toast.classList.add('show');
+        setTimeout(() => els.toast.classList.remove('show'), 2000);
       }
 
-      // Complement by hue shift +180°
-      function getComplementHex(hex) {
-        const rgb = hexToRgb(hex);
-        if (!rgb) return '#000000';
-        const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-        const newH = (hsl.h + 180) % 360;
-        const rgb2 = hslToRgb(newH, hsl.s, hsl.l);
-        return rgbToHex(rgb2.r, rgb2.g, rgb2.b);
-      }
-
-      /* ---------- SVG loading ---------- */
+      /* ========== SVG Loading ========== */
       async function loadSVG() {
-        const config = LOGO_CONFIG[currentLogoKey];
         try {
-          const resp = await fetch(config.file, { cache: "no-cache" });
-          if (!resp.ok) throw new Error('not found');
-          const txt = await resp.text();
-          svgContainer.innerHTML = txt;
-          svgRoot = svgContainer.querySelector('svg');
-          if (svgRoot) svgRoot.id = svgRootId;
-          findSvgElements();
-          applyStyles();
-          return;
+          const response = await fetch(currentConfig.file, { cache: "no-cache" });
+          if (!response.ok) throw new Error('File not found');
+          const text = await response.text();
+          els.svgContainer.innerHTML = text;
+          svgRoot = els.svgContainer.querySelector('svg');
+          if (svgRoot) svgRoot.id = 'svgRootInlined';
         } catch (e) {
-          // fallback inline svg
-          svgContainer.innerHTML = `<?xml version="1.0" encoding="utf-8"?> 
-      <svg id="${svgRootId}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
-        <rect id="SquareBehindTD" style="fill:#eedc29;fill-opacity:1;stroke-width:1.6;fill-rule:nonzero" width="800" height="800" x="113.09484" y="116.78271"/>
-        <path id="TDPath" style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:2" d="M419.65674,940.20232 c -6.62019,-2.11841 -12.35359,-8.61353 -13.81427,-15.64959 -1.97307,-9.50419 1.31056,-43.95566 6.99035,-73.34206 16.12051,-83.40515 51.53045,-192.53008 91.18284,-281.00359 9.43351,-21.04831 28.66618,-59.27576 37.73336,-75 18.27819,-31.69791 38.90638,-57.369 50.22838,-62.50754 11.07657,-5.02715 27.61651,0.65766 34.53819,11.87082 4.21446,6.82746 3.36234,9.6221 -6.80588,22.32079 -22.70035,28.34959 -50.90181,74.56806 -73.10896,119.81593 -24.88742,50.70901 -39.08543,85.89396 -59.11639,146.5 -11.51081,34.8273 -17.16552,54.2999 -22.68929,78.13299 -4.37888,18.89333 -16.1346,76.5901 -15.69483,77.02987 0.39446,0.39447 47.64256,-26.83694 69.67047,-40.15452 85.97817,-51.9805 158.80761,-110.63677 220.39982,-177.50834 29.94237,-32.50887 50.61951,-58.56139 71.82727,-90.5 36.18825,-54.49903 57.58561,-104.60108 66.41025,-155.5 2.57499,-14.85209 2.60049,-50.72883 0.045,-63.374 -2.63833,-13.05531 -6.21213,-23.57195 -9.91201,-29.16819 -5.09311,-7.70353 -17.58317,-19.57952 -24.38806,-23.18901 -7.91334,-4.19743 -27.14723,-9.71435 -45.38231,-13.01715 -13.31869,-2.41233 -16.78115,-2.6314 -42.5,-2.68897 -30.2576,-0.0677 -38.12952,0.67199 -69.90004,6.56851 -65.07557,12.07784 -112.51325,27.60471 -176.39207,57.73504 -36.00208,16.98144 -84.75861,44.79973 -121.22298,69.16438 l -11.51508,7.69412 -2.28742,23.88763 c -3.59292,37.52095 -4.11234,45.49943 -5.22476,80.25334 -2.06154,64.40626 0.7629,122.8963 9.15129,189.50973 3.52703,28.00867 3.3967,29.84537 -2.58794,36.46964 -4.90005,5.42378 -11.69156,8.50705 -19.789,8.98401 -10.39632,0.61236 -17.60288,-3.02228 -20.93701,-10.55964 -3.21089,-7.25874 -7.25073,-47.4206 -9.98542,-99.26944 -2.18543,-41.43506 -1.05795,-163.61877 1.82576,-197.85658 l 0.61962,-7.35658 -2.78098,1.82217 c -3.25453,2.13246 -11.74897,2.35796 -15.52594,0.41216 -11.53072,-5.94032 -13.89616,-18.66803 -5.02188,-27.02117 3.7842,-3.56197 18.70987,-12.83055 22.08158,-13.71227 1.47328,-0.38527 1.96154,-1.74861 2.37672,-6.63631 4.23367,-49.84118 9.19295,-82.4562 20.09897,-132.18233 3.5911,-16.37368 13.43906,-56.85728 16.10832,-66.21909 0.3883,-1.36186 0.20582,-2.25 -0.46229,-2.25 -2.88939,0 -89.83643,24.92447 -158.62945,45.47315 -64.69264,19.32388 -82.51558,24.43018 -87.79773,25.15418 -13.79249,1.89047 -28.312848,-11.97064 -24.804998,-23.67881 1.524129,-5.08707 5.061649,-10.02041 8.715448,-12.15435 6.87817,-4.01704 101.83508,-32.45079 175.88732,-52.66741 111.70466,-30.49592 228.23381,-59.47148 289.86473,-72.07633 85.99528,-17.58787 132.81865,-22.82455 193.63527,-21.65595 45.58866,0.876 68.50192,2.64756 74.82232,5.78498 13.24192,6.57322 11.94224,23.3204 -2.32232,29.92468 -3.6433,1.68679 -7.04434,1.85389 -38.13907,1.8739 -18.77649,0.0121 -42.17649,0.47764 -52,1.03458 -83.19633,4.71682 -173.96105,19.58285 -294.73343,48.27336 l -17.8725,4.24577 -1.79191,5.98412 c -22.51257,75.18142 -27.31339,92.40962 -33.39139,119.82801 -5.67642,25.60685 -7.87844,36.82658 -10.53072,53.65612 -1.17015,7.425 -2.29094,14.2875 -2.49065,15.25 -0.1997,0.9625 -0.2429,1.75 -0.096,1.75 0.1469,0 4.94227,-3.06272 10.65638,-6.80604 53.00801,-34.72566 117.1805,-68.20712 172.88929,-90.20354 31.39645,-12.39678 76.9532,-25.80927 112,-32.97424 36.74082,-7.51129 91.56038,-10.07301 120,-5.6076 13.93029,2.18725 37.36553,8.3209 45.45469,11.89675 27.22265,12.03391 48.77301,30.46718 66.28182,56.69467 9.99945,14.97877 16.89318,31.97689 21.2918,52.5 2.71345,12.66042 3.84683,49.32613 2.06148,66.69064 -4.51344,43.89842 -18.93917,83.44636 -46.33623,127.0301 -45.68425,72.67535 -117.23185,148.78668 -206.75356,219.94151 -64.4352,51.21524 -153.41761,109.46575 -217,142.05458 -19.70369,10.09903 -33.4404,13.37388 -43.11397,10.27841 z"/>
-      </svg>`;
-          svgRoot = svgContainer.querySelector('svg');
-          if (svgRoot) svgRoot.id = svgRootId;
-          findSvgElements();
-          applyStyles();
-          return;
+          els.svgContainer.innerHTML = `<?xml version="1.0"?>
+            <svg id="svgRootInlined" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+              <rect id="SquareBehindTD" fill="#eedc29" width="800" height="800" x="113" y="117"/>
+              <path id="TDPath" fill="#ffffff" stroke="#000000" stroke-width="2" d="M420,940c-6.6-2.1-12.4-8.6-13.8-15.6-2-9.5,1.3-44,7-73.3,16.1-83.4,51.5-192.5,91.2-281,9.4-21,28.7-59.3,37.7-75,18.3-31.7,38.9-57.4,50.2-62.5,11.1-5,27.6,0.7,34.5,11.9,4.2,6.8,3.4,9.6-6.8,22.3-22.7,28.3-50.9,74.6-73.1,119.8-24.9,50.7-39.1,85.9-59.1,146.5-11.5,34.8-17.2,54.3-22.7,78.1-4.4,18.9-16.1,76.6-15.7,77,0.4,0.4,47.6-26.8,69.7-40.2,86-52,158.8-110.6,220.4-177.5,29.9-32.5,50.6-58.6,71.8-90.5,36.2-54.5,57.6-104.6,66.4-155.5,2.6-14.9,2.6-50.7,0-63.4-2.6-13.1-6.2-23.6-9.9-29.2-5.1-7.7-17.6-19.6-24.4-23.2-7.9-4.2-27.1-9.7-45.4-13-13.3-2.4-16.8-2.6-42.5-2.7-30.3-0.1-38.1,0.7-69.9,6.6-65.1,12.1-112.5,27.6-176.4,57.7-36,17-84.8,44.8-121.2,69.2l-11.5,7.7-2.3,23.9c-3.6,37.5-4.1,45.5-5.2,80.3-2.1,64.4,0.8,122.9,9.2,189.5,3.5,28,3.4,29.8-2.6,36.5-4.9,5.4-11.7,8.5-19.8,9-10.4,0.6-17.6-3-20.9-10.6-3.2-7.3-7.3-47.4-10-99.3-2.2-41.4-1.1-163.6,1.8-197.9l0.6-7.4-2.8,1.8c-3.3,2.1-11.7,2.4-15.5,0.4-11.5-5.9-13.9-18.7-5-27,3.8-3.6,18.7-12.8,22.1-13.7,1.5-0.4,2-1.7,2.4-6.6,4.2-49.8,9.2-82.5,20.1-132.2,3.6-16.4,13.4-56.9,16.1-66.2,0.4-1.4,0.2-2.3-0.5-2.3-2.9,0-89.8,24.9-158.6,45.5-64.7,19.3-82.5,24.4-87.8,25.2-13.8,1.9-28.3-12-24.8-23.7,1.5-5.1,5.1-10,8.7-12.2,6.9-4,101.8-32.5,175.9-52.7,111.7-30.5,228.2-59.5,289.9-72.1,86-17.6,132.8-22.8,193.6-21.7,45.6,0.9,68.5,2.6,74.8,5.8,13.2,6.6,11.9,23.3-2.3,29.9-3.6,1.7-7,1.9-38.1,1.9-18.8,0-42.2,0.5-52,1-83.2,4.7-174,19.6-294.7,48.3l-17.9,4.2-1.8,6c-22.5,75.2-27.3,92.4-33.4,119.8-5.7,25.6-7.9,36.8-10.5,53.7-1.2,7.4-2.3,14.3-2.5,15.3-0.2,1-0.2,1.8-0.1,1.8,0.1,0,4.9-3.1,10.7-6.8,53-34.7,117.2-68.2,172.9-90.2,31.4-12.4,77-25.8,112-33,36.7-7.5,91.6-10.1,120-5.6,13.9,2.2,37.4,8.3,45.5,11.9,27.2,12,48.8,30.5,66.3,56.7,10,15,16.9,32,21.3,52.5,2.7,12.7,3.8,49.3,2.1,66.7-4.5,43.9-18.9,83.4-46.3,127-45.7,72.7-117.2,148.8-206.8,219.9-64.4,51.2-153.4,109.5-217,142.1C454.5,934.5,430.2,943.2,420,940z"/>
+            </svg>`;
+          svgRoot = els.svgContainer.querySelector('svg');
         }
       }
 
-      function findSvgElements() {
-        if (!svgRoot) return;
-        const config = LOGO_CONFIG[currentLogoKey];
-        pathEl = svgRoot.querySelector(config.el1.selector) || svgRoot.querySelector('path');
-        rectEl = svgRoot.querySelector(config.el2.selector) || svgRoot.querySelector('rect');
+      /* ========== Generate Control UI ========== */
+      function generateControlsUI() {
+        els.controlsSection.innerHTML = '';
 
-        // Update labels
-        document.getElementById('lbl-path').textContent = config.el1.label + " Fill";
-        document.getElementById('lbl-rect').textContent = config.el2.label + " Fill";
+        currentConfig.controls.forEach(ctrl => {
+          const state = controlState[ctrl.id] || ctrl.defaults;
 
-        if (!pathEl || !rectEl) {
-          console.warn('Could not find elements in the loaded SVG for ' + currentLogoKey);
-        }
+          const card = document.createElement('div');
+          card.className = 'control-card';
+          card.id = `control-${ctrl.id}`;
+
+          let html = `
+            <div class="control-header">
+              <span class="control-label">${ctrl.label}</span>
+              <button class="reset-btn" data-reset="${ctrl.id}" title="Reset">↺</button>
+            </div>
+            <div class="color-row">
+              <input type="color" class="color-picker" id="${ctrl.id}-fill-picker" value="${state.fill}">
+              <div class="hex-input-group">
+                <span class="hex-label">Color</span>
+                <div class="hex-input-wrap">
+                  <span class="hex-prefix">#</span>
+                  <input type="text" class="hex-input" id="${ctrl.id}-fill-hex" 
+                         value="${state.fill.replace('#', '')}" 
+                         maxlength="6" 
+                         placeholder="FFFFFF"
+                         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                  <button class="copy-btn" data-copy="${ctrl.id}-fill" title="Copy">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2"/>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>`;
+
+          if (ctrl.showStroke || ctrl.showStrokeWidth) {
+            html += `<div class="stroke-section">
+              <div class="stroke-section-title">Stroke</div>
+              <div class="stroke-row">`;
+
+            if (ctrl.showStroke) {
+              html += `<input type="color" class="stroke-color-picker" id="${ctrl.id}-stroke-picker" value="${state.stroke}" title="Stroke Color">`;
+            }
+
+            if (ctrl.showStrokeWidth) {
+              html += `
+                <div class="stroke-width-wrap">
+                  <span class="stroke-width-label">Width:</span>
+                  <input type="number" class="stroke-width-input" id="${ctrl.id}-stroke-width" 
+                         value="${state.strokeWidth}" min="0" max="20" step="0.5">
+                </div>`;
+            }
+
+            html += `</div></div>`;
+          }
+
+          card.innerHTML = html;
+          els.controlsSection.appendChild(card);
+        });
+
+        wireControlEvents();
       }
 
-      /* ---------- Apply styles to SVG ---------- */
+      /* ========== Wire Control Events ========== */
+      function wireControlEvents() {
+        currentConfig.controls.forEach(ctrl => {
+          const fillPicker = document.getElementById(`${ctrl.id}-fill-picker`);
+          const fillHex = document.getElementById(`${ctrl.id}-fill-hex`);
+          const strokePicker = document.getElementById(`${ctrl.id}-stroke-picker`);
+          const strokeWidth = document.getElementById(`${ctrl.id}-stroke-width`);
+          const resetBtn = document.querySelector(`[data-reset="${ctrl.id}"]`);
+          const copyBtns = document.querySelectorAll(`[data-copy^="${ctrl.id}"]`);
+
+          if (fillPicker) {
+            fillPicker.addEventListener('input', () => {
+              const hex = fillPicker.value.toUpperCase();
+              fillHex.value = hex.replace('#', '');
+              controlState[ctrl.id].fill = hex;
+              applyStyles();
+              saveSettings();
+            });
+          }
+
+          if (fillHex) {
+            fillHex.addEventListener('input', (e) => {
+              let val = fillHex.value.toUpperCase().replace(/[^0-9A-F]/g, '').slice(0, 6);
+              fillHex.value = val;
+
+              if (val.length === 6 || val.length === 3) {
+                let normalized = val;
+                if (val.length === 3) normalized = val.split('').map(c => c + c).join('');
+                normalized = '#' + normalized;
+                fillPicker.value = normalized;
+                controlState[ctrl.id].fill = normalized;
+                applyStyles();
+                saveSettings();
+              }
+            });
+
+            fillHex.addEventListener('blur', () => {
+              let val = fillHex.value.toUpperCase().replace(/[^0-9A-F]/g, '');
+              if (val.length === 3) val = val.split('').map(c => c + c).join('');
+              if (val.length === 6) {
+                fillHex.value = val;
+              } else {
+                fillHex.value = controlState[ctrl.id].fill.replace('#', '');
+              }
+            });
+          }
+
+          if (strokePicker) {
+            strokePicker.addEventListener('input', () => {
+              controlState[ctrl.id].stroke = strokePicker.value.toUpperCase();
+              applyStyles();
+              saveSettings();
+            });
+          }
+
+          if (strokeWidth) {
+            strokeWidth.addEventListener('input', () => {
+              controlState[ctrl.id].strokeWidth = strokeWidth.value;
+              applyStyles();
+              saveSettings();
+            });
+          }
+
+          if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+              controlState[ctrl.id] = { ...ctrl.defaults };
+              if (fillPicker) fillPicker.value = ctrl.defaults.fill;
+              if (fillHex) fillHex.value = ctrl.defaults.fill.replace('#', '');
+              if (strokePicker) strokePicker.value = ctrl.defaults.stroke;
+              if (strokeWidth) strokeWidth.value = ctrl.defaults.strokeWidth;
+              applyStyles();
+              saveSettings();
+              showToast('Reset ✓');
+            });
+          }
+
+          copyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+              navigator.clipboard.writeText(controlState[ctrl.id].fill).then(() => {
+                btn.classList.add('copied');
+                showToast('Copied ' + controlState[ctrl.id].fill);
+                setTimeout(() => btn.classList.remove('copied'), 1000);
+              }).catch(() => showToast('Copy failed'));
+            });
+          });
+        });
+      }
+
+      /* ========== Apply Styles to SVG ========== */
       function applyStyles() {
         if (!svgRoot) return;
-        findSvgElements();
-        if (pathEl) {
-          const pFill = controls.pathFillPicker.value || DEFAULTS.pathFill;
-          const pStroke = controls.pathStrokePicker.value || DEFAULTS.pathStroke;
-          const pStrokeWidth = String(controls.pathStrokeWidth.value || DEFAULTS.pathStrokeWidth);
-          pathEl.style.setProperty('fill', pFill);
-          pathEl.style.setProperty('stroke', pStroke);
-          pathEl.style.setProperty('stroke-width', pStrokeWidth);
-        }
-        if (rectEl) {
-          const rFill = controls.rectFillPicker.value || DEFAULTS.rectFill;
-          const rStroke = controls.rectStrokePicker.value || DEFAULTS.rectStroke;
-          const rStrokeWidth = String(controls.rectStrokeWidth.value || DEFAULTS.rectStrokeWidth);
-          rectEl.style.setProperty('fill', rFill);
-          rectEl.style.setProperty('stroke', rStroke);
-          rectEl.style.setProperty('stroke-width', rStrokeWidth);
-        }
+
+        currentConfig.controls.forEach(ctrl => {
+          const state = controlState[ctrl.id] || ctrl.defaults;
+          const elements = svgRoot.querySelectorAll(ctrl.selector);
+
+          elements.forEach(el => {
+            el.style.setProperty('fill', state.fill);
+            if (ctrl.showStroke) el.style.setProperty('stroke', state.stroke);
+            if (ctrl.showStrokeWidth) el.style.setProperty('stroke-width', state.strokeWidth);
+          });
+        });
       }
 
-      /* ---------- Persistence ---------- */
+      /* ========== Settings Persistence ========== */
       function saveSettings() {
-        const obj = {
-          currentLogoKey: currentLogoKey,
-          pathFill: normalizeHexInput(controls.pathFillPicker.value) || DEFAULTS.pathFill,
-          pathStroke: normalizeHexInput(controls.pathStrokePicker.value) || DEFAULTS.pathStroke,
-          pathStrokeWidth: String(controls.pathStrokeWidth.value),
-          rectFill: normalizeHexInput(controls.rectFillPicker.value) || DEFAULTS.rectFill,
-          rectStroke: normalizeHexInput(controls.rectStrokePicker.value) || DEFAULTS.rectStroke,
-          rectStrokeWidth: String(controls.rectStrokeWidth.value),
-          fileName: controls.fileNameInput.value ? controls.fileNameInput.value.trim() : DEFAULTS.fileName
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          logoKey: currentLogoKey,
+          controls: controlState,
+          fileName: els.fileNameInput.value.trim() || currentConfig.fileName
+        }));
       }
+
       function loadSettings() {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
           try {
-            const s = JSON.parse(raw);
-            currentLogoKey = s.currentLogoKey || 'td';
-            DEFAULTS = LOGO_CONFIG[currentLogoKey].defaults;
-            controls.logoSelect.value = currentLogoKey;
-
-            controls.pathFillPicker.value = s.pathFill || DEFAULTS.pathFill;
-            controls.pathStrokePicker.value = s.pathStroke || DEFAULTS.pathStroke;
-            controls.pathStrokeWidth.value = s.pathStrokeWidth != null ? s.pathStrokeWidth : DEFAULTS.pathStrokeWidth;
-            controls.rectFillPicker.value = s.rectFill || DEFAULTS.rectFill;
-            controls.rectStrokePicker.value = s.rectStroke || DEFAULTS.rectStroke;
-            controls.rectStrokeWidth.value = s.rectStrokeWidth != null ? s.rectStrokeWidth : DEFAULTS.rectStrokeWidth;
-            controls.fileNameInput.value = s.fileName || DEFAULTS.fileName;
+            const data = JSON.parse(raw);
+            if (data.logoKey && LOGO_CONFIG[data.logoKey]) {
+              currentLogoKey = data.logoKey;
+              currentConfig = LOGO_CONFIG[currentLogoKey];
+              els.logoSelect.value = currentLogoKey;
+            }
+            if (data.controls) controlState = data.controls;
+            if (data.fileName) els.fileNameInput.value = data.fileName;
             return;
           } catch (e) { }
         }
-        controls.pathFillPicker.value = DEFAULTS.pathFill;
-        controls.pathStrokePicker.value = DEFAULTS.pathStroke;
-        controls.pathStrokeWidth.value = DEFAULTS.pathStrokeWidth;
-        controls.rectFillPicker.value = DEFAULTS.rectFill;
-        controls.rectStrokePicker.value = DEFAULTS.rectStroke;
-        controls.rectStrokeWidth.value = DEFAULTS.rectStrokeWidth;
-        controls.fileNameInput.value = DEFAULTS.fileName;
+        initControlState();
+        els.fileNameInput.value = currentConfig.fileName;
       }
 
-      /* ---------- Complement preview & apply/undo ---------- */
-      function updateComplementaryPreviews() {
-        // compute complement from rect -> path preview
-        const rectFill = normalizeHexInput(controls.rectFillPicker.value) || controls.rectFillPicker.value;
-        const pathComp = getComplementHex(rectFill);
-        // not using preview boxes per request; saved for possible future use
-
-        // compute complement from path -> rect preview
-        const pathFill = normalizeHexInput(controls.pathFillPicker.value) || controls.pathFillPicker.value;
-        const rectComp = getComplementHex(pathFill);
-        // not using preview boxes per request; saved for possible future use
+      function initControlState() {
+        controlState = {};
+        currentConfig.controls.forEach(ctrl => {
+          controlState[ctrl.id] = { ...ctrl.defaults };
+        });
       }
 
-      function pushUndo(key, value) {
-        if (!undoStack[key]) undoStack[key] = [];
-        undoStack[key].push(value);
-        // limit stack
-        if (undoStack[key].length > 10) undoStack[key].shift();
-      }
-      function popUndo(key) {
-        if (!undoStack[key] || undoStack[key].length === 0) return null;
-        return undoStack[key].pop();
-      }
+      /* ========== Export Functions ========== */
+      function getContentBounds() {
+        if (!svgRoot) return null;
+        const elements = svgRoot.querySelectorAll('path, rect, circle, ellipse, polygon, polyline, text, g');
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
 
-      /* ---------- Wiring UI ---------- */
-      function wireUI() {
-        // color pickers and hex inputs: keep in sync
-        const pairs = [
-          [controls.pathFillPicker, controls.pathFillHex],
-          [controls.pathStrokePicker, controls.pathStrokeHex],
-          [controls.rectFillPicker, controls.rectFillHex],
-          [controls.rectStrokePicker, controls.rectStrokeHex]
-        ];
-        pairs.forEach(([picker, hexInput]) => {
-          // when picker changes
-          picker.addEventListener('input', () => {
-            const nh = normalizeHexInput(picker.value) || picker.value;
-            hexInput.value = nh;
-            applyStyles();
-            saveSettings();
-          });
-          // when hex typed
-          hexInput.addEventListener('input', () => {
-            const nh = normalizeHexInput(hexInput.value);
-            if (nh) {
-              picker.value = nh;
-              hexInput.value = nh;
-              applyStyles();
-              saveSettings();
+        elements.forEach(el => {
+          try {
+            const bbox = el.getBBox();
+            if (bbox.width > 0 && bbox.height > 0) {
+              minX = Math.min(minX, bbox.x);
+              minY = Math.min(minY, bbox.y);
+              maxX = Math.max(maxX, bbox.x + bbox.width);
+              maxY = Math.max(maxY, bbox.y + bbox.height);
             }
-          });
-          // ensure placeholder formatting when leaving field
-          hexInput.addEventListener('blur', () => {
-            const nh = normalizeHexInput(hexInput.value);
-            if (nh) hexInput.value = nh;
-          });
+          } catch (e) { }
         });
 
-        // logo selector sync
-        controls.logoSelect.addEventListener('change', async () => {
-          currentLogoKey = controls.logoSelect.value;
-          DEFAULTS = LOGO_CONFIG[currentLogoKey].defaults;
+        if (minX === Infinity) {
+          const vb = svgRoot.viewBox?.baseVal;
+          return { x: vb?.x || 0, y: vb?.y || 0, width: vb?.width || 1024, height: vb?.height || 1024 };
+        }
 
-          // reset to logo's defaults on first switch
-          controls.pathFillPicker.value = DEFAULTS.pathFill;
-          controls.pathFillHex.value = DEFAULTS.pathFill;
-          controls.pathStrokePicker.value = DEFAULTS.pathStroke;
-          controls.pathStrokeHex.value = DEFAULTS.pathStroke;
-          controls.pathStrokeWidth.value = DEFAULTS.pathStrokeWidth;
-
-          controls.rectFillPicker.value = DEFAULTS.rectFill;
-          controls.rectFillHex.value = DEFAULTS.rectFill;
-          controls.rectStrokePicker.value = DEFAULTS.rectStroke;
-          controls.rectStrokeHex.value = DEFAULTS.rectStroke;
-          controls.rectStrokeWidth.value = DEFAULTS.rectStrokeWidth;
-
-          controls.fileNameInput.value = DEFAULTS.fileName;
-
-          await loadSVG();
-          applyStyles();
-          saveSettings();
-        });
-
-        // stroke width inputs
-        controls.pathStrokeWidth.addEventListener('input', () => { applyStyles(); saveSettings(); });
-        controls.rectStrokeWidth.addEventListener('input', () => { applyStyles(); saveSettings(); });
-
-        // small reset buttons
-        document.querySelectorAll('.small-btn[data-reset]').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const key = btn.getAttribute('data-reset');
-            switch (key) {
-              case 'pathFill':
-                controls.pathFillPicker.value = DEFAULTS.pathFill; controls.pathFillHex.value = DEFAULTS.pathFill; break;
-              case 'pathStroke':
-                controls.pathStrokePicker.value = DEFAULTS.pathStroke; controls.pathStrokeHex.value = DEFAULTS.pathStroke; break;
-              case 'pathStrokeWidth':
-                controls.pathStrokeWidth.value = DEFAULTS.pathStrokeWidth; break;
-              case 'rectFill':
-                controls.rectFillPicker.value = DEFAULTS.rectFill; controls.rectFillHex.value = DEFAULTS.rectFill; break;
-              case 'rectStroke':
-                controls.rectStrokePicker.value = DEFAULTS.rectStroke; controls.rectStrokeHex.value = DEFAULTS.rectStroke; break;
-              case 'rectStrokeWidth':
-                controls.rectStrokeWidth.value = DEFAULTS.rectStrokeWidth; break;
-            }
-            applyStyles(); saveSettings();
-          });
-        });
-
-        // apply small quick actions (apply path -> rect complement, vice versa)
-        controls.applyPathToRectBtn.addEventListener('click', () => {
-          const p = normalizeHexInput(controls.pathFillPicker.value) || controls.pathFillPicker.value;
-          const comp = getComplementHex(p);
-          // push undo for rect
-          pushUndo('rectFill', controls.rectFillPicker.value);
-          controls.rectFillPicker.value = comp;
-          controls.rectFillHex.value = comp;
-          applyStyles(); saveSettings();
-        });
-        controls.applyRectToPathBtn.addEventListener('click', () => {
-          const r = normalizeHexInput(controls.rectFillPicker.value) || controls.rectFillPicker.value;
-          const comp = getComplementHex(r);
-          pushUndo('pathFill', controls.pathFillPicker.value);
-          controls.pathFillPicker.value = comp;
-          controls.pathFillHex.value = comp;
-          applyStyles(); saveSettings();
-        });
-
-        // complement area apply/undo (path)
-        controls.applyPathComplement.addEventListener('click', () => {
-          // compute complement from rectangle -> apply to path
-          const rectHex = normalizeHexInput(controls.rectFillPicker.value) || controls.rectFillPicker.value;
-          const comp = getComplementHex(rectHex);
-          pushUndo('pathFill', controls.pathFillPicker.value);
-          controls.pathFillPicker.value = comp;
-          controls.pathFillHex.value = comp;
-          applyStyles(); saveSettings();
-        });
-        controls.undoPathComplement.addEventListener('click', () => {
-          const prev = popUndo('pathFill');
-          if (prev) {
-            controls.pathFillPicker.value = prev;
-            controls.pathFillHex.value = prev;
-            applyStyles(); saveSettings();
-          }
-        });
-
-        // complement area apply/undo (rect)
-        controls.applyRectComplement.addEventListener('click', () => {
-          // compute complement from path -> apply to rect
-          const pathHex = normalizeHexInput(controls.pathFillPicker.value) || controls.pathFillPicker.value;
-          const comp = getComplementHex(pathHex);
-          pushUndo('rectFill', controls.rectFillPicker.value);
-          controls.rectFillPicker.value = comp;
-          controls.rectFillHex.value = comp;
-          applyStyles(); saveSettings();
-        });
-        controls.undoRectComplement.addEventListener('click', () => {
-          const prev = popUndo('rectFill');
-          if (prev) {
-            controls.rectFillPicker.value = prev;
-            controls.rectFillHex.value = prev;
-            applyStyles(); saveSettings();
-          }
-        });
-
-        // copy buttons
-        controls.copyButtons.forEach(btn => {
-          btn.addEventListener('click', () => {
-            const targetId = btn.getAttribute('data-copy-for');
-            const el = document.getElementById(targetId);
-            if (!el) return;
-            const val = el.value || '';
-            navigator.clipboard.writeText(val).then(() => {
-              btn.style.borderColor = 'rgba(1,101,195,0.3)';
-              setTimeout(() => btn.style.borderColor = 'rgba(3,7,18,0.06)', 600);
-            }).catch(() => {
-              alert('Copy failed — your browser may block clipboard access.');
-            });
-          });
-        });
-
-        // Reset all
-        controls.resetAllBtn.addEventListener('click', () => {
-          controls.pathFillPicker.value = DEFAULTS.pathFill; controls.pathFillHex.value = DEFAULTS.pathFill;
-          controls.pathStrokePicker.value = DEFAULTS.pathStroke; controls.pathStrokeHex.value = DEFAULTS.pathStroke;
-          controls.pathStrokeWidth.value = DEFAULTS.pathStrokeWidth;
-          controls.rectFillPicker.value = DEFAULTS.rectFill; controls.rectFillHex.value = DEFAULTS.rectFill;
-          controls.rectStrokePicker.value = DEFAULTS.rectStroke; controls.rectStrokeHex.value = DEFAULTS.rectStroke;
-          controls.rectStrokeWidth.value = DEFAULTS.rectStrokeWidth;
-          controls.fileNameInput.value = DEFAULTS.fileName;
-          undoStack.pathFill = []; undoStack.rectFill = [];
-          applyStyles(); saveSettings();
-        });
-
-        // Random button (top of preview) -> set both fills complementary using HSL hue shift
-        controls.randomBtn.addEventListener('click', () => {
-          // generate a truly random hue and S/L values, avoid immediate repeat of hue
-          let attempts = 0;
-          let hue;
-          do {
-            hue = Math.floor(Math.random() * 360);
-            attempts++;
-          } while (hue === lastRandomHue && attempts < 12);
-          lastRandomHue = hue;
-
-          // randomize saturation and lightness within reasonable ranges to avoid extremes:
-          const s = Math.random() * 0.5 + 0.35; // 0.35 - 0.85
-          const l = Math.random() * 0.4 + 0.25; // 0.25 - 0.65
-
-          const hueComp = (hue + 180) % 360;
-          const rgbA = hslToRgb(hue, s, l);
-          const rgbB = hslToRgb(hueComp, s, l);
-          const hexA = rgbToHex(rgbA.r, rgbA.g, rgbA.b);
-          const hexB = rgbToHex(rgbB.r, rgbB.g, rgbB.b);
-
-          // push undo states for both
-          pushUndo('pathFill', controls.pathFillPicker.value);
-          pushUndo('rectFill', controls.rectFillPicker.value);
-
-          controls.pathFillPicker.value = hexA; controls.pathFillHex.value = hexA;
-          controls.rectFillPicker.value = hexB; controls.rectFillHex.value = hexB;
-
-          applyStyles(); saveSettings();
-        });
-
-        // Reset button on top of preview (only resets the two fills to defaults)
-        controls.resetPreviewBtn.addEventListener('click', () => {
-          pushUndo('pathFill', controls.pathFillPicker.value);
-          pushUndo('rectFill', controls.rectFillPicker.value);
-          controls.pathFillPicker.value = DEFAULTS.pathFill; controls.pathFillHex.value = DEFAULTS.pathFill;
-          controls.rectFillPicker.value = DEFAULTS.rectFill; controls.rectFillHex.value = DEFAULTS.rectFill;
-          applyStyles(); saveSettings();
-        });
-
-        // export handlers
-        controls.export1xBtn.addEventListener('click', () => exportPNG(1));
-        controls.export2xBtn.addEventListener('click', () => exportPNG(2));
-        controls.exportSVGBtn.addEventListener('click', exportSVG);
+        const padding = Math.max(maxX - minX, maxY - minY) * 0.02;
+        return { x: minX - padding, y: minY - padding, width: (maxX - minX) + padding * 2, height: (maxY - minY) + padding * 2 };
       }
 
-      /* ---------- Export helpers ---------- */
-      function makeSerializableClone(scale = 1) {
+      function makeSerializableClone(scale = 1, cropToContent = true) {
         if (!svgRoot) return null;
         const clone = svgRoot.cloneNode(true);
         clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-        // copy inline styles for every element so appearance preserved
         clone.querySelectorAll('*').forEach(el => {
-          if (el.style && el.style.cssText) el.setAttribute('style', el.style.cssText);
+          if (el.style?.cssText) el.setAttribute('style', el.style.cssText);
         });
 
-        // get viewBox size
-        const vb = svgRoot.viewBox && svgRoot.viewBox.baseVal ? svgRoot.viewBox.baseVal : null;
-        const w = vb && vb.width ? vb.width : (parseInt(svgRoot.getAttribute('width')) || 1024);
-        const h = vb && vb.height ? vb.height : (parseInt(svgRoot.getAttribute('height')) || 1024);
-        clone.setAttribute('width', String(w * scale));
-        clone.setAttribute('height', String(h * scale));
-        return { clone, w: (vb ? vb.width : w), h: (vb ? vb.height : h) };
+        let w, h;
+        if (cropToContent) {
+          const bounds = getContentBounds();
+          clone.setAttribute('viewBox', `${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}`);
+          w = bounds.width;
+          h = bounds.height;
+        } else {
+          const vb = svgRoot.viewBox?.baseVal;
+          w = vb?.width || parseInt(svgRoot.getAttribute('width')) || 1024;
+          h = vb?.height || parseInt(svgRoot.getAttribute('height')) || 1024;
+        }
+
+        clone.setAttribute('width', String(Math.round(w * scale)));
+        clone.setAttribute('height', String(Math.round(h * scale)));
+        return { clone, w, h };
       }
 
-      function exportPNG(scaleMultiplier = 1) {
+      function exportPNG(useDeviceDPI = false) {
         applyStyles();
-        const rawName = controls.fileNameInput.value.trim();
-        const safeName = rawName ? rawName.replace(/[^a-zA-Z0-9-_\.]/g, '_') : DEFAULTS.fileName;
-        const data = makeSerializableClone(scaleMultiplier);
-        if (!data) { alert('SVG not loaded'); return; }
+        const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
+
+        let scale = 1;
+        let suffix = '';
+        if (useDeviceDPI) {
+          scale = Math.max(2, window.devicePixelRatio || 1);
+          suffix = '-HD';
+        }
+
+        const data = makeSerializableClone(scale, true);
+        if (!data) return showToast('SVG not loaded');
+
         const { clone, w, h } = data;
-        const serializer = new XMLSerializer();
-        let svgString = serializer.serializeToString(clone);
-        svgString = '<?xml version="1.0" encoding="utf-8"?>\n' + svgString;
+        const svgString = '<?xml version="1.0"?>\n' + new XMLSerializer().serializeToString(clone);
         const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const img = new Image();
+
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          canvas.width = Math.round(w * scaleMultiplier);
-          canvas.height = Math.round(h * scaleMultiplier);
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          canvas.width = Math.round(w * scale);
+          canvas.height = Math.round(h * scale);
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
           URL.revokeObjectURL(url);
+
           const a = document.createElement('a');
-          a.download = `${safeName}${scaleMultiplier > 1 ? ('@' + scaleMultiplier + 'x') : ''}.png`;
+          a.download = `${safeName}${suffix}.png`;
           a.href = canvas.toDataURL('image/png');
           a.click();
+          showToast(`Saved ${canvas.width}×${canvas.height} ✓`);
         };
-        img.onerror = () => { URL.revokeObjectURL(url); alert('Failed to render SVG to PNG. Try a modern browser.'); };
+
+        img.onerror = () => { URL.revokeObjectURL(url); showToast('Export failed'); };
         img.src = url;
       }
 
       function exportSVG() {
         applyStyles();
-        const rawName = controls.fileNameInput.value.trim();
-        const safeName = rawName ? rawName.replace(/[^a-zA-Z0-9-_\.]/g, '_') : DEFAULTS.fileName;
-        if (!svgRoot) { alert('SVG not loaded'); return; }
-        // clone and inline styles
-        const { clone } = makeSerializableClone(1);
-        const serializer = new XMLSerializer();
-        let svgString = serializer.serializeToString(clone);
-        svgString = '<?xml version="1.0" encoding="utf-8"?>\n' + svgString;
-        const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
+        const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
+        const data = makeSerializableClone(1, true);
+        if (!data) return showToast('SVG not loaded');
+
+        const svgString = '<?xml version="1.0"?>\n' + new XMLSerializer().serializeToString(data.clone);
+        const url = URL.createObjectURL(new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' }));
+
         const a = document.createElement('a');
         a.download = `${safeName}.svg`;
         a.href = url;
         a.click();
         setTimeout(() => URL.revokeObjectURL(url), 1500);
+        showToast('SVG saved ✓');
       }
 
-      /* ---------- Initialization ---------- */
+      /* ========== SMART RANDOM COLORS ========== */
+      // Strategy based on number of color controls:
+      // 1 color  → Random vibrant color
+      // 2 colors → Complementary (hue + 180°)
+      // 3+ colors → Triadic or split-complementary
+
+      let lastRandomHue = null;
+
+      function randomizeColors() {
+        const numColors = currentConfig.controls.length;
+
+        // Generate base hue (avoid repeating last)
+        let baseHue;
+        do {
+          baseHue = Math.floor(Math.random() * 360);
+        } while (lastRandomHue !== null && Math.abs(baseHue - lastRandomHue) < 30);
+        lastRandomHue = baseHue;
+
+        // Good saturation and lightness for visible colors
+        const saturation = 0.65 + Math.random() * 0.25; // 0.65 - 0.90
+        const lightness = 0.40 + Math.random() * 0.20;  // 0.40 - 0.60
+
+        // Generate colors based on count
+        const hues = [];
+
+        if (numColors === 1) {
+          // Single color: just use base hue
+          hues.push(baseHue);
+        } else if (numColors === 2) {
+          // Two colors: Complementary (opposite on color wheel)
+          hues.push(baseHue);
+          hues.push((baseHue + 180) % 360);
+        } else {
+          // 3+ colors: Triadic (evenly spaced)
+          for (let i = 0; i < numColors; i++) {
+            hues.push((baseHue + (360 / numColors) * i) % 360);
+          }
+        }
+
+        // Apply colors
+        currentConfig.controls.forEach((ctrl, i) => {
+          const hue = hues[i % hues.length];
+          const rgb = hslToRgb(hue, saturation, lightness);
+          const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+
+          controlState[ctrl.id].fill = hex;
+
+          const fillPicker = document.getElementById(`${ctrl.id}-fill-picker`);
+          const fillHex = document.getElementById(`${ctrl.id}-fill-hex`);
+          if (fillPicker) fillPicker.value = hex;
+          if (fillHex) fillHex.value = hex.replace('#', '');
+        });
+
+        applyStyles();
+        saveSettings();
+
+        // Show what strategy was used
+        const strategy = numColors === 1 ? 'Random' : numColors === 2 ? 'Complementary' : 'Triadic';
+        showToast(`${strategy} colors applied! 🎲`);
+      }
+
+      /* ========== Reset All ========== */
+      function resetAll() {
+        initControlState();
+        els.fileNameInput.value = currentConfig.fileName;
+        generateControlsUI();
+        applyStyles();
+        saveSettings();
+        showToast('Reset to defaults ✓');
+      }
+
+      /* ========== Logo Switch ========== */
+      async function switchLogo(key) {
+        currentLogoKey = key;
+        currentConfig = LOGO_CONFIG[key];
+        initControlState();
+        els.fileNameInput.value = currentConfig.fileName;
+        await loadSVG();
+        generateControlsUI();
+        applyStyles();
+        saveSettings();
+      }
+
+      /* ========== Wire Main Events ========== */
+      function wireMainEvents() {
+        els.logoSelect.addEventListener('change', () => switchLogo(els.logoSelect.value));
+        els.randomBtn.addEventListener('click', randomizeColors);
+        els.resetAllBtn.addEventListener('click', resetAll);
+        els.exportPNG.addEventListener('click', () => exportPNG(false));
+        els.exportPNGHD.addEventListener('click', () => exportPNG(true));
+        els.exportSVG.addEventListener('click', exportSVG);
+      }
+
+      /* ========== Initialize ========== */
       async function init() {
         loadSettings();
-        // sync hex input values to pickers
-        controls.pathFillHex.value = normalizeHexInput(controls.pathFillPicker.value) || controls.pathFillPicker.value;
-        controls.pathStrokeHex.value = normalizeHexInput(controls.pathStrokePicker.value) || controls.pathStrokePicker.value;
-        controls.rectFillHex.value = normalizeHexInput(controls.rectFillPicker.value) || controls.rectFillPicker.value;
-        controls.rectStrokeHex.value = normalizeHexInput(controls.rectStrokePicker.value) || controls.rectStrokePicker.value;
-
-        // load svg
         await loadSVG();
-
-        // initial update and wiring
+        generateControlsUI();
         applyStyles();
-        wireUI();
-
-        // live update complementary previews whenever inputs change (also handled in applyStyles)
-        setInterval(() => updateComplementaryPreviews(), 400);
+        wireMainEvents();
       }
 
-      // run on DOM ready
       document.addEventListener('DOMContentLoaded', init);
     })();
   </script>
