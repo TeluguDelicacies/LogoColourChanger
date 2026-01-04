@@ -852,234 +852,239 @@
   <div id="toast" class="toast"></div>
 
   <script type="module">
-    (() => {
-      /* ========== RESPONSIVE DETECTION ========== */
-      const DESKTOP_MIN_WIDTH = 900;
-      const DESKTOP_MIN_HEIGHT = 500;
 
-      function checkDesktop() {
-        const isDesktop = window.innerWidth >= DESKTOP_MIN_WIDTH &&
-          window.innerHeight >= DESKTOP_MIN_HEIGHT;
-        document.body.classList.toggle('is-desktop', isDesktop);
-        if (checkDesktop.lastMode !== isDesktop) {
-          console.log(`Layout: ${isDesktop ? 'DESKTOP' : 'MOBILE'} (${window.innerWidth}×${window.innerHeight})`);
-          checkDesktop.lastMode = isDesktop;
-        }
+    /* ========== RESPONSIVE DETECTION ========== */
+    const DESKTOP_MIN_WIDTH = 900;
+    const DESKTOP_MIN_HEIGHT = 500;
+
+    function checkDesktop() {
+      const isDesktop = window.innerWidth >= DESKTOP_MIN_WIDTH &&
+        window.innerHeight >= DESKTOP_MIN_HEIGHT;
+      document.body.classList.toggle('is-desktop', isDesktop);
+      if (checkDesktop.lastMode !== isDesktop) {
+        console.log(`Layout: ${isDesktop ? 'DESKTOP' : 'MOBILE'} (${window.innerWidth}×${window.innerHeight})`);
+        checkDesktop.lastMode = isDesktop;
       }
-      checkDesktop.lastMode = null;
-      checkDesktop();
-      window.addEventListener('orientationchange', checkDesktop);
+    }
+    checkDesktop.lastMode = null;
+    checkDesktop();
+    window.addEventListener('orientationchange', checkDesktop);
 
-      /* ========== Configuration ========== */
-      const LOGO_CONFIG = {
-        td: {
-          name: "Telugu Delicacies",
-          file: new URL('./logo.svg', import.meta.url).href,
-          controls: [
-            {
-              id: "path",
-              selector: "#path1, #TDPath",
-              label: "TD Letters",
-              desc: "The white 'TD' lettering in the center",
-              tooltip: "Change the color of the TD letters",
-              showStroke: true,
-              showStrokeWidth: true,
-              defaults: { fill: "#FFFFFF", stroke: "#000000", strokeWidth: "2" }
-            },
-            {
-              id: "rect",
-              selector: "#rect1, #SquareBehindTD",
-              label: "Background",
-              desc: "The yellow square behind the letters",
-              tooltip: "Change the background square color",
-              showStroke: true,
-              showStrokeWidth: true,
-              defaults: { fill: "#EEDC29", stroke: "#EEDC29", strokeWidth: "0" }
-            }
-          ],
-          fileName: "TD-custom"
-        },
-        akshaya: {
-          name: "Akshaya",
-          file: new URL('./Akshaya.svg', import.meta.url).href,
-          controls: [
-            {
-              id: "green",
-              selector: "#path3",
-              label: "Leaves & Green",
-              desc: "Green leaf decorations and elements",
-              tooltip: "Change the green parts of the logo",
-              showStroke: true,
-              showStrokeWidth: true,
-              defaults: { fill: "#18aa3e", stroke: "#18aa3e", strokeWidth: "0" }
-            },
-            {
-              id: "yellow",
-              selector: "#path4",
-              label: "Sun & Yellow",
-              desc: "Yellow sun and accent elements",
-              tooltip: "Change the yellow/sun parts of the logo",
-              showStroke: true,
-              showStrokeWidth: true,
-              defaults: { fill: "#fdf311", stroke: "#fdf311", strokeWidth: "0" }
-            }
-          ],
-          fileName: "Akshaya-custom"
-        },
-        tasty: {
-          name: "Tasty Pinch",
-          file: new URL('./Tasty Pinch.svg', import.meta.url).href,
-          controls: [
-            {
-              id: "brand",
-              selector: "#path2",
-              label: "Brand Fill",
-              desc: "Main brand color",
-              tooltip: "Change the logo color",
-              showStroke: true,
-              showStrokeWidth: true,
-              defaults: { fill: "#761e1a", stroke: "#761e1a", strokeWidth: "0" }
-            }
-          ],
-          fileName: "Tasty-Pinch-custom"
-        },
-        teepi: {
-          name: "Teepi Gurthu",
-          file: new URL('./Teepi Gurthu.svg', import.meta.url).href,
-          controls: [
-            {
-              id: "gold",
-              selector: "#path9",
-              label: "Gold Top",
-              desc: "Upper gold shape",
-              tooltip: "Change the gold part color",
-              showStroke: true,
-              showStrokeWidth: true,
-              defaults: { fill: "#f0bc54", stroke: "#f0bc54", strokeWidth: "0" }
-            },
-            {
-              id: "orange",
-              selector: "path[style*='fill:#ee8214']",
-              label: "Orange Base",
-              desc: "Lower orange shape",
-              tooltip: "Change the orange part color",
-              showStroke: true,
-              showStrokeWidth: true,
-              defaults: { fill: "#ee8214", stroke: "#ee8214", strokeWidth: "0" }
-            },
-            {
-              id: "dark",
-              selector: "#path7",
-              label: "Dark Detail",
-              desc: "Dark grey detail elements",
-              tooltip: "Change the dark detail color",
-              showStroke: true,
-              showStrokeWidth: true,
-              defaults: { fill: "#922902", stroke: "#922902", strokeWidth: "0" }
-            }
-          ],
-          fileName: "Teepi-Gurthu-custom"
-        }
-      };
+    /* ========== Configuration ========== */
+    import tdUrl from './logo.svg?url';
+    import akshayaUrl from './Akshaya.svg?url';
+    import tastyUrl from './Tasty Pinch.svg?url';
+    import teepiUrl from './Teepi Gurthu.svg?url';
 
-      const STORAGE_KEY = 'tdLogoCustomizer_v8';
-      let currentLogoKey = 'td';
-      let currentConfig = LOGO_CONFIG[currentLogoKey];
-      let svgRoot = null;
-      let controlState = {};
-
-      const els = {
-        svgContainer: document.getElementById('svgContainer'),
-        controlsSection: document.getElementById('controlsSection'),
-        logoSelect: document.getElementById('logoSelect'),
-        fileNameInput: document.getElementById('fileName'),
-        dpiInput: document.getElementById('dpiInput'),
-        randomBtn: document.getElementById('randomBtn'),
-        resetBtn: document.getElementById('resetBtn'),
-        exportPNG: document.getElementById('exportPNG'),
-        exportPNGHD: document.getElementById('exportPNGHD'),
-        exportSVG: document.getElementById('exportSVG'),
-        toast: document.getElementById('toast')
-      };
-
-      function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
-
-      function hexToRgb(hex) {
-        if (!hex) return null;
-        let h = String(hex).replace('#', '').trim();
-        if (h.length === 3) h = h.split('').map(c => c + c).join('');
-        if (h.length !== 6) return null;
-        const bigint = parseInt(h, 16);
-        return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
-      }
-
-      function rgbToHex(r, g, b) {
-        return '#' + [r, g, b].map(x => ('0' + Math.round(clamp(x, 0, 255)).toString(16)).slice(-2)).join('').toUpperCase();
-      }
-
-      function hslToRgb(h, s, l) {
-        h = ((h % 360) + 360) % 360;
-        if (s === 0) { const v = Math.round(l * 255); return { r: v, g: v, b: v }; }
-        const c = (1 - Math.abs(2 * l - 1)) * s;
-        const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-        const m = l - c / 2;
-        let r1 = 0, g1 = 0, b1 = 0;
-        if (h < 60) { r1 = c; g1 = x; }
-        else if (h < 120) { r1 = x; g1 = c; }
-        else if (h < 180) { g1 = c; b1 = x; }
-        else if (h < 240) { g1 = x; b1 = c; }
-        else if (h < 300) { r1 = x; b1 = c; }
-        else { r1 = c; b1 = x; }
-        return { r: Math.round((r1 + m) * 255), g: Math.round((g1 + m) * 255), b: Math.round((b1 + m) * 255) };
-      }
-
-      function showToast(message) {
-        els.toast.textContent = message;
-        els.toast.classList.add('show');
-        setTimeout(() => els.toast.classList.remove('show'), 2000);
-      }
-
-      async function loadSVG() {
-        try {
-          const fetchUrl = currentConfig.file;
-
-          console.log(`[LogoCustomizer] Attempting to fetch: ${fetchUrl}`);
-
-          const response = await fetch(fetchUrl, { cache: "no-cache" });
-          if (!response.ok) {
-            throw new Error(`Fetch failed: ${response.status} ${response.statusText}`);
+    const LOGO_CONFIG = {
+      td: {
+        name: "Telugu Delicacies",
+        file: tdUrl,
+        controls: [
+          {
+            id: "path",
+            selector: "#path1, #TDPath",
+            label: "TD Letters",
+            desc: "The white 'TD' lettering in the center",
+            tooltip: "Change the color of the TD letters",
+            showStroke: true,
+            showStrokeWidth: true,
+            defaults: { fill: "#FFFFFF", stroke: "#000000", strokeWidth: "2" }
+          },
+          {
+            id: "rect",
+            selector: "#rect1, #SquareBehindTD",
+            label: "Background",
+            desc: "The yellow square behind the letters",
+            tooltip: "Change the background square color",
+            showStroke: true,
+            showStrokeWidth: true,
+            defaults: { fill: "#EEDC29", stroke: "#EEDC29", strokeWidth: "0" }
           }
-
-          const text = await response.text();
-          els.svgContainer.innerHTML = text;
-          svgRoot = els.svgContainer.querySelector('svg');
-          if (svgRoot) {
-            svgRoot.id = 'svgRootInlined';
-            console.log(`[LogoCustomizer] Successfully loaded: ${currentConfig.name}`);
+        ],
+        fileName: "TD-custom"
+      },
+      akshaya: {
+        name: "Akshaya",
+        file: akshayaUrl,
+        controls: [
+          {
+            id: "green",
+            selector: "#path3",
+            label: "Leaves & Green",
+            desc: "Green leaf decorations and elements",
+            tooltip: "Change the green parts of the logo",
+            showStroke: true,
+            showStrokeWidth: true,
+            defaults: { fill: "#18aa3e", stroke: "#18aa3e", strokeWidth: "0" }
+          },
+          {
+            id: "yellow",
+            selector: "#path4",
+            label: "Sun & Yellow",
+            desc: "Yellow sun and accent elements",
+            tooltip: "Change the yellow/sun parts of the logo",
+            showStroke: true,
+            showStrokeWidth: true,
+            defaults: { fill: "#fdf311", stroke: "#fdf311", strokeWidth: "0" }
           }
-        } catch (e) {
-          console.error(`[LogoCustomizer] Error loading SVG from: ${currentConfig.file}`);
-          console.error(`[LogoCustomizer] Error details:`, e);
+        ],
+        fileName: "Akshaya-custom"
+      },
+      tasty: {
+        name: "Tasty Pinch",
+        file: tastyUrl,
+        controls: [
+          {
+            id: "brand",
+            selector: "#path2",
+            label: "Brand Fill",
+            desc: "Main brand color",
+            tooltip: "Change the logo color",
+            showStroke: true,
+            showStrokeWidth: true,
+            defaults: { fill: "#761e1a", stroke: "#761e1a", strokeWidth: "0" }
+          }
+        ],
+        fileName: "Tasty-Pinch-custom"
+      },
+      teepi: {
+        name: "Teepi Gurthu",
+        file: teepiUrl,
+        controls: [
+          {
+            id: "gold",
+            selector: "#path9",
+            label: "Gold Top",
+            desc: "Upper gold shape",
+            tooltip: "Change the gold part color",
+            showStroke: true,
+            showStrokeWidth: true,
+            defaults: { fill: "#f0bc54", stroke: "#f0bc54", strokeWidth: "0" }
+          },
+          {
+            id: "orange",
+            selector: "path[style*='fill:#ee8214']",
+            label: "Orange Base",
+            desc: "Lower orange shape",
+            tooltip: "Change the orange part color",
+            showStroke: true,
+            showStrokeWidth: true,
+            defaults: { fill: "#ee8214", stroke: "#ee8214", strokeWidth: "0" }
+          },
+          {
+            id: "dark",
+            selector: "#path7",
+            label: "Dark Detail",
+            desc: "Dark grey detail elements",
+            tooltip: "Change the dark detail color",
+            showStroke: true,
+            showStrokeWidth: true,
+            defaults: { fill: "#922902", stroke: "#922902", strokeWidth: "0" }
+          }
+        ],
+        fileName: "Teepi-Gurthu-custom"
+      }
+    };
 
-          // Fallback UI
-          els.svgContainer.innerHTML = `<svg id="svgRootInlined" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+    const STORAGE_KEY = 'tdLogoCustomizer_v8';
+    let currentLogoKey = 'td';
+    let currentConfig = LOGO_CONFIG[currentLogoKey];
+    let svgRoot = null;
+    let controlState = {};
+
+    const els = {
+      svgContainer: document.getElementById('svgContainer'),
+      controlsSection: document.getElementById('controlsSection'),
+      logoSelect: document.getElementById('logoSelect'),
+      fileNameInput: document.getElementById('fileName'),
+      dpiInput: document.getElementById('dpiInput'),
+      randomBtn: document.getElementById('randomBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      exportPNG: document.getElementById('exportPNG'),
+      exportPNGHD: document.getElementById('exportPNGHD'),
+      exportSVG: document.getElementById('exportSVG'),
+      toast: document.getElementById('toast')
+    };
+
+    function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
+
+    function hexToRgb(hex) {
+      if (!hex) return null;
+      let h = String(hex).replace('#', '').trim();
+      if (h.length === 3) h = h.split('').map(c => c + c).join('');
+      if (h.length !== 6) return null;
+      const bigint = parseInt(h, 16);
+      return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
+    }
+
+    function rgbToHex(r, g, b) {
+      return '#' + [r, g, b].map(x => ('0' + Math.round(clamp(x, 0, 255)).toString(16)).slice(-2)).join('').toUpperCase();
+    }
+
+    function hslToRgb(h, s, l) {
+      h = ((h % 360) + 360) % 360;
+      if (s === 0) { const v = Math.round(l * 255); return { r: v, g: v, b: v }; }
+      const c = (1 - Math.abs(2 * l - 1)) * s;
+      const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      const m = l - c / 2;
+      let r1 = 0, g1 = 0, b1 = 0;
+      if (h < 60) { r1 = c; g1 = x; }
+      else if (h < 120) { r1 = x; g1 = c; }
+      else if (h < 180) { g1 = c; b1 = x; }
+      else if (h < 240) { g1 = x; b1 = c; }
+      else if (h < 300) { r1 = x; b1 = c; }
+      else { r1 = c; b1 = x; }
+      return { r: Math.round((r1 + m) * 255), g: Math.round((g1 + m) * 255), b: Math.round((b1 + m) * 255) };
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add('show');
+      setTimeout(() => els.toast.classList.remove('show'), 2000);
+    }
+
+    async function loadSVG() {
+      try {
+        const fetchUrl = currentConfig.file;
+
+        console.log(`[LogoCustomizer] Attempting to fetch: ${fetchUrl}`);
+
+        const response = await fetch(fetchUrl, { cache: "no-cache" });
+        if (!response.ok) {
+          throw new Error(`Fetch failed: ${response.status} ${response.statusText}`);
+        }
+
+        const text = await response.text();
+        els.svgContainer.innerHTML = text;
+        svgRoot = els.svgContainer.querySelector('svg');
+        if (svgRoot) {
+          svgRoot.id = 'svgRootInlined';
+          console.log(`[LogoCustomizer] Successfully loaded: ${currentConfig.name}`);
+        }
+      } catch (e) {
+        console.error(`[LogoCustomizer] Error loading SVG from: ${currentConfig.file}`);
+        console.error(`[LogoCustomizer] Error details:`, e);
+
+        // Fallback UI
+        els.svgContainer.innerHTML = `<svg id="svgRootInlined" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
             <rect id="SquareBehindTD" fill="#eedc29" width="800" height="800" x="113" y="117"/>
             <path id="TDPath" fill="#ffffff" stroke="#000000" stroke-width="2" d="M420,940c-6.6-2.1-12.4-8.6-13.8-15.6-2-9.5,1.3-44,7-73.3,16.1-83.4,51.5-192.5,91.2-281,9.4-21,28.7-59.3,37.7-75,18.3-31.7,38.9-57.4,50.2-62.5,11.1-5,27.6,0.7,34.5,11.9,4.2,6.8,3.4,9.6-6.8,22.3-22.7,28.3-50.9,74.6-73.1,119.8-24.9,50.7-39.1,85.9-59.1,146.5-11.5,34.8-17.2,54.3-22.7,78.1-4.4,18.9-16.1,76.6-15.7,77,0.4,0.4,47.6-26.8,69.7-40.2,86-52,158.8-110.6,220.4-177.5,29.9-32.5,50.6-58.6,71.8-90.5,36.2-54.5,57.6-104.6,66.4-155.5,2.6-14.9,2.6-50.7,0-63.4-2.6-13.1-6.2-23.6-9.9-29.2-5.1-7.7-17.6-19.6-24.4-23.2-7.9-4.2-27.1-9.7-45.4-13-13.3-2.4-16.8-2.6-42.5-2.7-30.3-0.1-38.1,0.7-69.9,6.6-65.1,12.1-112.5,27.6-176.4,57.7-36,17-84.8,44.8-121.2,69.2l-11.5,7.7-2.3,23.9c-3.6,37.5-4.1,45.5-5.2,80.3-2.1,64.4,0.8,122.9,9.2,189.5,3.5,28,3.4,29.8-2.6,36.5-4.9,5.4-11.7,8.5-19.8,9-10.4,0.6-17.6-3-20.9-10.6-3.2-7.3-7.3-47.4-10-99.3-2.2-41.4-1.1-163.6,1.8-197.9l0.6-7.4-2.8,1.8c-3.3,2.1-11.7,2.4-15.5,0.4-11.5-5.9-13.9-18.7-5-27,3.8-3.6,18.7-12.8,22.1-13.7,1.5-0.4,2-1.7,2.4-6.6,4.2-49.8,9.2-82.5,20.1-132.2,3.6-16.4,13.4-56.9,16.1-66.2,0.4-1.4,0.2-2.3-0.5-2.3-2.9,0-89.8,24.9-158.6,45.5-64.7,19.3-82.5,24.4-87.8,25.2-13.8,1.9-28.3-12-24.8-23.7,1.5-5.1,5.1-10,8.7-12.2,6.9-4,101.8-32.5,175.9-52.7,111.7-30.5,228.2-59.5,289.9-72.1,86-17.6,132.8-22.8,193.6-21.7,45.6,0.9,68.5,2.6,74.8,5.8,13.2,6.6,11.9,23.3-2.3,29.9-3.6,1.7-7,1.9-38.1,1.9-18.8,0-42.2,0.5-52,1-83.2,4.7-174,19.6-294.7,48.3l-17.9,4.2-1.8,6c-22.5,75.2-27.3,92.4-33.4,119.8-5.7,25.6-7.9,36.8-10.5,53.7-1.2,7.4-2.3,14.3-2.5,15.3-0.2,1-0.2,1.8-0.1,1.8,0.1,0,4.9-3.1,10.7-6.8,53-34.7,117.2-68.2,172.9-90.2,31.4-12.4,77-25.8,112-33,36.7-7.5,91.6-10.1,120-5.6,13.9,2.2,37.4,8.3,45.5,11.9,27.2,12,48.8,30.5,66.3,56.7,10,15,16.9,32,21.3,52.5,2.7,12.7,3.8,49.3,2.1,66.7-4.5,43.9-18.9,83.4-46.3,127-45.7,72.7-117.2,148.8-206.8,219.9-64.4,51.2-153.4,109.5-217,142.1C454.5,934.5,430.2,943.2,420,940z"/>
           </svg>`;
-          svgRoot = els.svgContainer.querySelector('svg');
-        }
+        svgRoot = els.svgContainer.querySelector('svg');
       }
+    }
 
-      function generateControlsUI() {
-        els.controlsSection.innerHTML = '';
-        currentConfig.controls.forEach(ctrl => {
-          const state = controlState[ctrl.id] || ctrl.defaults;
-          const card = document.createElement('div');
-          card.className = 'control-card';
-          card.id = `control-${ctrl.id}`;
-          card.title = ctrl.tooltip || '';
+    function generateControlsUI() {
+      els.controlsSection.innerHTML = '';
+      currentConfig.controls.forEach(ctrl => {
+        const state = controlState[ctrl.id] || ctrl.defaults;
+        const card = document.createElement('div');
+        card.className = 'control-card';
+        card.id = `control-${ctrl.id}`;
+        card.title = ctrl.tooltip || '';
 
-          let html = `
+        let html = `
             <div class="control-header">
               <div class="control-info">
                 <span class="control-label">${ctrl.label}</span>
@@ -1105,304 +1110,304 @@
               </div>
             </div>`;
 
-          if (ctrl.showStroke || ctrl.showStrokeWidth) {
-            html += `<div class="stroke-section">
+        if (ctrl.showStroke || ctrl.showStrokeWidth) {
+          html += `<div class="stroke-section">
               <div class="stroke-section-title">Stroke (Outline)</div>
               <div class="stroke-row">`;
-            if (ctrl.showStroke) {
-              html += `<input type="color" class="stroke-color-picker" id="${ctrl.id}-stroke-picker" value="${state.stroke}" title="Stroke color">`;
-            }
-            if (ctrl.showStrokeWidth) {
-              html += `<div class="stroke-width-wrap" title="Outline thickness"><span class="stroke-width-label">Width:</span>
+          if (ctrl.showStroke) {
+            html += `<input type="color" class="stroke-color-picker" id="${ctrl.id}-stroke-picker" value="${state.stroke}" title="Stroke color">`;
+          }
+          if (ctrl.showStrokeWidth) {
+            html += `<div class="stroke-width-wrap" title="Outline thickness"><span class="stroke-width-label">Width:</span>
                 <div class="stepper">
                   <button class="stepper-btn minus">−</button>
                   <input type="number" class="stroke-width-input" id="${ctrl.id}-stroke-width" value="${state.strokeWidth}" min="0" max="20" step="1">
                   <button class="stepper-btn plus">+</button>
                 </div></div>`;
+          }
+          html += `</div></div>`;
+        }
+        card.innerHTML = html;
+        els.controlsSection.appendChild(card);
+      });
+      wireControlEvents();
+    }
+
+    function wireControlEvents() {
+      currentConfig.controls.forEach(ctrl => {
+        const fillPicker = document.getElementById(`${ctrl.id}-fill-picker`);
+        const fillHex = document.getElementById(`${ctrl.id}-fill-hex`);
+        const strokePicker = document.getElementById(`${ctrl.id}-stroke-picker`);
+        const strokeWidth = document.getElementById(`${ctrl.id}-stroke-width`);
+        const resetBtn = document.querySelector(`[data-reset="${ctrl.id}"]`);
+        const copyBtns = document.querySelectorAll(`[data-copy^="${ctrl.id}"]`);
+
+        if (fillPicker) {
+          fillPicker.addEventListener('input', () => {
+            const hex = fillPicker.value.toUpperCase();
+            fillHex.value = hex.replace('#', '');
+            controlState[ctrl.id].fill = hex;
+            applyStyles(); saveSettings();
+          });
+        }
+
+        if (fillHex) {
+          fillHex.addEventListener('input', () => {
+            let val = fillHex.value.toUpperCase().replace(/[^0-9A-F]/g, '').slice(0, 6);
+            fillHex.value = val;
+            if (val.length === 6 || val.length === 3) {
+              let normalized = val.length === 3 ? val.split('').map(c => c + c).join('') : val;
+              normalized = '#' + normalized;
+              fillPicker.value = normalized;
+              controlState[ctrl.id].fill = normalized;
+              applyStyles(); saveSettings();
             }
-            html += `</div></div>`;
-          }
-          card.innerHTML = html;
-          els.controlsSection.appendChild(card);
-        });
-        wireControlEvents();
-      }
+          });
+          fillHex.addEventListener('blur', () => {
+            let val = fillHex.value.toUpperCase().replace(/[^0-9A-F]/g, '');
+            if (val.length === 3) val = val.split('').map(c => c + c).join('');
+            fillHex.value = val.length === 6 ? val : controlState[ctrl.id].fill.replace('#', '');
+          });
+        }
 
-      function wireControlEvents() {
-        currentConfig.controls.forEach(ctrl => {
-          const fillPicker = document.getElementById(`${ctrl.id}-fill-picker`);
-          const fillHex = document.getElementById(`${ctrl.id}-fill-hex`);
-          const strokePicker = document.getElementById(`${ctrl.id}-stroke-picker`);
-          const strokeWidth = document.getElementById(`${ctrl.id}-stroke-width`);
-          const resetBtn = document.querySelector(`[data-reset="${ctrl.id}"]`);
-          const copyBtns = document.querySelectorAll(`[data-copy^="${ctrl.id}"]`);
+        if (strokePicker) {
+          strokePicker.addEventListener('input', () => {
+            controlState[ctrl.id].stroke = strokePicker.value.toUpperCase();
+            applyStyles(); saveSettings();
+          });
+        }
 
-          if (fillPicker) {
-            fillPicker.addEventListener('input', () => {
-              const hex = fillPicker.value.toUpperCase();
-              fillHex.value = hex.replace('#', '');
-              controlState[ctrl.id].fill = hex;
-              applyStyles(); saveSettings();
+        if (strokeWidth) {
+          const updateStroke = () => {
+            controlState[ctrl.id].strokeWidth = strokeWidth.value;
+            applyStyles(); saveSettings();
+          };
+          strokeWidth.addEventListener('input', updateStroke);
+
+          const stepper = strokeWidth.closest('.stepper');
+          if (stepper) {
+            const minus = stepper.querySelector('.minus');
+            const plus = stepper.querySelector('.plus');
+            minus.addEventListener('click', () => {
+              strokeWidth.stepDown();
+              strokeWidth.dispatchEvent(new Event('input'));
+            });
+            plus.addEventListener('click', () => {
+              strokeWidth.stepUp();
+              strokeWidth.dispatchEvent(new Event('input'));
             });
           }
+        }
 
-          if (fillHex) {
-            fillHex.addEventListener('input', () => {
-              let val = fillHex.value.toUpperCase().replace(/[^0-9A-F]/g, '').slice(0, 6);
-              fillHex.value = val;
-              if (val.length === 6 || val.length === 3) {
-                let normalized = val.length === 3 ? val.split('').map(c => c + c).join('') : val;
-                normalized = '#' + normalized;
-                fillPicker.value = normalized;
-                controlState[ctrl.id].fill = normalized;
-                applyStyles(); saveSettings();
-              }
-            });
-            fillHex.addEventListener('blur', () => {
-              let val = fillHex.value.toUpperCase().replace(/[^0-9A-F]/g, '');
-              if (val.length === 3) val = val.split('').map(c => c + c).join('');
-              fillHex.value = val.length === 6 ? val : controlState[ctrl.id].fill.replace('#', '');
-            });
-          }
+        if (resetBtn) {
+          resetBtn.addEventListener('click', () => {
+            controlState[ctrl.id] = { ...ctrl.defaults };
+            if (fillPicker) fillPicker.value = ctrl.defaults.fill;
+            if (fillHex) fillHex.value = ctrl.defaults.fill.replace('#', '');
+            if (strokePicker) strokePicker.value = ctrl.defaults.stroke;
+            if (strokeWidth) strokeWidth.value = ctrl.defaults.strokeWidth;
+            applyStyles(); saveSettings();
+            showToast('Reset ✓');
+          });
+        }
 
-          if (strokePicker) {
-            strokePicker.addEventListener('input', () => {
-              controlState[ctrl.id].stroke = strokePicker.value.toUpperCase();
-              applyStyles(); saveSettings();
-            });
-          }
-
-          if (strokeWidth) {
-            const updateStroke = () => {
-              controlState[ctrl.id].strokeWidth = strokeWidth.value;
-              applyStyles(); saveSettings();
-            };
-            strokeWidth.addEventListener('input', updateStroke);
-
-            const stepper = strokeWidth.closest('.stepper');
-            if (stepper) {
-              const minus = stepper.querySelector('.minus');
-              const plus = stepper.querySelector('.plus');
-              minus.addEventListener('click', () => {
-                strokeWidth.stepDown();
-                strokeWidth.dispatchEvent(new Event('input'));
-              });
-              plus.addEventListener('click', () => {
-                strokeWidth.stepUp();
-                strokeWidth.dispatchEvent(new Event('input'));
-              });
-            }
-          }
-
-          if (resetBtn) {
-            resetBtn.addEventListener('click', () => {
-              controlState[ctrl.id] = { ...ctrl.defaults };
-              if (fillPicker) fillPicker.value = ctrl.defaults.fill;
-              if (fillHex) fillHex.value = ctrl.defaults.fill.replace('#', '');
-              if (strokePicker) strokePicker.value = ctrl.defaults.stroke;
-              if (strokeWidth) strokeWidth.value = ctrl.defaults.strokeWidth;
-              applyStyles(); saveSettings();
-              showToast('Reset ✓');
-            });
-          }
-
-          copyBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-              navigator.clipboard.writeText(controlState[ctrl.id].fill).then(() => {
-                btn.classList.add('copied');
-                showToast('Copied ' + controlState[ctrl.id].fill);
-                setTimeout(() => btn.classList.remove('copied'), 1000);
-              }).catch(() => showToast('Copy failed'));
-            });
+        copyBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            navigator.clipboard.writeText(controlState[ctrl.id].fill).then(() => {
+              btn.classList.add('copied');
+              showToast('Copied ' + controlState[ctrl.id].fill);
+              setTimeout(() => btn.classList.remove('copied'), 1000);
+            }).catch(() => showToast('Copy failed'));
           });
         });
-      }
+      });
+    }
 
-      function applyStyles() {
-        if (!svgRoot) return;
-        currentConfig.controls.forEach(ctrl => {
-          const state = controlState[ctrl.id] || ctrl.defaults;
-          svgRoot.querySelectorAll(ctrl.selector).forEach(el => {
-            el.style.setProperty('fill', state.fill);
-            if (ctrl.showStroke) el.style.setProperty('stroke', state.stroke);
-            if (ctrl.showStrokeWidth) el.style.setProperty('stroke-width', state.strokeWidth);
-          });
+    function applyStyles() {
+      if (!svgRoot) return;
+      currentConfig.controls.forEach(ctrl => {
+        const state = controlState[ctrl.id] || ctrl.defaults;
+        svgRoot.querySelectorAll(ctrl.selector).forEach(el => {
+          el.style.setProperty('fill', state.fill);
+          if (ctrl.showStroke) el.style.setProperty('stroke', state.stroke);
+          if (ctrl.showStrokeWidth) el.style.setProperty('stroke-width', state.strokeWidth);
         });
-      }
+      });
+    }
 
-      function saveSettings() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({
-          logoKey: currentLogoKey, controls: controlState,
-          fileName: els.fileNameInput.value.trim() || currentConfig.fileName,
-          dpi: parseInt(els.dpiInput.value) || 2
-        }));
-      }
+    function saveSettings() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        logoKey: currentLogoKey, controls: controlState,
+        fileName: els.fileNameInput.value.trim() || currentConfig.fileName,
+        dpi: parseInt(els.dpiInput.value) || 2
+      }));
+    }
 
-      function loadSettings() {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-          try {
-            const data = JSON.parse(raw);
-            if (data.logoKey && LOGO_CONFIG[data.logoKey]) {
-              currentLogoKey = data.logoKey;
-              currentConfig = LOGO_CONFIG[currentLogoKey];
-              els.logoSelect.value = currentLogoKey;
-            }
-            if (data.controls) controlState = data.controls;
-            if (data.fileName) els.fileNameInput.value = data.fileName;
-            if (data.dpi) els.dpiInput.value = data.dpi;
-            return;
-          } catch (e) { }
-        }
-        initControlState();
-        els.fileNameInput.value = currentConfig.fileName;
+    function loadSettings() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try {
+          const data = JSON.parse(raw);
+          if (data.logoKey && LOGO_CONFIG[data.logoKey]) {
+            currentLogoKey = data.logoKey;
+            currentConfig = LOGO_CONFIG[currentLogoKey];
+            els.logoSelect.value = currentLogoKey;
+          }
+          if (data.controls) controlState = data.controls;
+          if (data.fileName) els.fileNameInput.value = data.fileName;
+          if (data.dpi) els.dpiInput.value = data.dpi;
+          return;
+        } catch (e) { }
       }
+      initControlState();
+      els.fileNameInput.value = currentConfig.fileName;
+    }
 
-      function initControlState() {
-        controlState = {};
-        currentConfig.controls.forEach(ctrl => { controlState[ctrl.id] = { ...ctrl.defaults }; });
+    function initControlState() {
+      controlState = {};
+      currentConfig.controls.forEach(ctrl => { controlState[ctrl.id] = { ...ctrl.defaults }; });
+    }
+
+    function getContentBounds() {
+      if (!svgRoot) return null;
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      svgRoot.querySelectorAll('path, rect, circle, ellipse, polygon, polyline, text, g').forEach(el => {
+        try {
+          const bbox = el.getBBox();
+          if (bbox.width > 0 && bbox.height > 0) {
+            minX = Math.min(minX, bbox.x); minY = Math.min(minY, bbox.y);
+            maxX = Math.max(maxX, bbox.x + bbox.width); maxY = Math.max(maxY, bbox.y + bbox.height);
+          }
+        } catch (e) { }
+      });
+      if (minX === Infinity) {
+        const vb = svgRoot.viewBox?.baseVal;
+        return { x: vb?.x || 0, y: vb?.y || 0, width: vb?.width || 1024, height: vb?.height || 1024 };
       }
+      const padding = Math.max(maxX - minX, maxY - minY) * 0.02;
+      return { x: minX - padding, y: minY - padding, width: (maxX - minX) + padding * 2, height: (maxY - minY) + padding * 2 };
+    }
 
-      function getContentBounds() {
-        if (!svgRoot) return null;
-        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-        svgRoot.querySelectorAll('path, rect, circle, ellipse, polygon, polyline, text, g').forEach(el => {
-          try {
-            const bbox = el.getBBox();
-            if (bbox.width > 0 && bbox.height > 0) {
-              minX = Math.min(minX, bbox.x); minY = Math.min(minY, bbox.y);
-              maxX = Math.max(maxX, bbox.x + bbox.width); maxY = Math.max(maxY, bbox.y + bbox.height);
-            }
-          } catch (e) { }
-        });
-        if (minX === Infinity) {
-          const vb = svgRoot.viewBox?.baseVal;
-          return { x: vb?.x || 0, y: vb?.y || 0, width: vb?.width || 1024, height: vb?.height || 1024 };
-        }
-        const padding = Math.max(maxX - minX, maxY - minY) * 0.02;
-        return { x: minX - padding, y: minY - padding, width: (maxX - minX) + padding * 2, height: (maxY - minY) + padding * 2 };
+    function makeSerializableClone(scale = 1, cropToContent = true) {
+      if (!svgRoot) return null;
+      const clone = svgRoot.cloneNode(true);
+      clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      clone.querySelectorAll('*').forEach(el => { if (el.style?.cssText) el.setAttribute('style', el.style.cssText); });
+      let w, h;
+      if (cropToContent) {
+        const bounds = getContentBounds();
+        clone.setAttribute('viewBox', `${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}`);
+        w = bounds.width; h = bounds.height;
+      } else {
+        const vb = svgRoot.viewBox?.baseVal;
+        w = vb?.width || parseInt(svgRoot.getAttribute('width')) || 1024;
+        h = vb?.height || parseInt(svgRoot.getAttribute('height')) || 1024;
       }
+      clone.setAttribute('width', String(Math.round(w * scale)));
+      clone.setAttribute('height', String(Math.round(h * scale)));
+      return { clone, w, h };
+    }
 
-      function makeSerializableClone(scale = 1, cropToContent = true) {
-        if (!svgRoot) return null;
-        const clone = svgRoot.cloneNode(true);
-        clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-        clone.querySelectorAll('*').forEach(el => { if (el.style?.cssText) el.setAttribute('style', el.style.cssText); });
-        let w, h;
-        if (cropToContent) {
-          const bounds = getContentBounds();
-          clone.setAttribute('viewBox', `${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}`);
-          w = bounds.width; h = bounds.height;
-        } else {
-          const vb = svgRoot.viewBox?.baseVal;
-          w = vb?.width || parseInt(svgRoot.getAttribute('width')) || 1024;
-          h = vb?.height || parseInt(svgRoot.getAttribute('height')) || 1024;
-        }
-        clone.setAttribute('width', String(Math.round(w * scale)));
-        clone.setAttribute('height', String(Math.round(h * scale)));
-        return { clone, w, h };
-      }
-
-      function exportPNG(useCustomDPI = false) {
-        applyStyles();
-        const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
-        let scale = 1, suffix = '';
-        if (useCustomDPI) { scale = clamp(parseInt(els.dpiInput.value) || 2, 1, 20); suffix = `-${scale}x`; }
-        const data = makeSerializableClone(scale, true);
-        if (!data) return showToast('SVG not loaded');
-        const { clone, w, h } = data;
-        const svgString = '<?xml version="1.0"?>\n' + new XMLSerializer().serializeToString(clone);
-        const url = URL.createObjectURL(new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' }));
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = Math.round(w * scale); canvas.height = Math.round(h * scale);
-          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-          URL.revokeObjectURL(url);
-          const a = document.createElement('a');
-          a.download = `${safeName}${suffix}.png`;
-          a.href = canvas.toDataURL('image/png');
-          a.click();
-          showToast(`Saved ${canvas.width}×${canvas.height} ✓`);
-        };
-        img.onerror = () => { URL.revokeObjectURL(url); showToast('Export failed'); };
-        img.src = url;
-      }
-
-      function exportSVG() {
-        applyStyles();
-        const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
-        const data = makeSerializableClone(1, true);
-        if (!data) return showToast('SVG not loaded');
-        const url = URL.createObjectURL(new Blob(['<?xml version="1.0"?>\n' + new XMLSerializer().serializeToString(data.clone)], { type: 'image/svg+xml;charset=utf-8' }));
+    function exportPNG(useCustomDPI = false) {
+      applyStyles();
+      const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
+      let scale = 1, suffix = '';
+      if (useCustomDPI) { scale = clamp(parseInt(els.dpiInput.value) || 2, 1, 20); suffix = `-${scale}x`; }
+      const data = makeSerializableClone(scale, true);
+      if (!data) return showToast('SVG not loaded');
+      const { clone, w, h } = data;
+      const svgString = '<?xml version="1.0"?>\n' + new XMLSerializer().serializeToString(clone);
+      const url = URL.createObjectURL(new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' }));
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(w * scale); canvas.height = Math.round(h * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
         const a = document.createElement('a');
-        a.download = `${safeName}.svg`; a.href = url; a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1500);
-        showToast('SVG saved ✓');
-      }
+        a.download = `${safeName}${suffix}.png`;
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+        showToast(`Saved ${canvas.width}×${canvas.height} ✓`);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); showToast('Export failed'); };
+      img.src = url;
+    }
 
-      let lastRandomHue = null;
-      function randomizeColors() {
-        const numColors = currentConfig.controls.length;
-        let baseHue;
-        do { baseHue = Math.floor(Math.random() * 360); } while (lastRandomHue !== null && Math.abs(baseHue - lastRandomHue) < 30);
-        lastRandomHue = baseHue;
-        const saturation = 0.65 + Math.random() * 0.25;
-        const lightness = 0.40 + Math.random() * 0.20;
-        const hues = numColors === 1 ? [baseHue] : numColors === 2 ? [baseHue, (baseHue + 180) % 360] :
-          Array.from({ length: numColors }, (_, i) => (baseHue + (360 / numColors) * i) % 360);
+    function exportSVG() {
+      applyStyles();
+      const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
+      const data = makeSerializableClone(1, true);
+      if (!data) return showToast('SVG not loaded');
+      const url = URL.createObjectURL(new Blob(['<?xml version="1.0"?>\n' + new XMLSerializer().serializeToString(data.clone)], { type: 'image/svg+xml;charset=utf-8' }));
+      const a = document.createElement('a');
+      a.download = `${safeName}.svg`; a.href = url; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      showToast('SVG saved ✓');
+    }
 
-        currentConfig.controls.forEach((ctrl, i) => {
-          const rgb = hslToRgb(hues[i % hues.length], saturation, lightness);
-          const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
-          controlState[ctrl.id].fill = hex;
-          const fillPicker = document.getElementById(`${ctrl.id}-fill-picker`);
-          const fillHex = document.getElementById(`${ctrl.id}-fill-hex`);
-          if (fillPicker) fillPicker.value = hex;
-          if (fillHex) fillHex.value = hex.replace('#', '');
-        });
-        applyStyles(); saveSettings();
-        showToast(`${numColors === 1 ? 'Random' : numColors === 2 ? 'Complementary' : 'Triadic'} colors 🎲`);
-      }
+    let lastRandomHue = null;
+    function randomizeColors() {
+      const numColors = currentConfig.controls.length;
+      let baseHue;
+      do { baseHue = Math.floor(Math.random() * 360); } while (lastRandomHue !== null && Math.abs(baseHue - lastRandomHue) < 30);
+      lastRandomHue = baseHue;
+      const saturation = 0.65 + Math.random() * 0.25;
+      const lightness = 0.40 + Math.random() * 0.20;
+      const hues = numColors === 1 ? [baseHue] : numColors === 2 ? [baseHue, (baseHue + 180) % 360] :
+        Array.from({ length: numColors }, (_, i) => (baseHue + (360 / numColors) * i) % 360);
 
-      function resetAll() {
-        initControlState();
-        els.fileNameInput.value = currentConfig.fileName;
-        generateControlsUI();
-        applyStyles(); saveSettings();
-        showToast('Reset to defaults ✓');
-      }
+      currentConfig.controls.forEach((ctrl, i) => {
+        const rgb = hslToRgb(hues[i % hues.length], saturation, lightness);
+        const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+        controlState[ctrl.id].fill = hex;
+        const fillPicker = document.getElementById(`${ctrl.id}-fill-picker`);
+        const fillHex = document.getElementById(`${ctrl.id}-fill-hex`);
+        if (fillPicker) fillPicker.value = hex;
+        if (fillHex) fillHex.value = hex.replace('#', '');
+      });
+      applyStyles(); saveSettings();
+      showToast(`${numColors === 1 ? 'Random' : numColors === 2 ? 'Complementary' : 'Triadic'} colors 🎲`);
+    }
 
-      async function switchLogo(key) {
-        currentLogoKey = key;
-        currentConfig = LOGO_CONFIG[key];
-        initControlState();
-        els.fileNameInput.value = currentConfig.fileName;
-        await loadSVG();
-        generateControlsUI();
-        applyStyles(); saveSettings();
-      }
+    function resetAll() {
+      initControlState();
+      els.fileNameInput.value = currentConfig.fileName;
+      generateControlsUI();
+      applyStyles(); saveSettings();
+      showToast('Reset to defaults ✓');
+    }
 
-      function wireMainEvents() {
-        els.logoSelect.addEventListener('change', () => switchLogo(els.logoSelect.value));
-        els.randomBtn.addEventListener('click', randomizeColors);
-        els.resetBtn.addEventListener('click', resetAll);
-        els.exportPNG.addEventListener('click', () => exportPNG(false));
-        els.exportPNGHD.addEventListener('click', () => exportPNG(true));
-        els.exportSVG.addEventListener('click', exportSVG);
-        els.dpiInput.addEventListener('change', saveSettings);
-      }
+    async function switchLogo(key) {
+      currentLogoKey = key;
+      currentConfig = LOGO_CONFIG[key];
+      initControlState();
+      els.fileNameInput.value = currentConfig.fileName;
+      await loadSVG();
+      generateControlsUI();
+      applyStyles(); saveSettings();
+    }
 
-      async function init() {
-        loadSettings();
-        await loadSVG();
-        generateControlsUI();
-        applyStyles();
-        wireMainEvents();
-      }
+    function wireMainEvents() {
+      els.logoSelect.addEventListener('change', () => switchLogo(els.logoSelect.value));
+      els.randomBtn.addEventListener('click', randomizeColors);
+      els.resetBtn.addEventListener('click', resetAll);
+      els.exportPNG.addEventListener('click', () => exportPNG(false));
+      els.exportPNGHD.addEventListener('click', () => exportPNG(true));
+      els.exportSVG.addEventListener('click', exportSVG);
+      els.dpiInput.addEventListener('change', saveSettings);
+    }
 
-      document.addEventListener('DOMContentLoaded', init);
-    })();
+    async function init() {
+      loadSettings();
+      await loadSVG();
+      generateControlsUI();
+      applyStyles();
+      wireMainEvents();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+
   </script>
 </body>
 
