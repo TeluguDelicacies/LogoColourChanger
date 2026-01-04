@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 
 <head>
@@ -828,7 +828,7 @@
               Download HD PNG
             </button>
           </div>
-          <div class="hd-hint">💡 Use 2× for web, 3-4× for print. Higher = larger file size.</div>
+          <div class="hd-hint">ðŸ’¡ Use 2Ã— for web, 3-4Ã— for print. Higher = larger file size.</div>
         </div>
       </section>
     </div>
@@ -838,8 +838,8 @@
       <div class="preview-wrapper">
         <!-- Overlay buttons on top-right of preview -->
         <div class="preview-overlay-buttons">
-          <button id="randomBtn" class="preview-btn random" title="Generate random colors">🎲 Random</button>
-          <button id="resetBtn" class="preview-btn reset" title="Reset to defaults">↺ Reset</button>
+          <button id="randomBtn" class="preview-btn random" title="Generate random colors">ðŸŽ² Random</button>
+          <button id="resetBtn" class="preview-btn reset" title="Reset to defaults">â†º Reset</button>
         </div>
         <div class="preview-container" id="preview">
           <div id="svgContainer"></div>
@@ -852,6 +852,7 @@
   <div id="toast" class="toast"></div>
 
   <script type="module">
+    import { LOGO_SVGS } from './logos.js';
 
     /* ========== RESPONSIVE DETECTION ========== */
     const DESKTOP_MIN_WIDTH = 900;
@@ -862,7 +863,7 @@
         window.innerHeight >= DESKTOP_MIN_HEIGHT;
       document.body.classList.toggle('is-desktop', isDesktop);
       if (checkDesktop.lastMode !== isDesktop) {
-        console.log(`Layout: ${isDesktop ? 'DESKTOP' : 'MOBILE'} (${window.innerWidth}×${window.innerHeight})`);
+        console.log(`Layout: ${isDesktop ? 'DESKTOP' : 'MOBILE'} (${window.innerWidth}Ã—${window.innerHeight})`);
         checkDesktop.lastMode = isDesktop;
       }
     }
@@ -875,7 +876,7 @@
     const LOGO_CONFIG = {
       td: {
         name: "Telugu Delicacies",
-        file: new URL('./logo.svg', import.meta.url).href,
+
         controls: [
           {
             id: "path",
@@ -902,7 +903,7 @@
       },
       akshaya: {
         name: "Akshaya",
-        file: new URL('./Akshaya.svg', import.meta.url).href,
+
         controls: [
           {
             id: "green",
@@ -929,7 +930,7 @@
       },
       tasty: {
         name: "Tasty Pinch",
-        file: new URL('./Tasty Pinch.svg', import.meta.url).href,
+
         controls: [
           {
             id: "brand",
@@ -946,7 +947,7 @@
       },
       teepi: {
         name: "Teepi Gurthu",
-        file: new URL('./Teepi Gurthu.svg', import.meta.url).href,
+
         controls: [
           {
             id: "gold",
@@ -1040,34 +1041,21 @@
       setTimeout(() => els.toast.classList.remove('show'), 2000);
     }
 
-    async function loadSVG() {
-      try {
-        const fetchUrl = currentConfig.file;
-
-        console.log(`[LogoCustomizer] Attempting to fetch: ${fetchUrl}`);
-
-        const response = await fetch(fetchUrl, { cache: "no-cache" });
-        if (!response.ok) {
-          throw new Error(`Fetch failed: ${response.status} ${response.statusText}`);
-        }
-
-        const text = await response.text();
-        els.svgContainer.innerHTML = text;
+    function renderLogo(brandName) {
+      console.log(`[LogoCustomizer] Rendering logo: ${brandName}`);
+      const svgContent = LOGO_SVGS[brandName];
+      if (svgContent) {
+        els.svgContainer.innerHTML = svgContent;
         svgRoot = els.svgContainer.querySelector('svg');
         if (svgRoot) {
           svgRoot.id = 'svgRootInlined';
-          console.log(`[LogoCustomizer] Successfully loaded: ${currentConfig.name}`);
+          console.log(`[LogoCustomizer] Successfully rendered: ${brandName}`);
+        } else {
+           console.error('[LogoCustomizer] SVG rendered but no <svg> element found');
         }
-      } catch (e) {
-        console.error(`[LogoCustomizer] Error loading SVG from: ${currentConfig.file}`);
-        console.error(`[LogoCustomizer] Error details:`, e);
-
-        // Fallback UI
-        els.svgContainer.innerHTML = `<svg id="svgRootInlined" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-            <rect id="SquareBehindTD" fill="#eedc29" width="800" height="800" x="113" y="117"/>
-            <path id="TDPath" fill="#ffffff" stroke="#000000" stroke-width="2" d="M420,940c-6.6-2.1-12.4-8.6-13.8-15.6-2-9.5,1.3-44,7-73.3,16.1-83.4,51.5-192.5,91.2-281,9.4-21,28.7-59.3,37.7-75,18.3-31.7,38.9-57.4,50.2-62.5,11.1-5,27.6,0.7,34.5,11.9,4.2,6.8,3.4,9.6-6.8,22.3-22.7,28.3-50.9,74.6-73.1,119.8-24.9,50.7-39.1,85.9-59.1,146.5-11.5,34.8-17.2,54.3-22.7,78.1-4.4,18.9-16.1,76.6-15.7,77,0.4,0.4,47.6-26.8,69.7-40.2,86-52,158.8-110.6,220.4-177.5,29.9-32.5,50.6-58.6,71.8-90.5,36.2-54.5,57.6-104.6,66.4-155.5,2.6-14.9,2.6-50.7,0-63.4-2.6-13.1-6.2-23.6-9.9-29.2-5.1-7.7-17.6-19.6-24.4-23.2-7.9-4.2-27.1-9.7-45.4-13-13.3-2.4-16.8-2.6-42.5-2.7-30.3-0.1-38.1,0.7-69.9,6.6-65.1,12.1-112.5,27.6-176.4,57.7-36,17-84.8,44.8-121.2,69.2l-11.5,7.7-2.3,23.9c-3.6,37.5-4.1,45.5-5.2,80.3-2.1,64.4,0.8,122.9,9.2,189.5,3.5,28,3.4,29.8-2.6,36.5-4.9,5.4-11.7,8.5-19.8,9-10.4,0.6-17.6-3-20.9-10.6-3.2-7.3-7.3-47.4-10-99.3-2.2-41.4-1.1-163.6,1.8-197.9l0.6-7.4-2.8,1.8c-3.3,2.1-11.7,2.4-15.5,0.4-11.5-5.9-13.9-18.7-5-27,3.8-3.6,18.7-12.8,22.1-13.7,1.5-0.4,2-1.7,2.4-6.6,4.2-49.8,9.2-82.5,20.1-132.2,3.6-16.4,13.4-56.9,16.1-66.2,0.4-1.4,0.2-2.3-0.5-2.3-2.9,0-89.8,24.9-158.6,45.5-64.7,19.3-82.5,24.4-87.8,25.2-13.8,1.9-28.3-12-24.8-23.7,1.5-5.1,5.1-10,8.7-12.2,6.9-4,101.8-32.5,175.9-52.7,111.7-30.5,228.2-59.5,289.9-72.1,86-17.6,132.8-22.8,193.6-21.7,45.6,0.9,68.5,2.6,74.8,5.8,13.2,6.6,11.9,23.3-2.3,29.9-3.6,1.7-7,1.9-38.1,1.9-18.8,0-42.2,0.5-52,1-83.2,4.7-174,19.6-294.7,48.3l-17.9,4.2-1.8,6c-22.5,75.2-27.3,92.4-33.4,119.8-5.7,25.6-7.9,36.8-10.5,53.7-1.2,7.4-2.3,14.3-2.5,15.3-0.2,1-0.2,1.8-0.1,1.8,0.1,0,4.9-3.1,10.7-6.8,53-34.7,117.2-68.2,172.9-90.2,31.4-12.4,77-25.8,112-33,36.7-7.5,91.6-10.1,120-5.6,13.9,2.2,37.4,8.3,45.5,11.9,27.2,12,48.8,30.5,66.3,56.7,10,15,16.9,32,21.3,52.5,2.7,12.7,3.8,49.3,2.1,66.7-4.5,43.9-18.9,83.4-46.3,127-45.7,72.7-117.2,148.8-206.8,219.9-64.4,51.2-153.4,109.5-217,142.1C454.5,934.5,430.2,943.2,420,940z"/>
-          </svg>`;
-        svgRoot = els.svgContainer.querySelector('svg');
+      } else {
+        console.error(`[LogoCustomizer] Logo not found: ${brandName}`);
+        els.svgContainer.innerHTML = '<div style="color:red;padding:20px;">Logo Not Found</div>';
       }
     }
 
@@ -1086,7 +1074,7 @@
                 <span class="control-label">${ctrl.label}</span>
                 <span class="control-desc">${ctrl.desc}</span>
               </div>
-              <button class="reset-btn" data-reset="${ctrl.id}" title="Reset to default">↺</button>
+              <button class="reset-btn" data-reset="${ctrl.id}" title="Reset to default">â†º</button>
             </div>
             <div class="color-row">
               <input type="color" class="color-picker" id="${ctrl.id}-fill-picker" value="${state.fill}" title="Click to pick a color">
@@ -1116,7 +1104,7 @@
           if (ctrl.showStrokeWidth) {
             html += `<div class="stroke-width-wrap" title="Outline thickness"><span class="stroke-width-label">Width:</span>
                 <div class="stepper">
-                  <button class="stepper-btn minus">−</button>
+                  <button class="stepper-btn minus">âˆ’</button>
                   <input type="number" class="stroke-width-input" id="${ctrl.id}-stroke-width" value="${state.strokeWidth}" min="0" max="20" step="1">
                   <button class="stepper-btn plus">+</button>
                 </div></div>`;
@@ -1203,7 +1191,7 @@
             if (strokePicker) strokePicker.value = ctrl.defaults.stroke;
             if (strokeWidth) strokeWidth.value = ctrl.defaults.strokeWidth;
             applyStyles(); saveSettings();
-            showToast('Reset ✓');
+            showToast('Reset âœ“');
           });
         }
 
@@ -1324,7 +1312,7 @@
         a.download = `${safeName}${suffix}.png`;
         a.href = canvas.toDataURL('image/png');
         a.click();
-        showToast(`Saved ${canvas.width}×${canvas.height} ✓`);
+        showToast(`Saved ${canvas.width}Ã—${canvas.height} âœ“`);
       };
       img.onerror = () => { URL.revokeObjectURL(url); showToast('Export failed'); };
       img.src = url;
@@ -1339,7 +1327,7 @@
       const a = document.createElement('a');
       a.download = `${safeName}.svg`; a.href = url; a.click();
       setTimeout(() => URL.revokeObjectURL(url), 1500);
-      showToast('SVG saved ✓');
+      showToast('SVG saved âœ“');
     }
 
     let lastRandomHue = null;
@@ -1363,7 +1351,7 @@
         if (fillHex) fillHex.value = hex.replace('#', '');
       });
       applyStyles(); saveSettings();
-      showToast(`${numColors === 1 ? 'Random' : numColors === 2 ? 'Complementary' : 'Triadic'} colors 🎲`);
+      showToast(`${numColors === 1 ? 'Random' : numColors === 2 ? 'Complementary' : 'Triadic'} colors ðŸŽ²`);
     }
 
     function resetAll() {
@@ -1371,7 +1359,7 @@
       els.fileNameInput.value = currentConfig.fileName;
       generateControlsUI();
       applyStyles(); saveSettings();
-      showToast('Reset to defaults ✓');
+      showToast('Reset to defaults âœ“');
     }
 
     async function switchLogo(key) {
@@ -1379,7 +1367,7 @@
       currentConfig = LOGO_CONFIG[key];
       initControlState();
       els.fileNameInput.value = currentConfig.fileName;
-      await loadSVG();
+      renderLogo(key);
       generateControlsUI();
       applyStyles(); saveSettings();
     }
@@ -1396,7 +1384,7 @@
 
     async function init() {
       loadSettings();
-      await loadSVG();
+      renderLogo(currentLogoKey);
       generateControlsUI();
       applyStyles();
       wireMainEvents();
