@@ -38,7 +38,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ========== MOBILE LAYOUT (Default) ========== */
+    /* ========== MOBILE LAYOUT ========== */
     .app {
       min-height: 100vh;
       min-height: 100dvh;
@@ -69,7 +69,6 @@
       margin: 0;
     }
 
-    /* Card base */
     .card {
       background: var(--card);
       border-radius: var(--radius);
@@ -119,7 +118,6 @@
       display: flex;
       flex-direction: column;
       order: 1;
-      /* Mobile: preview first */
     }
 
     .preview-header {
@@ -127,12 +125,40 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .preview-title {
       font-size: 0.75rem;
       font-weight: 600;
       color: var(--text-muted);
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .preview-btn {
+      padding: 6px 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .preview-btn.random {
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      color: white;
+    }
+
+    .preview-btn.reset {
+      background: var(--bg);
+      color: var(--text-secondary);
+      border: 1px solid var(--card-border);
     }
 
     .preview-container {
@@ -177,14 +203,26 @@
     .control-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .control-info {
+      flex: 1;
     }
 
     .control-label {
       font-size: 0.813rem;
       font-weight: 600;
       color: var(--text-primary);
+      display: block;
+    }
+
+    .control-desc {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 2px;
     }
 
     .reset-btn {
@@ -199,6 +237,7 @@
       cursor: pointer;
       color: var(--text-muted);
       font-size: 0.9rem;
+      flex-shrink: 0;
     }
 
     .color-row {
@@ -387,6 +426,44 @@
       border-color: var(--accent);
     }
 
+    .download-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .dpi-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+    }
+
+    .dpi-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .dpi-input {
+      width: 40px;
+      padding: 4px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      text-align: center;
+    }
+
+    .dpi-input:focus {
+      outline: none;
+    }
+
     .download-buttons {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -424,39 +501,6 @@
     .download-icon {
       width: 16px;
       height: 16px;
-    }
-
-    /* Action Buttons at Bottom */
-    .action-buttons {
-      order: 4;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      padding: 12px 0;
-    }
-
-    .action-btn {
-      padding: 12px 20px;
-      font-size: 0.813rem;
-      font-weight: 600;
-      border-radius: var(--radius-sm);
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: var(--transition);
-    }
-
-    .action-btn.random {
-      background: linear-gradient(135deg, #8b5cf6, #6366f1);
-      color: white;
-    }
-
-    .action-btn.reset {
-      background: transparent;
-      border: 1px solid var(--danger);
-      color: var(--danger);
     }
 
     /* Toast */
@@ -532,8 +576,10 @@
 
     body.is-desktop .preview-container {
       flex: 1;
-      aspect-ratio: unset;
-      min-height: 200px;
+      aspect-ratio: 1;
+      max-width: 100%;
+      max-height: 100%;
+      margin: 0 auto;
     }
 
     body.is-desktop .controls-section {
@@ -543,6 +589,11 @@
       overflow-y: auto;
       max-height: 100%;
       padding-right: 8px;
+      /* 2x2 GRID on desktop */
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-content: start;
     }
 
     body.is-desktop .controls-section::-webkit-scrollbar {
@@ -555,18 +606,22 @@
     }
 
     body.is-desktop .download-section {
-      grid-column: 1;
+      grid-column: 1 / -1;
       grid-row: 4;
       order: unset;
     }
 
-    body.is-desktop .action-buttons {
-      grid-column: 2;
-      grid-row: 4;
-      order: unset;
-      justify-content: flex-end;
-      padding: 0;
-      align-items: center;
+    body.is-desktop .download-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    body.is-desktop .download-btn {
+      flex: 1;
+    }
+
+    body.is-desktop .download-btn.primary {
+      flex: 2;
     }
   </style>
 </head>
@@ -591,10 +646,14 @@
       </div>
     </div>
 
-    <!-- Preview Section -->
+    <!-- Preview Section with Random/Reset in header -->
     <section class="preview-section card">
       <div class="preview-header">
         <span class="preview-title">👁️ Preview</span>
+        <div class="preview-actions">
+          <button id="randomBtn" class="preview-btn random" title="Generate random color scheme">🎲 Random</button>
+          <button id="resetBtn" class="preview-btn reset" title="Reset to default colors">↺ Reset</button>
+        </div>
       </div>
       <div class="preview-container" id="preview">
         <div id="svgContainer"></div>
@@ -609,8 +668,16 @@
       <label for="fileName">File Name</label>
       <input type="text" id="fileName" class="filename-input" placeholder="my-logo">
 
+      <div class="download-row">
+        <div class="dpi-wrap" title="Scale multiplier for HD export (2 = double size)">
+          <span class="dpi-label">HD Scale:</span>
+          <input type="number" id="dpiInput" class="dpi-input" value="2" min="1" max="4" step="1">
+          <span class="dpi-label">×</span>
+        </div>
+      </div>
+
       <div class="download-buttons">
-        <button id="exportPNG" class="download-btn primary">
+        <button id="exportPNG" class="download-btn primary" title="Download standard resolution PNG">
           <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
@@ -618,7 +685,7 @@
           </svg>
           Save PNG
         </button>
-        <button id="exportPNGHD" class="download-btn secondary">
+        <button id="exportPNGHD" class="download-btn secondary" title="Download high resolution PNG using scale above">
           <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
@@ -626,7 +693,7 @@
           </svg>
           HD PNG
         </button>
-        <button id="exportSVG" class="download-btn secondary">
+        <button id="exportSVG" class="download-btn secondary" title="Download as scalable vector (best quality)">
           <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
             <polyline points="14 2 14 8 20 8" />
@@ -634,12 +701,6 @@
           SVG
         </button>
       </div>
-    </section>
-
-    <!-- Action Buttons (Random & Reset) at Bottom -->
-    <section class="action-buttons">
-      <button id="randomBtn" class="action-btn random">🎲 Random Colors</button>
-      <button id="resetAllBtn" class="action-btn reset">↺ Reset All</button>
     </section>
   </div>
 
@@ -649,29 +710,23 @@
   <script>
     (() => {
       /* ========== RESPONSIVE DETECTION ========== */
-      // Use 768px width (tablet+) and 500px height (minimal)
       const DESKTOP_MIN_WIDTH = 900;
-      const DESKTOP_MIN_HEIGHT = 500; // Lowered from 600
+      const DESKTOP_MIN_HEIGHT = 500;
 
       function checkDesktop() {
         const isDesktop = window.innerWidth >= DESKTOP_MIN_WIDTH &&
           window.innerHeight >= DESKTOP_MIN_HEIGHT;
-
         document.body.classList.toggle('is-desktop', isDesktop);
-
-        // Only log once per mode change
-        const currentMode = isDesktop ? 'DESKTOP' : 'MOBILE';
-        if (checkDesktop.lastMode !== currentMode) {
-          console.log(`Layout: ${currentMode} (${window.innerWidth}×${window.innerHeight})`);
-          checkDesktop.lastMode = currentMode;
+        if (checkDesktop.lastMode !== isDesktop) {
+          console.log(`Layout: ${isDesktop ? 'DESKTOP' : 'MOBILE'} (${window.innerWidth}×${window.innerHeight})`);
+          checkDesktop.lastMode = isDesktop;
         }
       }
       checkDesktop.lastMode = null;
-
       checkDesktop();
       window.addEventListener('resize', checkDesktop);
 
-      /* ========== Configuration ========== */
+      /* ========== Configuration with Labels & Descriptions ========== */
       const LOGO_CONFIG = {
         td: {
           name: "Telugu Delicacies",
@@ -680,7 +735,9 @@
             {
               id: "path",
               selector: "#path1, #TDPath",
-              label: "Logo Path Fill",
+              label: "TD Letters",
+              desc: "The white 'TD' lettering in the center",
+              tooltip: "Change the color of the TD letters",
               showStroke: true,
               showStrokeWidth: true,
               defaults: { fill: "#FFFFFF", stroke: "#000000", strokeWidth: "2" }
@@ -688,7 +745,9 @@
             {
               id: "rect",
               selector: "#rect1, #SquareBehindTD",
-              label: "Background Fill",
+              label: "Background",
+              desc: "The yellow square behind the letters",
+              tooltip: "Change the background square color",
               showStroke: true,
               showStrokeWidth: true,
               defaults: { fill: "#EEDC29", stroke: "#EEDC29", strokeWidth: "0" }
@@ -703,7 +762,9 @@
             {
               id: "green",
               selector: "#path3",
-              label: "Green Details",
+              label: "Leaves & Green",
+              desc: "Green leaf decorations and elements",
+              tooltip: "Change the green parts of the logo",
               showStroke: true,
               showStrokeWidth: true,
               defaults: { fill: "#18aa3e", stroke: "#18aa3e", strokeWidth: "0" }
@@ -711,7 +772,9 @@
             {
               id: "yellow",
               selector: "#path4",
-              label: "Yellow Details",
+              label: "Sun & Yellow",
+              desc: "Yellow sun and accent elements",
+              tooltip: "Change the yellow/sun parts of the logo",
               showStroke: true,
               showStrokeWidth: true,
               defaults: { fill: "#fdf311", stroke: "#fdf311", strokeWidth: "0" }
@@ -726,7 +789,9 @@
             {
               id: "brand",
               selector: "#path1",
-              label: "Brand Fill",
+              label: "Brand & Spoon",
+              desc: "Main brand text and spoon graphic",
+              tooltip: "Change the brand text and spoon color",
               showStroke: true,
               showStrokeWidth: true,
               defaults: { fill: "#802328", stroke: "#802328", strokeWidth: "0" }
@@ -736,7 +801,7 @@
         }
       };
 
-      const STORAGE_KEY = 'tdLogoCustomizer_v6';
+      const STORAGE_KEY = 'tdLogoCustomizer_v7';
       let currentLogoKey = 'td';
       let currentConfig = LOGO_CONFIG[currentLogoKey];
       let svgRoot = null;
@@ -748,8 +813,9 @@
         controlsSection: document.getElementById('controlsSection'),
         logoSelect: document.getElementById('logoSelect'),
         fileNameInput: document.getElementById('fileName'),
+        dpiInput: document.getElementById('dpiInput'),
         randomBtn: document.getElementById('randomBtn'),
-        resetAllBtn: document.getElementById('resetAllBtn'),
+        resetBtn: document.getElementById('resetBtn'),
         exportPNG: document.getElementById('exportPNG'),
         exportPNGHD: document.getElementById('exportPNGHD'),
         exportSVG: document.getElementById('exportSVG'),
@@ -831,14 +897,18 @@
           const card = document.createElement('div');
           card.className = 'control-card';
           card.id = `control-${ctrl.id}`;
+          card.title = ctrl.tooltip || '';
 
           let html = `
             <div class="control-header">
-              <span class="control-label">${ctrl.label}</span>
-              <button class="reset-btn" data-reset="${ctrl.id}" title="Reset">↺</button>
+              <div class="control-info">
+                <span class="control-label">${ctrl.label}</span>
+                <span class="control-desc">${ctrl.desc}</span>
+              </div>
+              <button class="reset-btn" data-reset="${ctrl.id}" title="Reset to default">↺</button>
             </div>
             <div class="color-row">
-              <input type="color" class="color-picker" id="${ctrl.id}-fill-picker" value="${state.fill}">
+              <input type="color" class="color-picker" id="${ctrl.id}-fill-picker" value="${state.fill}" title="Click to pick a color">
               <div class="hex-input-group">
                 <span class="hex-label">Color</span>
                 <div class="hex-input-wrap">
@@ -847,8 +917,9 @@
                          value="${state.fill.replace('#', '')}" 
                          maxlength="6" 
                          placeholder="FFFFFF"
+                         title="Enter hex color code"
                          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-                  <button class="copy-btn" data-copy="${ctrl.id}-fill" title="Copy">
+                  <button class="copy-btn" data-copy="${ctrl.id}-fill" title="Copy color code">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <rect x="9" y="9" width="13" height="13" rx="2"/>
                       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
@@ -860,16 +931,16 @@
 
           if (ctrl.showStroke || ctrl.showStrokeWidth) {
             html += `<div class="stroke-section">
-              <div class="stroke-section-title">Stroke</div>
+              <div class="stroke-section-title">Stroke (Outline)</div>
               <div class="stroke-row">`;
 
             if (ctrl.showStroke) {
-              html += `<input type="color" class="stroke-color-picker" id="${ctrl.id}-stroke-picker" value="${state.stroke}" title="Stroke Color">`;
+              html += `<input type="color" class="stroke-color-picker" id="${ctrl.id}-stroke-picker" value="${state.stroke}" title="Stroke/outline color">`;
             }
 
             if (ctrl.showStrokeWidth) {
               html += `
-                <div class="stroke-width-wrap">
+                <div class="stroke-width-wrap" title="Outline thickness (0 = no outline)">
                   <span class="stroke-width-label">Width:</span>
                   <input type="number" class="stroke-width-input" id="${ctrl.id}-stroke-width" 
                          value="${state.strokeWidth}" min="0" max="20" step="0.5">
@@ -995,7 +1066,8 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
           logoKey: currentLogoKey,
           controls: controlState,
-          fileName: els.fileNameInput.value.trim() || currentConfig.fileName
+          fileName: els.fileNameInput.value.trim() || currentConfig.fileName,
+          dpi: parseInt(els.dpiInput.value) || 2
         }));
       }
 
@@ -1011,6 +1083,7 @@
             }
             if (data.controls) controlState = data.controls;
             if (data.fileName) els.fileNameInput.value = data.fileName;
+            if (data.dpi) els.dpiInput.value = data.dpi;
             return;
           } catch (e) { }
         }
@@ -1077,15 +1150,15 @@
         return { clone, w, h };
       }
 
-      function exportPNG(useDeviceDPI = false) {
+      function exportPNG(useCustomDPI = false) {
         applyStyles();
         const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
 
         let scale = 1;
         let suffix = '';
-        if (useDeviceDPI) {
-          scale = Math.max(2, window.devicePixelRatio || 1);
-          suffix = '-HD';
+        if (useCustomDPI) {
+          scale = clamp(parseInt(els.dpiInput.value) || 2, 1, 4);
+          suffix = `-${scale}x`;
         }
 
         const data = makeSerializableClone(scale, true);
@@ -1133,45 +1206,32 @@
       }
 
       /* ========== SMART RANDOM COLORS ========== */
-      // Strategy based on number of color controls:
-      // 1 color  → Random vibrant color
-      // 2 colors → Complementary (hue + 180°)
-      // 3+ colors → Triadic or split-complementary
-
       let lastRandomHue = null;
 
       function randomizeColors() {
         const numColors = currentConfig.controls.length;
 
-        // Generate base hue (avoid repeating last)
         let baseHue;
         do {
           baseHue = Math.floor(Math.random() * 360);
         } while (lastRandomHue !== null && Math.abs(baseHue - lastRandomHue) < 30);
         lastRandomHue = baseHue;
 
-        // Good saturation and lightness for visible colors
-        const saturation = 0.65 + Math.random() * 0.25; // 0.65 - 0.90
-        const lightness = 0.40 + Math.random() * 0.20;  // 0.40 - 0.60
+        const saturation = 0.65 + Math.random() * 0.25;
+        const lightness = 0.40 + Math.random() * 0.20;
 
-        // Generate colors based on count
         const hues = [];
-
         if (numColors === 1) {
-          // Single color: just use base hue
           hues.push(baseHue);
         } else if (numColors === 2) {
-          // Two colors: Complementary (opposite on color wheel)
           hues.push(baseHue);
           hues.push((baseHue + 180) % 360);
         } else {
-          // 3+ colors: Triadic (evenly spaced)
           for (let i = 0; i < numColors; i++) {
             hues.push((baseHue + (360 / numColors) * i) % 360);
           }
         }
 
-        // Apply colors
         currentConfig.controls.forEach((ctrl, i) => {
           const hue = hues[i % hues.length];
           const rgb = hslToRgb(hue, saturation, lightness);
@@ -1188,9 +1248,8 @@
         applyStyles();
         saveSettings();
 
-        // Show what strategy was used
         const strategy = numColors === 1 ? 'Random' : numColors === 2 ? 'Complementary' : 'Triadic';
-        showToast(`${strategy} colors applied! 🎲`);
+        showToast(`${strategy} colors 🎲`);
       }
 
       /* ========== Reset All ========== */
@@ -1219,10 +1278,11 @@
       function wireMainEvents() {
         els.logoSelect.addEventListener('change', () => switchLogo(els.logoSelect.value));
         els.randomBtn.addEventListener('click', randomizeColors);
-        els.resetAllBtn.addEventListener('click', resetAll);
+        els.resetBtn.addEventListener('click', resetAll);
         els.exportPNG.addEventListener('click', () => exportPNG(false));
         els.exportPNGHD.addEventListener('click', () => exportPNG(true));
         els.exportSVG.addEventListener('click', exportSVG);
+        els.dpiInput.addEventListener('change', saveSettings);
       }
 
       /* ========== Initialize ========== */
