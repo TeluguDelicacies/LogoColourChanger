@@ -423,51 +423,15 @@
       border-color: var(--accent);
     }
 
-    .download-row {
+    /* Standard download buttons row */
+    .download-buttons-row {
       display: flex;
-      flex-wrap: wrap;
       gap: 8px;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .dpi-wrap {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--bg);
-      border-radius: var(--radius-sm);
-      padding: 8px 12px;
-    }
-
-    .dpi-label {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    .dpi-input {
-      width: 40px;
-      padding: 4px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      background: transparent;
-      border: none;
-      color: var(--text-primary);
-      text-align: center;
-    }
-
-    .dpi-input:focus {
-      outline: none;
-    }
-
-    .download-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      margin-bottom: 12px;
     }
 
     .download-btn {
+      flex: 1;
       padding: 12px 8px;
       font-size: 0.75rem;
       font-weight: 600;
@@ -482,17 +446,88 @@
     }
 
     .download-btn.primary {
-      grid-column: 1 / -1;
       background: linear-gradient(135deg, var(--accent), #6366f1);
       color: white;
-      padding: 14px;
-      font-size: 0.875rem;
     }
 
     .download-btn.secondary {
       background: var(--bg);
       color: var(--text-secondary);
       border: 1px solid var(--card-border);
+    }
+
+    /* HD Export section */
+    .hd-section {
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      margin-top: 8px;
+    }
+
+    .hd-section-title {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .hd-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .scale-wrap {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--card);
+      border-radius: 6px;
+      padding: 6px 10px;
+    }
+
+    .scale-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .scale-input {
+      width: 36px;
+      padding: 4px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      text-align: center;
+    }
+
+    .scale-input:focus {
+      outline: none;
+    }
+
+    .hd-btn {
+      flex: 1;
+      padding: 10px 14px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .hd-hint {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      margin-top: 6px;
     }
 
     .download-icon {
@@ -592,17 +627,13 @@
       order: 2;
     }
 
-    body.is-desktop .download-buttons {
+    body.is-desktop .download-buttons-row {
       display: flex;
       gap: 10px;
     }
 
-    body.is-desktop .download-btn {
-      flex: 1;
-    }
-
-    body.is-desktop .download-btn.primary {
-      flex: 2;
+    body.is-desktop .hd-row {
+      flex-wrap: nowrap;
     }
 
     /* Right Column: Preview only */
@@ -686,15 +717,8 @@
         <label for="fileName">File Name</label>
         <input type="text" id="fileName" class="filename-input" placeholder="my-logo">
 
-        <div class="download-row">
-          <div class="dpi-wrap" title="Scale multiplier for HD export (2 = double size)">
-            <span class="dpi-label">HD Scale:</span>
-            <input type="number" id="dpiInput" class="dpi-input" value="2" min="1" max="4" step="1">
-            <span class="dpi-label">×</span>
-          </div>
-        </div>
-
-        <div class="download-buttons">
+        <!-- Row 1: Standard PNG and SVG -->
+        <div class="download-buttons-row">
           <button id="exportPNG" class="download-btn primary" title="Download standard resolution PNG">
             <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -703,22 +727,34 @@
             </svg>
             Save PNG
           </button>
-          <button id="exportPNGHD" class="download-btn secondary"
-            title="Download high resolution PNG using scale above">
-            <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            HD PNG
-          </button>
-          <button id="exportSVG" class="download-btn secondary" title="Download as scalable vector (best quality)">
+          <button id="exportSVG" class="download-btn secondary" title="Download as vector - infinite quality">
             <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
               <polyline points="14 2 14 8 20 8" />
             </svg>
-            SVG
+            Save SVG
           </button>
+        </div>
+
+        <!-- Row 2: HD Export with scale control -->
+        <div class="hd-section">
+          <div class="hd-section-title">High Resolution Export</div>
+          <div class="hd-row">
+            <div class="scale-wrap" title="Multiply size by this number">
+              <span class="scale-label">Scale:</span>
+              <input type="number" id="dpiInput" class="scale-input" value="2" min="1" max="4" step="1">
+              <span class="scale-label">×</span>
+            </div>
+            <button id="exportPNGHD" class="hd-btn" title="Download larger PNG for printing or high-res displays">
+              <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Download HD PNG
+            </button>
+          </div>
+          <div class="hd-hint">💡 Use 2× for web, 3-4× for print. Higher = larger file size.</div>
         </div>
       </section>
     </div>
