@@ -871,15 +871,11 @@
     window.addEventListener('orientationchange', checkDesktop);
 
     /* ========== Configuration ========== */
-    import tdUrl from './logo.svg?url';
-    import akshayaUrl from './Akshaya.svg?url';
-    import tastyUrl from './Tasty Pinch.svg?url';
-    import teepiUrl from './Teepi Gurthu.svg?url';
-
+    /* ========== Configuration ========== */
     const LOGO_CONFIG = {
       td: {
         name: "Telugu Delicacies",
-        file: tdUrl,
+        file: new URL('./logo.svg', import.meta.url).href,
         controls: [
           {
             id: "path",
@@ -906,7 +902,7 @@
       },
       akshaya: {
         name: "Akshaya",
-        file: akshayaUrl,
+        file: new URL('./Akshaya.svg', import.meta.url).href,
         controls: [
           {
             id: "green",
@@ -933,7 +929,7 @@
       },
       tasty: {
         name: "Tasty Pinch",
-        file: tastyUrl,
+        file: new URL('./Tasty Pinch.svg', import.meta.url).href,
         controls: [
           {
             id: "brand",
@@ -950,7 +946,7 @@
       },
       teepi: {
         name: "Teepi Gurthu",
-        file: teepiUrl,
+        file: new URL('./Teepi Gurthu.svg', import.meta.url).href,
         controls: [
           {
             id: "gold",
