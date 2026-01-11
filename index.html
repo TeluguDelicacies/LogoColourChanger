@@ -1519,6 +1519,7 @@
             <option value="akshaya">Akshaya</option>
             <option value="tasty">Tasty Pinch</option>
             <option value="teepi">Teepi Gurthu</option>
+            <option value="productPackaging">Product Packaging</option>
           </select>
         </div>
       </div>
@@ -1854,7 +1855,158 @@
             defaults: { fill: "#922902", stroke: "#922902", strokeWidth: "0" }
           }
         ],
-        fileName: "Teepi-Gurthu-custom"
+      },
+      productPackaging: {
+        name: "Product Packaging",
+        controls: [
+          // --- COLORS ---
+          {
+            id: "background",
+            selector: "#path656",
+            label: "Top Colour",
+            desc: "Main background color",
+            tooltip: "Change the top color",
+            showStroke: true,
+            showStrokeWidth: true,
+            defaults: { fill: "#FE9A5E", stroke: "#000000", strokeWidth: "1.5" }
+          },
+          {
+            id: "topDecoration",
+            selector: "#path588",
+            label: "Bottom Colour",
+            desc: "Decoration color",
+            tooltip: "Change the bottom color",
+            showStroke: false,
+            defaults: { fill: "#FF5A3D", stroke: "none", strokeWidth: "0" }
+          },
+          {
+            id: "seal",
+            selector: "#imagebot_18, #imagebot_17, #imagebot_16, #imagebot_15",
+            label: "Green Seal",
+            desc: "Vegetarian seal elements",
+            tooltip: "Change the seal color",
+            showStroke: false,
+            excludeRandom: true,
+            defaults: { fill: "#008000", stroke: "none", strokeWidth: "0" }
+          },
+          {
+            id: "textColors",
+            selector: "#tspan931, #tspan5, #tspan937, #tspan935-4, #tspan927, #tspan927-1, #tspan310, #tspan307",
+            label: "All Text Color",
+            desc: "Color for all text elements",
+            tooltip: "Change color of all text",
+            showStroke: false,
+            excludeRandom: true,
+            defaults: { fill: "#000000", stroke: "none", strokeWidth: "0" }
+          },
+          {
+            id: "tdLogoBox",
+            selector: "#rect1",
+            label: "TD Logo Box",
+            desc: "Yellow square in logo",
+            tooltip: "Change TD logo background",
+            showStroke: false,
+            excludeRandom: true,
+            defaults: { fill: "#EEDC29", stroke: "#EEDC29", strokeWidth: "0" }
+          },
+          {
+            id: "tdLogoText",
+            selector: "#path1",
+            label: "TD Logo Text",
+            desc: "White TD letters",
+            tooltip: "Change TD logo text color",
+            showStroke: true,
+            showStrokeWidth: true,
+            excludeRandom: true,
+            defaults: { fill: "#FFFFFF", stroke: "#000000", strokeWidth: "2" }
+          },
+          {
+            id: "bottomLogoYellow",
+            selector: "#path4",
+            label: "Bottom Logo Yellow",
+            desc: "Yellow parts of bottom logo",
+            tooltip: "Change yellow parts",
+            showStroke: false,
+            excludeRandom: true,
+            defaults: { fill: "#FDF311", stroke: "none", strokeWidth: "0" }
+          },
+          {
+            id: "bottomLogoGreen",
+            selector: "#path3-4",
+            label: "Bottom Logo Green",
+            desc: "Green parts of bottom logo",
+            tooltip: "Change green parts",
+            showStroke: false,
+            excludeRandom: true,
+            defaults: { fill: "#18AA3E", stroke: "none", strokeWidth: "0" }
+          },
+          // --- TEXT EDITING ---
+          {
+            id: "text_productName",
+            selector: "#tspan931",
+            type: "text",
+            label: "Product Name",
+            desc: "Main product title",
+            defaults: { text: "Kadapa Kaaram" }
+          },
+          {
+            id: "text_tagline1",
+            selector: "#tspan5",
+            type: "text",
+            label: "Tagline 1",
+            desc: "Under product name",
+            defaults: { text: "Bold flavor, rich and hearty!" }
+          },
+          {
+            id: "text_tagline2",
+            selector: "#tspan937",
+            type: "text",
+            label: "CTA Text",
+            desc: "Top right text",
+            defaults: { text: "Order More" }
+          },
+          {
+            id: "text_tagline3",
+            selector: "#tspan935-4",
+            type: "text",
+            label: "Tagline 2",
+            desc: "Bottom tagline",
+            defaults: { text: "Modern Yet Traditional" }
+          },
+          {
+            id: "text_brandNameEnglish",
+            selector: "#tspan927",
+            type: "text",
+            label: "Brand Name (EN)",
+            desc: "English brand name",
+            defaults: { text: "Telugu Delicacies" }
+          },
+          {
+            id: "text_brandNameTelugu",
+            selector: "#tspan927-1",
+            type: "text",
+            label: "Brand Name (TE)",
+            desc: "Telugu brand name",
+            defaults: { text: "తెలుగు డెలికసీస్" }
+          },
+          {
+            id: "text_address1",
+            selector: "#tspan310",
+            type: "text",
+            label: "Address Line 1",
+            desc: "First line of address",
+            defaults: { text: "Plot No121/3,Western Part, First Floor,IDA Cherlapalli, Phase II," }
+          },
+          {
+            id: "text_address2",
+            selector: "#tspan307",
+            type: "text",
+            label: "Address Line 2",
+            desc: "Second line of address",
+            defaults: { text: "Hyderabd  500051 Ph: 9676712031 help@telugudelicacies.com" }
+          }
+        ],
+        fileName: "Product-Packaging-custom"
       }
     };
 
@@ -1942,7 +2094,23 @@
         card.id = `control-${ctrl.id}`;
         card.title = ctrl.tooltip || '';
 
-        let html = `
+        let html;
+        if (ctrl.type === 'text') {
+          html = `
+            <div class="control-header">
+              <div class="control-info">
+                <span class="control-label">${ctrl.label}</span>
+                <span class="control-desc">${ctrl.desc}</span>
+              </div>
+              <button class="reset-btn" data-reset="${ctrl.id}" title="Reset text">&#8634;</button>
+            </div>
+            <div class="hex-input-wrap">
+              <input type="text" class="hex-input" id="${ctrl.id}-text-input" 
+                     value="${state.text || ''}" style="padding-left:10px; width:100%; text-transform:none;"
+                     placeholder="Enter text">
+            </div>`;
+        } else {
+          html = `
             <div class="control-header">
               <div class="control-info">
                 <span class="control-label">${ctrl.label}</span>
@@ -1957,7 +2125,7 @@
                 <div class="hex-input-wrap">
                   <span class="hex-prefix">#</span>
                   <input type="text" class="hex-input" id="${ctrl.id}-fill-hex" 
-                         value="${state.fill.replace('#', '')}" maxlength="6" placeholder="FFFFFF"
+                         value="${state.fill ? state.fill.replace('#', '') : ''}" maxlength="6" placeholder="FFFFFF"
                          title="Enter hex color code" autocomplete="off" spellcheck="false">
                   <button class="copy-btn" data-copy="${ctrl.id}-fill" title="Copy color code">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1968,22 +2136,23 @@
               </div>
             </div>`;
 
-        if (ctrl.showStroke || ctrl.showStrokeWidth) {
-          html += `<div class="stroke-section">
-              <div class="stroke-section-title">Stroke (Outline)</div>
-              <div class="stroke-row">`;
-          if (ctrl.showStroke) {
-            html += `<input type="color" class="stroke-color-picker" id="${ctrl.id}-stroke-picker" value="${state.stroke}" title="Stroke color">`;
+          if (ctrl.showStroke || ctrl.showStrokeWidth) {
+            html += `<div class="stroke-section">
+                <div class="stroke-section-title">Stroke (Outline)</div>
+                <div class="stroke-row">`;
+            if (ctrl.showStroke) {
+              html += `<input type="color" class="stroke-color-picker" id="${ctrl.id}-stroke-picker" value="${state.stroke}" title="Stroke color">`;
+            }
+            if (ctrl.showStrokeWidth) {
+              html += `<div class="stroke-width-wrap" title="Outline thickness"><span class="stroke-width-label">Width:</span>
+                  <div class="stepper">
+                    <button class="stepper-btn minus">&minus;</button>
+                    <input type="number" class="stroke-width-input" id="${ctrl.id}-stroke-width" value="${state.strokeWidth}" min="0" max="20" step="1">
+                    <button class="stepper-btn plus">+</button>
+                  </div></div>`;
+            }
+            html += `</div></div>`;
           }
-          if (ctrl.showStrokeWidth) {
-            html += `<div class="stroke-width-wrap" title="Outline thickness"><span class="stroke-width-label">Width:</span>
-                <div class="stepper">
-                  <button class="stepper-btn minus">&minus;</button>
-                  <input type="number" class="stroke-width-input" id="${ctrl.id}-stroke-width" value="${state.strokeWidth}" min="0" max="20" step="1">
-                  <button class="stepper-btn plus">+</button>
-                </div></div>`;
-          }
-          html += `</div></div>`;
         }
         card.innerHTML = html;
         els.controlsSection.appendChild(card);
@@ -1999,6 +2168,14 @@
         const strokeWidth = document.getElementById(`${ctrl.id}-stroke-width`);
         const resetBtn = document.querySelector(`[data-reset="${ctrl.id}"]`);
         const copyBtns = document.querySelectorAll(`[data-copy^="${ctrl.id}"]`);
+        const textInput = document.getElementById(`${ctrl.id}-text-input`);
+
+        if (textInput) {
+          textInput.addEventListener('input', () => {
+            controlState[ctrl.id].text = textInput.value;
+            applyStyles(); saveSettings();
+          });
+        }
 
         if (fillPicker) {
           fillPicker.addEventListener('input', () => {
@@ -2060,12 +2237,13 @@
         if (resetBtn) {
           resetBtn.addEventListener('click', () => {
             controlState[ctrl.id] = { ...ctrl.defaults };
+            if (textInput) textInput.value = ctrl.defaults.text;
             if (fillPicker) fillPicker.value = ctrl.defaults.fill;
             if (fillHex) fillHex.value = ctrl.defaults.fill.replace('#', '');
             if (strokePicker) strokePicker.value = ctrl.defaults.stroke;
             if (strokeWidth) strokeWidth.value = ctrl.defaults.strokeWidth;
             applyStyles(); saveSettings();
-            showToast('Reset âœ“');
+            showToast('Reset ✓');
           });
         }
 
@@ -2086,9 +2264,13 @@
       currentConfig.controls.forEach(ctrl => {
         const state = controlState[ctrl.id] || ctrl.defaults;
         svgRoot.querySelectorAll(ctrl.selector).forEach(el => {
-          el.style.setProperty('fill', state.fill);
-          if (ctrl.showStroke) el.style.setProperty('stroke', state.stroke);
-          if (ctrl.showStrokeWidth) el.style.setProperty('stroke-width', state.strokeWidth);
+          if (ctrl.type === 'text') {
+            if (state.text !== undefined) el.textContent = state.text;
+          } else {
+            if (state.fill) el.style.setProperty('fill', state.fill);
+            if (ctrl.showStroke && state.stroke) el.style.setProperty('stroke', state.stroke);
+            if (ctrl.showStrokeWidth && state.strokeWidth) el.style.setProperty('stroke-width', state.strokeWidth);
+          }
         });
       });
     }
@@ -2268,6 +2450,8 @@
         Array.from({ length: numColors }, (_, i) => (baseHue + (360 / numColors) * i) % 360);
 
       currentConfig.controls.forEach((ctrl, i) => {
+        if (ctrl.type === 'text') return; // Skip text controls
+        if (ctrl.excludeRandom) return; // Skip excluded controls
         const rgb = hslToRgb(hues[i % hues.length], saturation, lightness);
         const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
         controlState[ctrl.id].fill = hex;
@@ -2428,6 +2612,7 @@
       // Get current logo colors
       const logoColors = [];
       currentConfig.controls.forEach(ctrl => {
+        if (ctrl.type === 'text') return;
         const state = controlState[ctrl.id];
         if (state && state.fill) {
           logoColors.push(state.fill);
@@ -2727,9 +2912,13 @@
         currentConfig.controls.forEach(ctrl => {
           const state = controlState[ctrl.id] || ctrl.defaults;
           tempSvg.querySelectorAll(ctrl.selector).forEach(el => {
-            el.style.setProperty('fill', state.fill);
-            if (ctrl.showStroke) el.style.setProperty('stroke', state.stroke);
-            if (ctrl.showStrokeWidth) el.style.setProperty('stroke-width', state.strokeWidth);
+            if (ctrl.type === 'text') {
+              if (state.text !== undefined) el.textContent = state.text;
+            } else {
+              if (state.fill) el.style.setProperty('fill', state.fill);
+              if (ctrl.showStroke && state.stroke) el.style.setProperty('stroke', state.stroke);
+              if (ctrl.showStrokeWidth && state.strokeWidth) el.style.setProperty('stroke-width', state.strokeWidth);
+            }
           });
         });
       }
@@ -2897,9 +3086,13 @@
         config.controls.forEach(ctrl => {
           const defaults = ctrl.defaults;
           tempSvg.querySelectorAll(ctrl.selector).forEach(el => {
-            el.style.setProperty('fill', defaults.fill);
-            if (ctrl.showStroke) el.style.setProperty('stroke', defaults.stroke);
-            if (ctrl.showStrokeWidth) el.style.setProperty('stroke-width', defaults.strokeWidth);
+            if (ctrl.type === 'text') {
+              if (defaults.text !== undefined) el.textContent = defaults.text;
+            } else {
+              if (defaults.fill) el.style.setProperty('fill', defaults.fill);
+              if (ctrl.showStroke) el.style.setProperty('stroke', defaults.stroke);
+              if (ctrl.showStrokeWidth) el.style.setProperty('stroke-width', defaults.strokeWidth);
+            }
           });
         });
       }
