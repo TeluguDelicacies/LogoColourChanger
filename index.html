@@ -6,8 +6,39 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>Telugu Delicacies Customizer</title>
   <link rel="icon" type="image/svg+xml" href="logo.svg">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family: 'Inter';
+      src: url('fonts/Inter.ttf') format('truetype');
+      font-weight: 400 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Ubuntu Mono';
+      src: url('fonts/UbuntuMono.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'Chathura';
+      src: url('fonts/Chathura.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* Modern No. 20 placeholder - fallback to system font for now */
+    @font-face {
+      font-family: 'Modern No. 20';
+      src: local('Modern No. 20'), local('ModernNo20');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
     :root {
       --bg: #0f172a;
       --card: #1e293b;
@@ -601,6 +632,97 @@
     .download-icon {
       width: 16px;
       height: 16px;
+    }
+
+    /* Bulk Section */
+    .bulk-section {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px dashed var(--card-border);
+    }
+
+    .bulk-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bulk-desc {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .bulk-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .bulk-btn {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .bulk-btn.primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .bulk-btn.primary:disabled {
+      background: var(--bg);
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      cursor: not-allowed;
+    }
+
+    .bulk-btn.secondary {
+      background: var(--bg);
+      color: var(--text-primary);
+      border: 1px solid var(--card-border);
+    }
+
+    .bulk-status {
+      background: var(--card);
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .bulk-progress-bar {
+      height: 4px;
+      background: var(--bg);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .bulk-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .bulk-status-text {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      text-align: center;
+      font-family: var(--font-mono);
     }
 
     /* Toast */
@@ -1563,6 +1685,9 @@
                 <option value="3">3x (Print)</option>
                 <option value="4">4x (Ultra HD)</option>
                 <option value="6">6x (Maximum)</option>
+                <option value="8">8x (Pro Print)</option>
+                <option value="12">12x (Super Zoom)</option>
+                <option value="20">20x (Extreme)</option>
               </select>
             </div>
             <button id="exportPNGHD" class="hd-btn" title="Download larger PNG for printing or high-res displays">
@@ -1575,6 +1700,33 @@
             </button>
           </div>
           <div class="hd-hint">&#x1F4A1; Use 2&times; for web, 3-4&times; for print. Higher = larger file size.</div>
+        </div>
+
+        <!-- Row 3: Bulk Generation (Conditional for Product Packaging) -->
+        <div id="bulkSection" class="bulk-section" style="display: none;">
+          <div class="bulk-title">📦 Bulk Generation (Product & Tagline)</div>
+          <div class="bulk-desc">Upload a CSV to generate logos in bulk. Columns needed: <b>Product Name, Tagline</b>
+          </div>
+          <div class="bulk-controls">
+            <input type="file" id="bulkCSVInput" accept=".csv" style="display: none;">
+            <button id="bulkUploadBtn" class="bulk-btn secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              Upload CSV
+            </button>
+            <button id="runBulkBtn" class="bulk-btn primary" disabled>
+              Generate & Download All
+            </button>
+          </div>
+          <div id="bulkStatus" class="bulk-status" style="display: none;">
+            <div class="bulk-progress-bar">
+              <div id="bulkProgressFill" class="bulk-progress-fill"></div>
+            </div>
+            <div id="bulkStatusText" class="bulk-status-text">Ready to process 0 rows</div>
+          </div>
         </div>
       </section>
 
@@ -2006,7 +2158,8 @@
             defaults: { text: "Hyderabd  500051 Ph: 9676712031 help@telugudelicacies.com" }
           }
         ],
-        fileName: "Product-Packaging-custom"
+        fileName: "Product-Packaging-custom",
+        baseScale: 4.8 // Normalize 210mm wide logo to ~1000px base width
       }
     };
 
@@ -2027,7 +2180,15 @@
       exportPNG: document.getElementById('exportPNG'),
       exportPNGHD: document.getElementById('exportPNGHD'),
       exportSVG: document.getElementById('exportSVG'),
-      toast: document.getElementById('toast')
+      toast: document.getElementById('toast'),
+      // Bulk elements
+      bulkSection: document.getElementById('bulkSection'),
+      bulkCSVInput: document.getElementById('bulkCSVInput'),
+      bulkUploadBtn: document.getElementById('bulkUploadBtn'),
+      runBulkBtn: document.getElementById('runBulkBtn'),
+      bulkStatus: document.getElementById('bulkStatus'),
+      bulkProgressFill: document.getElementById('bulkProgressFill'),
+      bulkStatusText: document.getElementById('bulkStatusText')
     };
 
     function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
@@ -2320,57 +2481,74 @@
         height: vb?.height || parseInt(svgRoot.getAttribute('height')) || 1024
       };
 
-      // Get the inverse of the SVG root's screen CTM to transform coordinates back to SVG space
-      const svgScreenCTM = svgRoot.getScreenCTM();
-      if (!svgScreenCTM) return fallback;
-      const svgInverseCTM = svgScreenCTM.inverse();
+      try {
+        // Use screen CTM for more robust root-relative mapping
+        const svgScreenCTM = svgRoot.getScreenCTM();
+        if (!svgScreenCTM) return fallback;
+        const svgInverseCTM = svgScreenCTM.inverse();
 
-      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
 
-      // Helper to transform a point using CTM
-      function transformPoint(x, y, ctm) {
-        if (!ctm) return { x, y };
+        svgRoot.querySelectorAll('path, rect, circle, ellipse, polygon, polyline, text, image').forEach(el => {
+          try {
+            // Skip elements in non-rendering containers
+            if (el.closest('defs, clipPath, mask, marker')) return;
+
+            // Skip invisible elements
+            const style = window.getComputedStyle(el);
+            if (style.display === 'none' || style.visibility === 'hidden' || parseFloat(style.opacity || '1') === 0) return;
+
+            // Stricter check: skip elements with no fill AND no stroke (unless image/text)
+            const tagName = el.tagName.toLowerCase();
+            if (tagName !== 'image' && tagName !== 'text') {
+              const hasFill = style.fill !== 'none' && style.fill !== 'rgba(0,0,0,0)';
+              const hasStroke = style.stroke !== 'none' && style.stroke !== 'rgba(0,0,0,0)' && parseFloat(style.strokeWidth || '0') > 0;
+              if (!hasFill && !hasStroke) return;
+            }
+
+            const bbox = el.getBBox();
+            if (bbox.width > 0 && bbox.height > 0) {
+              const elCTM = el.getScreenCTM();
+              if (!elCTM) return;
+
+              // Map el coordinates to root SVG coordinate space
+              const relativeCTM = svgInverseCTM.multiply(elCTM);
+
+              const corners = [
+                { x: bbox.x, y: bbox.y },
+                { x: bbox.x + bbox.width, y: bbox.y },
+                { x: bbox.x, y: bbox.y + bbox.height },
+                { x: bbox.x + bbox.width, y: bbox.y + bbox.height }
+              ];
+
+              corners.forEach(p => {
+                const tx = relativeCTM.a * p.x + relativeCTM.c * p.y + relativeCTM.e;
+                const ty = relativeCTM.b * p.x + relativeCTM.d * p.y + relativeCTM.f;
+                minX = Math.min(minX, tx);
+                minY = Math.min(minY, ty);
+                maxX = Math.max(maxX, tx);
+                maxY = Math.max(maxY, ty);
+              });
+            }
+          } catch (e) { }
+        });
+
+        if (minX === Infinity || !isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) {
+          return fallback;
+        }
+
+        // Apply 1px minimal padding
+        const padding = 1;
         return {
-          x: ctm.a * x + ctm.c * y + ctm.e,
-          y: ctm.b * x + ctm.d * y + ctm.f
+          x: minX - padding,
+          y: minY - padding,
+          width: (maxX - minX) + (padding * 2),
+          height: (maxY - minY) + (padding * 2)
         };
-      }
-
-      svgRoot.querySelectorAll('path, rect, circle, ellipse, polygon, polyline, text').forEach(el => {
-        try {
-          const bbox = el.getBBox();
-          if (bbox.width > 0 && bbox.height > 0) {
-            // Get the transform matrix relative to the SVG root (not screen)
-            const elScreenCTM = el.getScreenCTM();
-            if (!elScreenCTM) return;
-            const ctm = svgInverseCTM.multiply(elScreenCTM);
-
-            // Transform all 4 corners of the bbox to account for rotation/skew
-            const corners = [
-              { x: bbox.x, y: bbox.y },
-              { x: bbox.x + bbox.width, y: bbox.y },
-              { x: bbox.x, y: bbox.y + bbox.height },
-              { x: bbox.x + bbox.width, y: bbox.y + bbox.height }
-            ];
-
-            corners.forEach(corner => {
-              const transformed = transformPoint(corner.x, corner.y, ctm);
-              minX = Math.min(minX, transformed.x);
-              minY = Math.min(minY, transformed.y);
-              maxX = Math.max(maxX, transformed.x);
-              maxY = Math.max(maxY, transformed.y);
-            });
-          }
-        } catch (e) { }
-      });
-
-      // If no valid bounds found, use fallback
-      if (minX === Infinity || !isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) {
+      } catch (e) {
+        console.error('Error calculating content bounds:', e);
         return fallback;
       }
-
-      const padding = 1; // 1px padding as requested
-      return { x: minX - padding, y: minY - padding, width: (maxX - minX) + padding * 2, height: (maxY - minY) + padding * 2 };
     }
 
     function makeSerializableClone(scale = 1, cropToContent = true) {
@@ -2403,8 +2581,18 @@
     function exportPNG(useCustomDPI = false) {
       applyStyles();
       const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
-      let scale = 1, suffix = '';
-      if (useCustomDPI) { scale = clamp(parseInt(els.dpiInput.value) || 2, 1, 20); suffix = `-${scale}x`; }
+
+      // Factor in baseScale for logos designed in small units (like mm)
+      const baseScale = currentConfig.baseScale || 1;
+      let scale = baseScale;
+      let suffix = '';
+
+      if (useCustomDPI) {
+        const multiplier = clamp(parseInt(els.dpiInput.value) || 2, 1, 20);
+        scale = baseScale * multiplier;
+        suffix = `-${multiplier}x`;
+      }
+
       const data = makeSerializableClone(scale, true);
       if (!data) return showToast('SVG not loaded');
       const { clone, w, h } = data;
@@ -2429,7 +2617,8 @@
     function exportSVG() {
       applyStyles();
       const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
-      const data = makeSerializableClone(1, true);
+      const baseScale = currentConfig.baseScale || 1;
+      const data = makeSerializableClone(baseScale, true);
       if (!data) return showToast('SVG not loaded');
       const url = URL.createObjectURL(new Blob(['<?xml version="1.0"?>\n' + new XMLSerializer().serializeToString(data.clone)], { type: 'image/svg+xml;charset=utf-8' }));
       const a = document.createElement('a');
@@ -2482,6 +2671,13 @@
       applyStyles(); saveSettings();
       // Update portal complementary colors when logo changes
       updateComplementaryColors();
+
+      // Show/hide bulk generation section
+      if (key === 'productPackaging') {
+        els.bulkSection.style.display = 'block';
+      } else {
+        els.bulkSection.style.display = 'none';
+      }
     }
 
     /* ========== PORTAL BACKGROUND GENERATOR ========== */
@@ -2931,14 +3127,15 @@
       return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
-          // Calculate size (80% of canvas)
-          const scale = Math.min(canvasW * 0.8 / img.width, canvasH * 0.8 / img.height);
+          // Calculate scale (92% of canvas for "minimal padding" look)
+          const fillRatio = 0.92;
+          const scale = Math.min(canvasW * fillRatio / img.width, canvasH * fillRatio / img.height);
           const w = img.width * scale;
           const h = img.height * scale;
 
           // Calculate position based on logoPosition
           const position = portalState.logoPosition || 'center';
-          const padding = canvasW * 0.05;
+          const padding = canvasW * 0.04; // 4% padding for side-alignment
           let x, y;
 
           // Horizontal position
@@ -3310,6 +3507,116 @@
       applyStyles();
       wireMainEvents();
       initPortalSection();
+      wireBulkEvents();
+    }
+
+    /* ========== BULK GENERATION LOGIC ========== */
+    let bulkData = [];
+
+    function wireBulkEvents() {
+      els.bulkUploadBtn.addEventListener('click', () => els.bulkCSVInput.click());
+      els.bulkCSVInput.addEventListener('change', handleCSVUpload);
+      els.runBulkBtn.addEventListener('click', runBulkExport);
+    }
+
+    function handleCSVUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target.result;
+        bulkData = parseCSV(text);
+
+        if (bulkData.length > 0) {
+          els.runBulkBtn.disabled = false;
+          els.bulkStatus.style.display = 'block';
+          els.bulkStatusText.textContent = `Ready to process ${bulkData.length} rows`;
+          els.bulkProgressFill.style.width = '0%';
+          showToast(`CSV loaded: ${bulkData.length} rows found`);
+        } else {
+          els.runBulkBtn.disabled = true;
+          showToast('No valid data found in CSV');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function parseCSV(text) {
+      const rows = text.split(/\r?\n/).filter(line => line.trim());
+      if (rows.length < 2) return [];
+
+      const headers = rows[0].split(',').map(h => h.trim().toLowerCase());
+      const data = [];
+
+      // Look for specific columns
+      const nameIdx = headers.findIndex(h => h.includes('product') || h.includes('name'));
+      const taglineIdx = headers.findIndex(h => h.includes('tagline') || h.includes('desc'));
+
+      if (nameIdx === -1) {
+        showToast('CSV must have a "Product Name" column');
+        return [];
+      }
+
+      for (let i = 1; i < rows.length; i++) {
+        const cols = rows[i].split(',').map(c => c.trim().replace(/^"(.*)"$/, '$1'));
+        if (cols[nameIdx]) {
+          data.push({
+            name: cols[nameIdx],
+            tagline: taglineIdx !== -1 ? cols[taglineIdx] : ''
+          });
+        }
+      }
+      return data;
+    }
+
+    async function runBulkExport() {
+      if (bulkData.length === 0) return;
+
+      els.runBulkBtn.disabled = true;
+      els.bulkUploadBtn.disabled = true;
+
+      const total = bulkData.length;
+      for (let i = 0; i < total; i++) {
+        const row = bulkData[i];
+
+        // Update status UI
+        const percent = ((i + 1) / total) * 100;
+        els.bulkProgressFill.style.width = `${percent}%`;
+        els.bulkStatusText.textContent = `Processing ${i + 1}/${total}: ${row.name}`;
+
+        // Apply data to controls
+        const nameCtrl = currentConfig.controls.find(c => c.id === 'text_productName');
+        const taglineCtrl = currentConfig.controls.find(c => c.id === 'text_tagline1');
+
+        if (nameCtrl) {
+          controlState[nameCtrl.id].text = row.name;
+          const input = document.getElementById(`${nameCtrl.id}-text-input`);
+          if (input) input.value = row.name;
+        }
+
+        if (taglineCtrl && row.tagline) {
+          controlState[taglineCtrl.id].text = row.tagline;
+          const input = document.getElementById(`${taglineCtrl.id}-text-input`);
+          if (input) input.value = row.tagline;
+        }
+
+        applyStyles();
+
+        // Small delay to ensure UI updates and let CPU breathe
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Trigger export (High Res if selected)
+        exportPNG(true);
+
+        // Wait a bit more between downloads to avoid browser congestion
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      els.bulkStatusText.textContent = `Completed ${total} exports!`;
+      els.runBulkBtn.disabled = false;
+      els.bulkUploadBtn.disabled = false;
+      showToast('Bulk export completed ✓');
     }
 
     document.addEventListener('DOMContentLoaded', init);
