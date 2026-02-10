@@ -7,38 +7,6 @@
   <title>Telugu Delicacies Customizer</title>
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <style>
-    @font-face {
-      font-family: 'Inter';
-      src: url('fonts/Inter.ttf') format('truetype');
-      font-weight: 400 700;
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Ubuntu Mono';
-      src: url('fonts/UbuntuMono.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-
-    @font-face {
-      font-family: 'Chathura';
-      src: url('fonts/Chathura.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-
-    /* Modern No. 20 placeholder - fallback to system font for now */
-    @font-face {
-      font-family: 'Modern No. 20';
-      src: local('Modern No. 20'), local('ModernNo20');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-
     :root {
       --bg: #0f172a;
       --card: #1e293b;
@@ -1610,6 +1578,86 @@
       padding: 2px 8px;
       border-radius: 10px;
     }
+
+    /* Download UI Layout Fixes */
+    .download-header-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 15px;
+      align-items: flex-end;
+    }
+
+    .download-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .download-input-group label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .download-section input[type="text"],
+    .download-section select {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      transition: border-color 0.2s;
+    }
+
+    .download-section input[type="text"]:focus,
+    .download-section select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .download-buttons-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .download-buttons-row .download-btn {
+      flex: 1;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .download-buttons-row .download-btn:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .download-buttons-row .download-btn:active {
+      transform: translateY(0);
+    }
+
+    .progress-bar-wrap {
+      height: 4px;
+      background: var(--bg-card);
+      border-radius: 2px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      display: none;
+      position: relative;
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.2s ease-out;
+      box-shadow: 0 0 10px var(--accent);
+    }
   </style>
 </head>
 
@@ -1641,7 +1689,6 @@
             <option value="akshaya">Akshaya</option>
             <option value="tasty">Tasty Pinch</option>
             <option value="teepi">Teepi Gurthu</option>
-            <option value="productPackaging">Product Packaging</option>
           </select>
         </div>
       </div>
@@ -1651,12 +1698,31 @@
 
       <!-- Download Section -->
       <section class="download-section card">
-        <label for="fileName">File Name</label>
-        <input type="text" id="fileName" class="filename-input" placeholder="my-logo">
+        <div class="download-header-row">
+          <div class="download-input-group" style="flex: 1;">
+            <label for="fileName">File Name</label>
+            <input type="text" id="fileName" placeholder="Enter file name" value="logo">
+          </div>
+          <div class="download-input-group" style="flex: 0 0 140px;">
+            <label for="dpiInput">Quality (Scale)</label>
+            <select id="dpiInput" class="scale-select">
+              <option value="1">1x (Standard)</option>
+              <option value="2" selected>2x (High Res)</option>
+              <option value="3">3x (Print)</option>
+              <option value="4">4x (Ultra HD)</option>
+              <option value="8">8x (Super)</option>
+              <option value="20">20x (Extreme)</option>
+            </select>
+          </div>
+        </div>
 
-        <!-- Row 1: Standard PNG and SVG -->
-        <div class="download-buttons-row">
-          <button id="exportPNG" class="download-btn primary" title="Download standard resolution PNG">
+        <!-- Progress Bar -->
+        <div id="dlProgressWrap" class="progress-bar-wrap">
+          <div id="dlProgressFill" class="progress-bar-fill"></div>
+        </div>
+
+        <div class="download-buttons-row" style="display: flex; gap: 10px; margin-top: 15px;">
+          <button id="exportPNG" class="download-btn primary" title="Download PNG (Transparent)">
             <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="7 10 12 15 17 10" />
@@ -1664,7 +1730,15 @@
             </svg>
             Save PNG
           </button>
-          <button id="exportSVG" class="download-btn secondary" title="Download as vector - infinite quality">
+          <button id="exportJPG" class="download-btn secondary" title="Download JPG (White Background)">
+            <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Save JPG
+          </button>
+          <button id="exportSVG" class="download-btn secondary" title="Download Vector">
             <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
               <polyline points="14 2 14 8 20 8" />
@@ -1672,34 +1746,8 @@
             Save SVG
           </button>
         </div>
-
-        <!-- Row 2: HD Export with scale control -->
-        <div class="hd-section">
-          <div class="hd-section-title">High Resolution Export</div>
-          <div class="hd-row">
-            <div class="scale-wrap" title="Multiply size by this number">
-              <span class="scale-label">Scale:</span>
-              <select id="dpiInput" class="scale-select">
-                <option value="1">1x (Standard)</option>
-                <option value="2" selected>2x (High Res - Web)</option>
-                <option value="3">3x (Print)</option>
-                <option value="4">4x (Ultra HD)</option>
-                <option value="6">6x (Maximum)</option>
-                <option value="8">8x (Pro Print)</option>
-                <option value="12">12x (Super Zoom)</option>
-                <option value="20">20x (Extreme)</option>
-              </select>
-            </div>
-            <button id="exportPNGHD" class="hd-btn" title="Download larger PNG for printing or high-res displays">
-              <svg class="download-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" y1="15" x2="12" y2="3" />
-              </svg>
-              Download HD PNG
-            </button>
-          </div>
-          <div class="hd-hint">&#x1F4A1; Use 2&times; for web, 3-4&times; for print. Higher = larger file size.</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; text-align: center;">
+          Quality setting applies to PNG & JPG. SVG is always vector.
         </div>
 
         <!-- Row 3: Bulk Generation (Conditional for Product Packaging) -->
@@ -2007,159 +2055,7 @@
             defaults: { fill: "#922902", stroke: "#922902", strokeWidth: "0" }
           }
         ],
-      },
-      productPackaging: {
-        name: "Product Packaging",
-        controls: [
-          // --- COLORS ---
-          {
-            id: "background",
-            selector: "#path656",
-            label: "Top Colour",
-            desc: "Main background color",
-            tooltip: "Change the top color",
-            showStroke: true,
-            showStrokeWidth: true,
-            defaults: { fill: "#FE9A5E", stroke: "#000000", strokeWidth: "1.5" }
-          },
-          {
-            id: "topDecoration",
-            selector: "#path588",
-            label: "Bottom Colour",
-            desc: "Decoration color",
-            tooltip: "Change the bottom color",
-            showStroke: false,
-            defaults: { fill: "#FF5A3D", stroke: "none", strokeWidth: "0" }
-          },
-          {
-            id: "seal",
-            selector: "#imagebot_18, #imagebot_17, #imagebot_16, #imagebot_15",
-            label: "Green Seal",
-            desc: "Vegetarian seal elements",
-            tooltip: "Change the seal color",
-            showStroke: false,
-            excludeRandom: true,
-            defaults: { fill: "#008000", stroke: "none", strokeWidth: "0" }
-          },
-          {
-            id: "textColors",
-            selector: "#tspan931, #tspan5, #tspan937, #tspan935-4, #tspan927, #tspan927-1, #tspan310, #tspan307",
-            label: "All Text Color",
-            desc: "Color for all text elements",
-            tooltip: "Change color of all text",
-            showStroke: false,
-            excludeRandom: true,
-            defaults: { fill: "#000000", stroke: "none", strokeWidth: "0" }
-          },
-          {
-            id: "tdLogoBox",
-            selector: "#rect1",
-            label: "TD Logo Box",
-            desc: "Yellow square in logo",
-            tooltip: "Change TD logo background",
-            showStroke: false,
-            excludeRandom: true,
-            defaults: { fill: "#EEDC29", stroke: "#EEDC29", strokeWidth: "0" }
-          },
-          {
-            id: "tdLogoText",
-            selector: "#path1",
-            label: "TD Logo Text",
-            desc: "White TD letters",
-            tooltip: "Change TD logo text color",
-            showStroke: true,
-            showStrokeWidth: true,
-            excludeRandom: true,
-            defaults: { fill: "#FFFFFF", stroke: "#000000", strokeWidth: "2" }
-          },
-          {
-            id: "bottomLogoYellow",
-            selector: "#path4",
-            label: "Bottom Logo Yellow",
-            desc: "Yellow parts of bottom logo",
-            tooltip: "Change yellow parts",
-            showStroke: false,
-            excludeRandom: true,
-            defaults: { fill: "#FDF311", stroke: "none", strokeWidth: "0" }
-          },
-          {
-            id: "bottomLogoGreen",
-            selector: "#path3-4",
-            label: "Bottom Logo Green",
-            desc: "Green parts of bottom logo",
-            tooltip: "Change green parts",
-            showStroke: false,
-            excludeRandom: true,
-            defaults: { fill: "#18AA3E", stroke: "none", strokeWidth: "0" }
-          },
-          // --- TEXT EDITING ---
-          {
-            id: "text_productName",
-            selector: "#tspan931",
-            type: "text",
-            label: "Product Name",
-            desc: "Main product title",
-            defaults: { text: "Kadapa Kaaram" }
-          },
-          {
-            id: "text_tagline1",
-            selector: "#tspan5",
-            type: "text",
-            label: "Tagline 1",
-            desc: "Under product name",
-            defaults: { text: "Bold flavor, rich and hearty!" }
-          },
-          {
-            id: "text_tagline2",
-            selector: "#tspan937",
-            type: "text",
-            label: "CTA Text",
-            desc: "Top right text",
-            defaults: { text: "Order More" }
-          },
-          {
-            id: "text_tagline3",
-            selector: "#tspan935-4",
-            type: "text",
-            label: "Tagline 2",
-            desc: "Bottom tagline",
-            defaults: { text: "Modern Yet Traditional" }
-          },
-          {
-            id: "text_brandNameEnglish",
-            selector: "#tspan927",
-            type: "text",
-            label: "Brand Name (EN)",
-            desc: "English brand name",
-            defaults: { text: "Telugu Delicacies" }
-          },
-          {
-            id: "text_brandNameTelugu",
-            selector: "#tspan927-1",
-            type: "text",
-            label: "Brand Name (TE)",
-            desc: "Telugu brand name",
-            defaults: { text: "తెలుగు డెలికసీస్" }
-          },
-          {
-            id: "text_address1",
-            selector: "#tspan310",
-            type: "text",
-            label: "Address Line 1",
-            desc: "First line of address",
-            defaults: { text: "Plot No121/3,Western Part, First Floor,IDA Cherlapalli, Phase II," }
-          },
-          {
-            id: "text_address2",
-            selector: "#tspan307",
-            type: "text",
-            label: "Address Line 2",
-            desc: "Second line of address",
-            defaults: { text: "Hyderabd  500051 Ph: 9676712031 help@telugudelicacies.com" }
-          }
-        ],
-        fileName: "Product-Packaging-custom",
-        baseScale: 4.8 // Normalize 210mm wide logo to ~1000px base width
+        fileName: "Teepi-Gurthu-custom"
       }
     };
 
@@ -2178,8 +2074,10 @@
       randomBtn: document.getElementById('randomBtn'),
       resetBtn: document.getElementById('resetBtn'),
       exportPNG: document.getElementById('exportPNG'),
-      exportPNGHD: document.getElementById('exportPNGHD'),
+      exportJPG: document.getElementById('exportJPG'),
       exportSVG: document.getElementById('exportSVG'),
+      dlProgressWrap: document.getElementById('dlProgressWrap'),
+      dlProgressFill: document.getElementById('dlProgressFill'),
       toast: document.getElementById('toast'),
       // Bulk elements
       bulkSection: document.getElementById('bulkSection'),
@@ -2578,45 +2476,143 @@
       return { clone, w, h };
     }
 
-    function exportPNG(useCustomDPI = false) {
+    let progressTimer;
+    function startProgress() {
+      els.dlProgressWrap.style.display = 'block';
+      els.dlProgressFill.style.width = '0%';
+      let p = 0; clearInterval(progressTimer);
+      progressTimer = setInterval(() => {
+        p += (92 - p) * 0.1;
+        els.dlProgressFill.style.width = p + '%';
+      }, 100);
+    }
+    function finishProgress() {
+      clearInterval(progressTimer);
+      els.dlProgressFill.style.width = '100%';
+      setTimeout(() => {
+        els.dlProgressWrap.style.display = 'none';
+        els.dlProgressFill.style.width = '0%';
+      }, 600);
+    }
+
+    async function exportPNG() {
       applyStyles();
-      const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
+      startProgress();
 
-      // Factor in baseScale for logos designed in small units (like mm)
-      const baseScale = currentConfig.baseScale || 1;
-      let scale = baseScale;
-      let suffix = '';
+      // Delay slightly to let UI update (progress bar show)
+      await new Promise(r => setTimeout(r, 100));
 
-      if (useCustomDPI) {
-        const multiplier = clamp(parseInt(els.dpiInput.value) || 2, 1, 20);
-        scale = baseScale * multiplier;
-        suffix = `-${multiplier}x`;
-      }
+      try {
+        const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName || currentConfig.name || 'logo').replace(/[^a-zA-Z0-9-_\.]/g, '_');
+        const multiplier = parseInt(els.dpiInput.value) || 1;
+        const baseScale = currentConfig.baseScale || 1;
+        let scale = baseScale * multiplier;
+        const suffix = multiplier > 1 ? `-${multiplier}x` : '';
 
-      const data = makeSerializableClone(scale, true);
-      if (!data) return showToast('SVG not loaded');
-      const { clone, w, h } = data;
-      const svgString = '<?xml version="1.0"?>\n' + new XMLSerializer().serializeToString(clone);
-      const url = URL.createObjectURL(new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' }));
-      const img = new Image();
-      img.onload = () => {
+        const data = makeSerializableClone(scale, true);
+        if (!data) throw new Error('SVG not loaded');
+        let { clone, w, h } = data;
+
+        // Stability safety: clamp to ~12k pixels max side
+        const MAX_SIDE = 12000;
+        let fw = Math.round(w * scale);
+        let fh = Math.round(h * scale);
+
+        if (fw > MAX_SIDE || fh > MAX_SIDE) {
+          const ratio = MAX_SIDE / Math.max(fw, fh);
+          scale *= ratio;
+          fw = Math.round(w * scale);
+          fh = Math.round(h * scale);
+          showToast('Resolution adjusted for stability');
+        }
+
+        const svgString = '<?xml version="1.0"?>\n' + new XMLSerializer().serializeToString(clone);
+        const url = URL.createObjectURL(new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' }));
+        const img = new Image();
+        img.src = url;
+
+        await img.decode();
+
         const canvas = document.createElement('canvas');
-        canvas.width = Math.round(w * scale); canvas.height = Math.round(h * scale);
-        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.width = fw; canvas.height = fh;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, fw, fh);
+
         URL.revokeObjectURL(url);
         const a = document.createElement('a');
         a.download = `${safeName}${suffix}.png`;
         a.href = canvas.toDataURL('image/png');
         a.click();
-        showToast(`Saved ${canvas.width}×${canvas.height} \u2713`);
-      };
-      img.onerror = () => { URL.revokeObjectURL(url); showToast('Export failed'); };
-      img.src = url;
+        showToast(`Saved ${fw}×${fh} \u2713`);
+      } catch (e) {
+        console.error(e);
+        showToast('Export failed');
+      } finally {
+        finishProgress();
+      }
+    }
+
+    async function exportJPG() {
+      applyStyles();
+      startProgress();
+      await new Promise(r => setTimeout(r, 100));
+
+      try {
+        const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName || currentConfig.name || 'logo').replace(/[^a-zA-Z0-9-_\.]/g, '_');
+        const multiplier = parseInt(els.dpiInput.value) || 1;
+        const baseScale = currentConfig.baseScale || 1;
+        let scale = baseScale * multiplier;
+        const suffix = multiplier > 1 ? `-${multiplier}x` : '';
+
+        const data = makeSerializableClone(scale, true);
+        if (!data) throw new Error('SVG not loaded');
+        const { clone, w, h } = data;
+
+        const MAX_SIDE = 12000;
+        let fw = Math.round(w * scale);
+        let fh = Math.round(h * scale);
+        if (fw > MAX_SIDE || fh > MAX_SIDE) {
+          const ratio = MAX_SIDE / Math.max(fw, fh);
+          scale *= ratio;
+          fw = Math.round(w * scale);
+          fh = Math.round(h * scale);
+          showToast('Resolution adjusted for stability');
+        }
+
+        const svgString = '<?xml version="1.0"?>\n' + new XMLSerializer().serializeToString(clone);
+        const url = URL.createObjectURL(new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' }));
+        const img = new Image();
+        img.src = url;
+        await img.decode();
+
+        const canvas = document.createElement('canvas');
+        canvas.width = fw;
+        canvas.height = fh;
+        const ctx = canvas.getContext('2d');
+
+        // JPEG doesn't support transparency, so fill with white
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+
+        const a = document.createElement('a');
+        a.download = `${safeName}${suffix}.jpg`;
+        a.href = canvas.toDataURL('image/jpeg', 0.9);
+        a.click();
+        showToast(`Saved JPG ${fw}×${fh} \u2713`);
+      } catch (e) {
+        console.error(e);
+        showToast('Export failed');
+      } finally {
+        finishProgress();
+      }
     }
 
     function exportSVG() {
       applyStyles();
-      const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName).replace(/[^a-zA-Z0-9-_\.]/g, '_');
+      const safeName = (els.fileNameInput.value.trim() || currentConfig.fileName || currentConfig.name || 'logo').replace(/[^a-zA-Z0-9-_\.]/g, '_');
       const baseScale = currentConfig.baseScale || 1;
       const data = makeSerializableClone(baseScale, true);
       if (!data) return showToast('SVG not loaded');
@@ -2665,7 +2661,7 @@
       currentLogoKey = key;
       currentConfig = LOGO_CONFIG[key];
       initControlState();
-      els.fileNameInput.value = currentConfig.fileName;
+      els.fileNameInput.value = currentConfig.fileName || currentConfig.name || key;
       renderLogo(key);
       generateControlsUI();
       applyStyles(); saveSettings();
@@ -3494,8 +3490,8 @@
       els.logoSelect.addEventListener('change', () => switchLogo(els.logoSelect.value));
       els.randomBtn.addEventListener('click', randomizeColors);
       els.resetBtn.addEventListener('click', resetAll);
-      els.exportPNG.addEventListener('click', () => exportPNG(false));
-      els.exportPNGHD.addEventListener('click', () => exportPNG(true));
+      els.exportPNG.addEventListener('click', exportPNG);
+      els.exportJPG.addEventListener('click', exportJPG);
       els.exportSVG.addEventListener('click', exportSVG);
       els.dpiInput.addEventListener('change', saveSettings);
     }
