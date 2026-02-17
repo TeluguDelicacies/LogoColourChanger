@@ -1884,14 +1884,6 @@
 
           <div class="effect-row">
             <div class="effect-label-row">
-              <span class="effect-label">Blur</span>
-              <span class="effect-value" id="blurValue">0px</span>
-            </div>
-            <input type="range" class="effect-slider" id="blurSlider" min="0" max="20" step="0.5" value="0">
-          </div>
-
-          <div class="effect-row">
-            <div class="effect-label-row">
               <span class="effect-label">Opacity</span>
               <span class="effect-value" id="opacityValue">100%</span>
             </div>
@@ -2231,19 +2223,19 @@
           {
             id: "gold",
             selector: "#path9",
-            label: "Gold Top",
-            desc: "Upper gold shape",
-            tooltip: "Change the gold part color",
+            label: "Fill Element",
+            desc: "Main fill element",
+            tooltip: "Change the fill element color",
             showStroke: true,
             showStrokeWidth: true,
             defaults: { fill: "#f0bc54", stroke: "#f0bc54", strokeWidth: "0" }
           },
           {
             id: "orange",
-            selector: "path[style*='fill:#ee8214']",
-            label: "Orange Base",
-            desc: "Lower orange shape",
-            tooltip: "Change the orange part color",
+            selector: "#path8",
+            label: "Lollypop and Reel Fill Colour",
+            desc: "Lollypop and reel fill elements",
+            tooltip: "Change the lollypop and reel fill colour",
             showStroke: true,
             showStrokeWidth: true,
             defaults: { fill: "#ee8214", stroke: "#ee8214", strokeWidth: "0" }
@@ -2292,8 +2284,6 @@
       bulkProgressFill: document.getElementById('bulkProgressFill'),
       bulkStatusText: document.getElementById('bulkStatusText'),
       // Effects elements
-      blurSlider: document.getElementById('blurSlider'),
-      blurValue: document.getElementById('blurValue'),
       opacitySlider: document.getElementById('opacitySlider'),
       opacityValue: document.getElementById('opacityValue'),
       bwPresetBtns: document.querySelectorAll('.bw-preset-btn')
@@ -2302,7 +2292,6 @@
     /* ========== EFFECTS STATE ========== */
     let effectsState = {
       bwMode: 'original',  // 'original', 'bw', 'inverse', 'grayscale'
-      blur: 0,
       opacity: 100,
       originalColors: {}   // stash of original controlState colors before B&W
     };
@@ -2430,6 +2419,19 @@
             }
             html += `</div></div>`;
           }
+
+          // Per-element fill opacity slider
+          const opVal = state.fillOpacity !== undefined ? state.fillOpacity : 100;
+          html += `<div class="stroke-section">
+              <div class="stroke-section-title">Fill Opacity</div>
+              <div class="effect-row" style="margin:0">
+                <div class="effect-label-row">
+                  <span class="effect-label">Amount</span>
+                  <span class="effect-value" id="${ctrl.id}-opacity-value">${opVal}%</span>
+                </div>
+                <input type="range" class="effect-slider" id="${ctrl.id}-opacity-slider" min="0" max="100" step="1" value="${opVal}">
+              </div>
+            </div>`;
         }
         card.innerHTML = html;
         els.controlsSection.appendChild(card);
@@ -2511,16 +2513,28 @@
           }
         }
 
+        // Per-element fill opacity slider
+        const opacSlider = document.getElementById(`${ctrl.id}-opacity-slider`);
+        const opacValueEl = document.getElementById(`${ctrl.id}-opacity-value`);
+        if (opacSlider) {
+          opacSlider.addEventListener('input', () => {
+            controlState[ctrl.id].fillOpacity = parseInt(opacSlider.value);
+            if (opacValueEl) opacValueEl.textContent = opacSlider.value + '%';
+            applyStyles(); saveSettings();
+          });
+        }
+
         if (resetBtn) {
           resetBtn.addEventListener('click', () => {
-            controlState[ctrl.id] = { ...ctrl.defaults };
+            controlState[ctrl.id] = { ...ctrl.defaults, fillOpacity: 100 };
             if (textInput) textInput.value = ctrl.defaults.text;
             if (fillPicker) fillPicker.value = ctrl.defaults.fill;
             if (fillHex) fillHex.value = ctrl.defaults.fill.replace('#', '');
             if (strokePicker) strokePicker.value = ctrl.defaults.stroke;
             if (strokeWidth) strokeWidth.value = ctrl.defaults.strokeWidth;
+            if (opacSlider) { opacSlider.value = 100; if (opacValueEl) opacValueEl.textContent = '100%'; }
             applyStyles(); saveSettings();
-            showToast('Reset ✓');
+            showToast('Reset \u2713');
           });
         }
 
@@ -2547,6 +2561,10 @@
             if (state.fill) el.style.setProperty('fill', state.fill);
             if (ctrl.showStroke && state.stroke) el.style.setProperty('stroke', state.stroke);
             if (ctrl.showStrokeWidth && state.strokeWidth) el.style.setProperty('stroke-width', state.strokeWidth);
+
+            // Per-element fill opacity
+            const fillOp = state.fillOpacity !== undefined ? state.fillOpacity : 100;
+            el.style.setProperty('fill-opacity', fillOp / 100);
           }
         });
       });
@@ -2557,56 +2575,9 @@
     function applyEffects() {
       if (!svgRoot) return;
 
-      // --- Blur via SVG filter ---
-      const blurVal = effectsState.blur;
-      let defs = svgRoot.querySelector('defs');
-      if (blurVal > 0) {
-        if (!defs) {
-          defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-          svgRoot.insertBefore(defs, svgRoot.firstChild);
-        }
-        let blurFilter = defs.querySelector('#effectBlur');
-        if (!blurFilter) {
-          blurFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
-          blurFilter.id = 'effectBlur';
-          // Use a large enough filter region so edges aren't clipped
-          blurFilter.setAttribute('x', '-20%');
-          blurFilter.setAttribute('y', '-20%');
-          blurFilter.setAttribute('width', '140%');
-          blurFilter.setAttribute('height', '140%');
-          defs.appendChild(blurFilter);
-        }
-        blurFilter.innerHTML = `<feGaussianBlur in="SourceGraphic" stdDeviation="${blurVal}"/>`;
-
-        // Apply filter to a wrapper group or root children
-        let contentGroup = svgRoot.querySelector('#effectsGroup');
-        if (!contentGroup) {
-          contentGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-          contentGroup.id = 'effectsGroup';
-          // Move all non-defs children into the group
-          const children = Array.from(svgRoot.children).filter(c => c.tagName !== 'defs');
-          children.forEach(c => contentGroup.appendChild(c));
-          svgRoot.appendChild(contentGroup);
-        }
-        contentGroup.setAttribute('filter', 'url(#effectBlur)');
-      } else {
-        // Remove blur filter
-        const blurFilter = defs?.querySelector('#effectBlur');
-        if (blurFilter) blurFilter.remove();
-        const contentGroup = svgRoot.querySelector('#effectsGroup');
-        if (contentGroup) {
-          contentGroup.removeAttribute('filter');
-        }
-      }
-
       // --- Opacity ---
       const opacityVal = effectsState.opacity / 100;
-      const opacityGroup = svgRoot.querySelector('#effectsGroup');
-      if (opacityGroup) {
-        opacityGroup.style.opacity = opacityVal < 1 ? opacityVal : '';
-      } else {
-        svgRoot.style.opacity = opacityVal < 1 ? opacityVal : '';
-      }
+      svgRoot.style.opacity = opacityVal < 1 ? opacityVal : '';
     }
 
     function getLuminance(hex) {
@@ -2627,6 +2598,25 @@
         });
       }
 
+      // For B&W and Inverse: compute median luminance as the threshold
+      // so elements are split relative to each other, not against a fixed 0.5
+      let bwThreshold = 0.5;
+      if (mode === 'bw' || mode === 'inverse') {
+        const luminances = [];
+        currentConfig.controls.forEach(ctrl => {
+          if (ctrl.type === 'text') return;
+          const original = effectsState.originalColors[ctrl.id] || ctrl.defaults;
+          luminances.push(getLuminance(original.fill));
+        });
+        if (luminances.length > 1) {
+          luminances.sort((a, b) => a - b);
+          const mid = Math.floor(luminances.length / 2);
+          bwThreshold = luminances.length % 2 === 0
+            ? (luminances[mid - 1] + luminances[mid]) / 2
+            : luminances[mid];
+        }
+      }
+
       currentConfig.controls.forEach(ctrl => {
         if (ctrl.type === 'text') return;
         const original = effectsState.originalColors[ctrl.id] || ctrl.defaults;
@@ -2635,12 +2625,12 @@
         switch (mode) {
           case 'bw': {
             const lum = getLuminance(original.fill);
-            newFill = lum > 0.5 ? '#FFFFFF' : '#000000';
+            newFill = lum > bwThreshold ? '#FFFFFF' : '#000000';
             break;
           }
           case 'inverse': {
             const lum = getLuminance(original.fill);
-            newFill = lum > 0.5 ? '#000000' : '#FFFFFF';
+            newFill = lum > bwThreshold ? '#000000' : '#FFFFFF';
             break;
           }
           case 'grayscale': {
@@ -2665,10 +2655,10 @@
           const strokeLum = getLuminance(origStroke);
           switch (mode) {
             case 'bw':
-              controlState[ctrl.id].stroke = strokeLum > 0.5 ? '#FFFFFF' : '#000000';
+              controlState[ctrl.id].stroke = strokeLum > bwThreshold ? '#FFFFFF' : '#000000';
               break;
             case 'inverse':
-              controlState[ctrl.id].stroke = strokeLum > 0.5 ? '#000000' : '#FFFFFF';
+              controlState[ctrl.id].stroke = strokeLum > bwThreshold ? '#000000' : '#FFFFFF';
               break;
             case 'grayscale': {
               const srgb = hexToRgb(origStroke);
@@ -2683,13 +2673,15 @@
           controlState[ctrl.id].stroke = original.stroke;
         }
 
-        // Update UI pickers
+        // Update all UI pickers/inputs so user can fine-tune
         const fillPicker = document.getElementById(`${ctrl.id}-fill-picker`);
         const fillHex = document.getElementById(`${ctrl.id}-fill-hex`);
         const strokePicker = document.getElementById(`${ctrl.id}-stroke-picker`);
+        const strokeWidthInput = document.getElementById(`${ctrl.id}-stroke-width`);
         if (fillPicker) fillPicker.value = controlState[ctrl.id].fill;
         if (fillHex) fillHex.value = controlState[ctrl.id].fill.replace('#', '');
         if (strokePicker) strokePicker.value = controlState[ctrl.id].stroke || '';
+        if (strokeWidthInput) strokeWidthInput.value = controlState[ctrl.id].strokeWidth || '0';
       });
 
       // If returning to original, clear stash
@@ -2710,13 +2702,20 @@
     }
 
     function resetEffects() {
-      effectsState = { bwMode: 'original', blur: 0, opacity: 100, originalColors: {} };
-      els.blurSlider.value = 0;
-      els.blurValue.textContent = '0px';
+      effectsState = { bwMode: 'original', opacity: 100, originalColors: {} };
       els.opacitySlider.value = 100;
       els.opacityValue.textContent = '100%';
       els.bwPresetBtns.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.bwMode === 'original');
+      });
+      // Reset per-element fill opacity sliders
+      currentConfig.controls.forEach(ctrl => {
+        if (ctrl.type === 'text') return;
+        if (controlState[ctrl.id]) controlState[ctrl.id].fillOpacity = 100;
+        const slider = document.getElementById(`${ctrl.id}-opacity-slider`);
+        const valEl = document.getElementById(`${ctrl.id}-opacity-value`);
+        if (slider) slider.value = 100;
+        if (valEl) valEl.textContent = '100%';
       });
     }
 
@@ -2724,13 +2723,6 @@
       // B&W preset buttons
       els.bwPresetBtns.forEach(btn => {
         btn.addEventListener('click', () => applyBWMode(btn.dataset.bwMode));
-      });
-
-      // Blur slider
-      els.blurSlider.addEventListener('input', () => {
-        effectsState.blur = parseFloat(els.blurSlider.value);
-        els.blurValue.textContent = effectsState.blur + 'px';
-        applyEffects();
       });
 
       // Opacity slider
