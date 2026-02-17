@@ -1658,6 +1658,172 @@
       transition: width 0.2s ease-out;
       box-shadow: 0 0 10px var(--accent);
     }
+
+    /* ========== EFFECTS PANEL ========== */
+    .effects-section {
+      order: 1;
+    }
+
+    .effects-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .effects-title {
+      font-size: 0.813rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .effects-subtitle {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .effect-row {
+      margin-bottom: 12px;
+    }
+
+    .effect-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .effect-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .effect-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .effect-value {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(59, 130, 246, 0.1);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-family: monospace;
+    }
+
+    .effect-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--bg);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .effect-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid var(--card);
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+      transition: transform 0.15s;
+    }
+
+    .effect-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .effect-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid var(--card);
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+    }
+
+    /* B&W Preset Buttons */
+    .bw-presets {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .bw-preset-btn {
+      padding: 6px 12px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid var(--card-border);
+      background: var(--bg);
+      color: var(--text-secondary);
+    }
+
+    .bw-preset-btn:hover {
+      border-color: var(--accent);
+      color: var(--text-primary);
+      transform: translateY(-1px);
+    }
+
+    .bw-preset-btn.active {
+      border-color: var(--accent);
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--text-primary);
+    }
+
+    .bw-preset-btn.bw-black {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      border-color: #333;
+    }
+
+    .bw-preset-btn.bw-black:hover,
+    .bw-preset-btn.bw-black.active {
+      border-color: var(--accent);
+    }
+
+    .bw-preset-btn.bw-white {
+      background: #f0f0f0;
+      color: #222;
+      border-color: #ccc;
+    }
+
+    .bw-preset-btn.bw-white:hover,
+    .bw-preset-btn.bw-white.active {
+      border-color: var(--accent);
+    }
+
+    .effects-divider {
+      height: 1px;
+      background: var(--card-border);
+      margin: 12px 0;
+    }
+
+    .effects-section-label {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 
@@ -1695,6 +1861,44 @@
 
       <!-- Controls Section (2x2 on desktop) -->
       <section class="controls-section" id="controlsSection"></section>
+
+      <!-- Effects Section -->
+      <section class="effects-section">
+        <div class="effects-card">
+          <div class="effects-title">✨ Effects</div>
+          <div class="effects-subtitle">Apply visual effects and color presets</div>
+
+          <div class="effects-section-label">Color Presets</div>
+          <div class="bw-presets">
+            <button class="bw-preset-btn active" data-bw-mode="original" title="Restore original colors">🎨
+              Original</button>
+            <button class="bw-preset-btn bw-black" data-bw-mode="bw" title="Convert to black & white">⬛ B&W</button>
+            <button class="bw-preset-btn bw-white" data-bw-mode="inverse" title="Inverted black & white">⬜
+              Inverse</button>
+            <button class="bw-preset-btn" data-bw-mode="grayscale" title="Grayscale with tonal variation">🌫️
+              Grayscale</button>
+          </div>
+
+          <div class="effects-divider"></div>
+          <div class="effects-section-label">Adjustments</div>
+
+          <div class="effect-row">
+            <div class="effect-label-row">
+              <span class="effect-label">Blur</span>
+              <span class="effect-value" id="blurValue">0px</span>
+            </div>
+            <input type="range" class="effect-slider" id="blurSlider" min="0" max="20" step="0.5" value="0">
+          </div>
+
+          <div class="effect-row">
+            <div class="effect-label-row">
+              <span class="effect-label">Opacity</span>
+              <span class="effect-value" id="opacityValue">100%</span>
+            </div>
+            <input type="range" class="effect-slider" id="opacitySlider" min="0" max="100" step="1" value="100">
+          </div>
+        </div>
+      </section>
 
       <!-- Download Section -->
       <section class="download-section card">
@@ -2086,7 +2290,21 @@
       runBulkBtn: document.getElementById('runBulkBtn'),
       bulkStatus: document.getElementById('bulkStatus'),
       bulkProgressFill: document.getElementById('bulkProgressFill'),
-      bulkStatusText: document.getElementById('bulkStatusText')
+      bulkStatusText: document.getElementById('bulkStatusText'),
+      // Effects elements
+      blurSlider: document.getElementById('blurSlider'),
+      blurValue: document.getElementById('blurValue'),
+      opacitySlider: document.getElementById('opacitySlider'),
+      opacityValue: document.getElementById('opacityValue'),
+      bwPresetBtns: document.querySelectorAll('.bw-preset-btn')
+    };
+
+    /* ========== EFFECTS STATE ========== */
+    let effectsState = {
+      bwMode: 'original',  // 'original', 'bw', 'inverse', 'grayscale'
+      blur: 0,
+      opacity: 100,
+      originalColors: {}   // stash of original controlState colors before B&W
     };
 
     function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
@@ -2331,6 +2549,195 @@
             if (ctrl.showStrokeWidth && state.strokeWidth) el.style.setProperty('stroke-width', state.strokeWidth);
           }
         });
+      });
+      applyEffects();
+    }
+
+    /* ========== EFFECTS LOGIC ========== */
+    function applyEffects() {
+      if (!svgRoot) return;
+
+      // --- Blur via SVG filter ---
+      const blurVal = effectsState.blur;
+      let defs = svgRoot.querySelector('defs');
+      if (blurVal > 0) {
+        if (!defs) {
+          defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+          svgRoot.insertBefore(defs, svgRoot.firstChild);
+        }
+        let blurFilter = defs.querySelector('#effectBlur');
+        if (!blurFilter) {
+          blurFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+          blurFilter.id = 'effectBlur';
+          // Use a large enough filter region so edges aren't clipped
+          blurFilter.setAttribute('x', '-20%');
+          blurFilter.setAttribute('y', '-20%');
+          blurFilter.setAttribute('width', '140%');
+          blurFilter.setAttribute('height', '140%');
+          defs.appendChild(blurFilter);
+        }
+        blurFilter.innerHTML = `<feGaussianBlur in="SourceGraphic" stdDeviation="${blurVal}"/>`;
+
+        // Apply filter to a wrapper group or root children
+        let contentGroup = svgRoot.querySelector('#effectsGroup');
+        if (!contentGroup) {
+          contentGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          contentGroup.id = 'effectsGroup';
+          // Move all non-defs children into the group
+          const children = Array.from(svgRoot.children).filter(c => c.tagName !== 'defs');
+          children.forEach(c => contentGroup.appendChild(c));
+          svgRoot.appendChild(contentGroup);
+        }
+        contentGroup.setAttribute('filter', 'url(#effectBlur)');
+      } else {
+        // Remove blur filter
+        const blurFilter = defs?.querySelector('#effectBlur');
+        if (blurFilter) blurFilter.remove();
+        const contentGroup = svgRoot.querySelector('#effectsGroup');
+        if (contentGroup) {
+          contentGroup.removeAttribute('filter');
+        }
+      }
+
+      // --- Opacity ---
+      const opacityVal = effectsState.opacity / 100;
+      const opacityGroup = svgRoot.querySelector('#effectsGroup');
+      if (opacityGroup) {
+        opacityGroup.style.opacity = opacityVal < 1 ? opacityVal : '';
+      } else {
+        svgRoot.style.opacity = opacityVal < 1 ? opacityVal : '';
+      }
+    }
+
+    function getLuminance(hex) {
+      const rgb = hexToRgb(hex);
+      if (!rgb) return 0.5;
+      // Relative luminance (ITU-R BT.709)
+      return (0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b) / 255;
+    }
+
+    function applyBWMode(mode) {
+      effectsState.bwMode = mode;
+
+      // If switching away from original, stash current colors first
+      if (mode !== 'original' && Object.keys(effectsState.originalColors).length === 0) {
+        currentConfig.controls.forEach(ctrl => {
+          if (ctrl.type === 'text') return;
+          effectsState.originalColors[ctrl.id] = { ...controlState[ctrl.id] };
+        });
+      }
+
+      currentConfig.controls.forEach(ctrl => {
+        if (ctrl.type === 'text') return;
+        const original = effectsState.originalColors[ctrl.id] || ctrl.defaults;
+
+        let newFill;
+        switch (mode) {
+          case 'bw': {
+            const lum = getLuminance(original.fill);
+            newFill = lum > 0.5 ? '#FFFFFF' : '#000000';
+            break;
+          }
+          case 'inverse': {
+            const lum = getLuminance(original.fill);
+            newFill = lum > 0.5 ? '#000000' : '#FFFFFF';
+            break;
+          }
+          case 'grayscale': {
+            const rgb = hexToRgb(original.fill);
+            if (rgb) {
+              const gray = Math.round(0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b);
+              newFill = rgbToHex(gray, gray, gray);
+            } else {
+              newFill = original.fill;
+            }
+            break;
+          }
+          default: // 'original'
+            newFill = original.fill;
+        }
+
+        controlState[ctrl.id].fill = newFill;
+
+        // Also update the stroke for consistency
+        if (ctrl.showStroke && mode !== 'original') {
+          const origStroke = original.stroke || original.fill;
+          const strokeLum = getLuminance(origStroke);
+          switch (mode) {
+            case 'bw':
+              controlState[ctrl.id].stroke = strokeLum > 0.5 ? '#FFFFFF' : '#000000';
+              break;
+            case 'inverse':
+              controlState[ctrl.id].stroke = strokeLum > 0.5 ? '#000000' : '#FFFFFF';
+              break;
+            case 'grayscale': {
+              const srgb = hexToRgb(origStroke);
+              if (srgb) {
+                const sg = Math.round(0.2126 * srgb.r + 0.7152 * srgb.g + 0.0722 * srgb.b);
+                controlState[ctrl.id].stroke = rgbToHex(sg, sg, sg);
+              }
+              break;
+            }
+          }
+        } else if (mode === 'original' && ctrl.showStroke) {
+          controlState[ctrl.id].stroke = original.stroke;
+        }
+
+        // Update UI pickers
+        const fillPicker = document.getElementById(`${ctrl.id}-fill-picker`);
+        const fillHex = document.getElementById(`${ctrl.id}-fill-hex`);
+        const strokePicker = document.getElementById(`${ctrl.id}-stroke-picker`);
+        if (fillPicker) fillPicker.value = controlState[ctrl.id].fill;
+        if (fillHex) fillHex.value = controlState[ctrl.id].fill.replace('#', '');
+        if (strokePicker) strokePicker.value = controlState[ctrl.id].stroke || '';
+      });
+
+      // If returning to original, clear stash
+      if (mode === 'original') {
+        effectsState.originalColors = {};
+      }
+
+      // Update button states
+      els.bwPresetBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.bwMode === mode);
+      });
+
+      applyStyles();
+      saveSettings();
+
+      const labels = { original: 'Original colors', bw: 'Black & White', inverse: 'Inverse B&W', grayscale: 'Grayscale' };
+      showToast(`${labels[mode]} ✓`);
+    }
+
+    function resetEffects() {
+      effectsState = { bwMode: 'original', blur: 0, opacity: 100, originalColors: {} };
+      els.blurSlider.value = 0;
+      els.blurValue.textContent = '0px';
+      els.opacitySlider.value = 100;
+      els.opacityValue.textContent = '100%';
+      els.bwPresetBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.bwMode === 'original');
+      });
+    }
+
+    function wireEffectsEvents() {
+      // B&W preset buttons
+      els.bwPresetBtns.forEach(btn => {
+        btn.addEventListener('click', () => applyBWMode(btn.dataset.bwMode));
+      });
+
+      // Blur slider
+      els.blurSlider.addEventListener('input', () => {
+        effectsState.blur = parseFloat(els.blurSlider.value);
+        els.blurValue.textContent = effectsState.blur + 'px';
+        applyEffects();
+      });
+
+      // Opacity slider
+      els.opacitySlider.addEventListener('input', () => {
+        effectsState.opacity = parseInt(els.opacitySlider.value);
+        els.opacityValue.textContent = effectsState.opacity + '%';
+        applyEffects();
       });
     }
 
@@ -2661,6 +3068,7 @@
 
     function resetAll() {
       initControlState();
+      resetEffects();
       els.fileNameInput.value = currentConfig.fileName;
       generateControlsUI();
       applyStyles(); saveSettings();
@@ -2672,6 +3080,7 @@
       currentConfig = LOGO_CONFIG[key];
       initControlState();
       els.fileNameInput.value = currentConfig.fileName || currentConfig.name || key;
+      resetEffects();
       renderLogo(key);
       generateControlsUI();
       applyStyles(); saveSettings();
@@ -3512,6 +3921,7 @@
       generateControlsUI();
       applyStyles();
       wireMainEvents();
+      wireEffectsEvents();
       initPortalSection();
       wireBulkEvents();
     }
