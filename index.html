@@ -2404,7 +2404,16 @@
               if (!hasFill && !hasStroke) return;
             }
 
-            const bbox = el.getBBox();
+            const rawBBox = el.getBBox();
+            // Expand bbox by half the stroke-width to account for stroke extents
+            const sw = parseFloat(style.strokeWidth || '0') || 0;
+            const halfStroke = sw / 2;
+            const bbox = {
+              x: rawBBox.x - halfStroke,
+              y: rawBBox.y - halfStroke,
+              width: rawBBox.width + sw,
+              height: rawBBox.height + sw
+            };
             if (bbox.width > 0 && bbox.height > 0) {
               const elCTM = el.getScreenCTM();
               if (!elCTM) return;
@@ -2435,8 +2444,9 @@
           return fallback;
         }
 
-        // Apply 1px minimal padding
-        const padding = 1;
+        // Apply comfortable padding to prevent edge clipping from
+        // anti-aliasing, sub-pixel rendering, or stroke miter joins
+        const padding = 4;
         return {
           x: minX - padding,
           y: minY - padding,
