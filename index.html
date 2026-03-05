@@ -2204,6 +2204,16 @@
 
         controls: [
           {
+            id: "bg",
+            selector: "#rect3",
+            label: "Background Color",
+            desc: "The background square color",
+            tooltip: "Change the background color",
+            showStroke: true,
+            showStrokeWidth: true,
+            defaults: { fill: "#fff0c4", stroke: "#761e1a", strokeWidth: "0.9" }
+          },
+          {
             id: "brand",
             selector: "#path2",
             label: "Brand Fill",
@@ -2211,7 +2221,7 @@
             tooltip: "Change the logo color",
             showStroke: true,
             showStrokeWidth: true,
-            defaults: { fill: "#761e1a", stroke: "#761e1a", strokeWidth: "0" }
+            defaults: { fill: "#761e1a", stroke: "#000000", strokeWidth: "0" }
           }
         ],
         fileName: "Tasty-Pinch-custom"
